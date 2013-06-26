@@ -27,3 +27,15 @@ Agent Mediated P2P Mobile Service Oriented Architecture
 -all units have to be, and are, independent
 -agents are programs that respond depending on the current state of the environment
 -usage of mobile proxies that act as "Agent Servers"
+
+A P2P VoD System Using Dynamic Priority
+-uses a main server with a dynamic hash table (DHT) with list of all peers
+	-like torrent tracker
+-aimed at minimizing Control Overhead, Segment Priority Managament, and Server Resource Balancing
+-implementation of "communities" with a superpeer
+	-communities have similar needs
+-proposal of a scheduling algorithm based off of peer and group
+
+Evaluation of the P2P File Sharing Technique by Indexed-Priority Metric
+-implemented using Chord
+-aims to distribute the load of a single file being distributed by decentralizing using the "indexed-priority metric"
