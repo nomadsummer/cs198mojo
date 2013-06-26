@@ -1,0 +1,77 @@
+NOTES
+
+1. Stabilizing peer-to-peer systems using public cloud
+	- case study is on peer-to-peer search like Faroo
+   Problem Statement 
+	How do we stabilize load-spiking in peer-to-peer search?
+	- happens when a certain keyword become more popular resulting to a spike in queries
+	- the peer that indexes the keyword will not be able to handle the requests and will cause system instability
+   Traditional SOlution
+	a. Caching - results will be cached to intermediate peers
+	b. Caching with Replication - in addition to caching, other peers will also handle the queries for the same keyword
+   Proposed Solution:
+	CAPS(Cloud-assisted Peer-to-Peer Search)
+	- In case of load spikes, the responsibility of handling query requests will transfer from a peer to a public cloud
+	Important elements to consider
+	a. Switching decision maker - when do we redirect the queries from the peer to the cloud?
+	b. Switching implementer - how do we transfer the queries from the peer to the cloud?   
+   Points to Ponder
+	- How can the cloud-assistance process be applied to other P2P services like content distribution and streaming?
+        - Is it possible to incorporate a cloud in the current P2P topologies?
+
+2. Hybrid Peer-to-Peer Systems
+	- hybrid in the sense that they want to combine structured and unstructured P2P systems
+   Problem Statement
+	Can we design a hybrid peer-to-peer system which combines the advantages of both types of peer-to-peer networks and minimizes their disadvantages?
+	- Structured P2P
+		Advantages
+		- any peer can be found in at most O(logn) hops where n is the total number of peers in the network
+		- if a document is present in the network, it will always be found
+		Disadvatages
+		-  large overhead for peers frequently joining and leaving because
+		   DHT(distrubuted hash tableS) needS to be updated everytime peers join/leave
+	- Unstructured P2P
+		Advantages
+		- much easier to implement
+		- flexibility for peers joining and leaving
+		Disadvatages
+		- peers can only be found through query flooding which will be an issue for scalability in large networks
+		- a file will not always be found beacuse query flooding will not reach distant peers
+   Proposed Solution
+	The Hybrid Peer-to-Peer System
+	- composed of two parts: a core network and many sub-networks, each of which is attached to a node 
+          in the core network.The core transit network is a structured peer-to-peer network while the 
+          sub-networks are unstructured.
+   	Important elements to consider
+	a. System paramter p - determines what is the ratio of the number peers inside the core network to 
+                               the number of peers in the sub-networks in order for the system to be effective
+   Points to Ponder
+	- Is there a more effective strucutre than the one stated above for a hybrid peer-to-peer system?
+	- What can we add to the current infrastructure to make the system more efficient without changing
+	  the type of the P2P network?
+
+3. A Novel Peer Management Model For Live Peer-To-Peer Streaming
+   Problem Statement
+	How to achieve optimal peer selection and dynamic peer management, which gains global optimal performance in P2P networks
+   Proposed Solution
+	A new peer management model
+	Important Elements
+	a. Time Synchronization
+		-  data relativity between two peers A and B during the streaming session. If the buffer of A always has
+                   data B need during streaming, we consider A and B in good synchronization.
+	b. Peer Performance
+		- property indicate the network performance of the peer considering delay and offer rate.
+	c. Peer Goodness
+		- We define the goodness of peer p, G of p, as a function of its performance property and the time 
+                  synchronization between two peers.
+	d. Best Active Peers Set
+		- This is the subset of peers that are likely to provide the best quality to the receiver. 
+   Points to Ponder
+	- Is peer management as important as P2P network structure to make the overall system more efficient?
+
+-- To Follow Notes --
+4. Transport Optimization in Peer-to-Peer Networks
+5. Trustworthiness of Peers in P2P Overlay Networks
+6. VMTorrent
+
+	
