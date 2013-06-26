@@ -1,0 +1,29 @@
+Notes:
+
+Towards an Access Control System for Mobile P2P Collaborative Environments
+-implemented in MObile Teamwork Infrastructure for Organizations Networking
+-security related p2p issues
+-proposal of 3 methodologies for ensuring security in p2p networks.
+
+Consistency Management among replicas in P2P Mobile Ad hoc Networks
+-Data Replication for disconnected peers
+-region based data consistency
+	-proxy (manager) & peer (user)
+-use of "quorums" in groups (for global consistency)
+	-minimum number of agreeing peers
+-other types of consistency mgmt
+	-Global, Local, Hop-Count based, Time-based, Peer-based, Hybrid, App-based
+-Read/Writes are on a Quorum basis
+-Tested different configurations based on
+	-Quorum Size, Write Freq, Area Size
+
+P2P Based Mobile Video on Demand with Layered Video Distribution
+-streaming live media from server AND peers
+-segmenetation of video into "slices" vs "layers"
+-layering is based off of bandwidth speed of peers
+-aims to solve the problem of peers having different bandwidths
+
+Agent Mediated P2P Mobile Service Oriented Architecture
+-all units have to be, and are, independent
+-agents are programs that respond depending on the current state of the environment
+-usage of mobile proxies that act as "Agent Servers"
