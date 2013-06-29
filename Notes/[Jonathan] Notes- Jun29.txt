@@ -20,3 +20,22 @@ Analysis and improvement on Chord protocol for structured P2P
 		-considers the number of hops and not network latency
 		-too many messages
 
+Maximum Utility Peer Selection for P2P Streaming in Wireless Ad Hoc Networks
+	-High number of peers consumes a large portion of bandwidth 
+		Solution: Peer Selection/Topology Control
+	*Tree-type topology
+		-Heirarchical structure
+		-Sensitive to changes
+	*Mesh Topology
+		-based on the tree structure
+		-maximize spatial diversity in data distribution
+		-higher throughput than traditional tree topology
+
+	Network level optimality can be reached with local information exchange = scalable, no rigid,predefined structure
+
+	(Note: Check T. Small; B. Li and B. Liang, “Outreach: peer-to-peer topology construction
+	towards minimized server bandwidth costs,” IEEE Journal on Sel. Areas in Communications)
+
+Performance Evaluation of AS-friendly Peer Selection Algorithms for P2P Live Streaming
+
+Optimal Peer Selection for P2P Downloading and Streaming
