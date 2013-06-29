@@ -1,0 +1,22 @@
+Towards Minimum Traffic Cost and Minimum Response Latency: A Novel Dynamic Query Protocol in Unstructured P2P Networks
+	*Controlled-flooding Algorithms
+		-Expanding Ring Protocol : low response delay, high traffic cost
+		-Random-walk  based Protocols : low traffic, high latency, enhanced scalability, results vary for diff. topologies,
+										good for energy-constrained applications
+	*Dynamic Query
+		-Probe phase ("census")
+		-Interative flooding phase
+
+A Trust-Enhanced Topology Adaptation Protocol for Unstructured P2P Overlays
+	*Beta Reputation System
+		-centralized probabilistic trust model based on beta distribution
+		-can't cope with misleading information
+	*Maximum Likelihood Estimation
+		-rough estimate of performance
+
+Analysis and improvement on Chord protocol for structured P2P
+	*Chord
+		-does not take into account physical network characteristics
+		-considers the number of hops and not network latency
+		-too many messages
+
