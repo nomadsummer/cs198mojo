@@ -1,0 +1,12 @@
+VMTorrent: Virtual Appliances On-Demand
+	Virtual Appliances (VA) = task-specific Virtual Machines (VM)
+	-Good in Cloud Computing
+	-Current setup is to download the virtual disk image
+		Solution: VMTorrent
+	*VMTorrent
+		-piece/chunk priority
+		-similar to video streaming
+		-more unpredictable than video streaming but has a lower block usage
+
+VMTorrent: Scalable P2P Virtual Machine Streaming
+
