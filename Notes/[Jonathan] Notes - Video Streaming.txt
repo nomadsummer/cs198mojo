@@ -1,0 +1,43 @@
+======================================================================================================================================
+Performance analysis of peer-to-peer video streaming systems with tree and forest topology
+	*The video stream
+		-time interval of frame with respect to the entire video stream
+		-sub-frames = part of the whole frame, ex. layered coding
+	*Segments
+		-at application layer: sub-frames -> segments
+		-segments = sub-frames with the same offset
+	*Sources and trees
+		-content is distributed among all peers in different trees
+		-source = root node
+		-root sequentially sends segments to its children depending on frame interval
+		-number of trees is a multiple of the number of sub-frames per frame
+		-a number of them transports segments with the same sub-frame offset
+	*Peers' operation
+		-download queue -> packets received from parent peers
+		-reassembles the stream in an overlay buffer
+		-complete segments are sent to all children peers
+		-frames are extracted from playout buffer ready for viewing
+	*Playout buffer
+		-assembles the stream
+		-frees space when all the frames of a segment has been extracted
+		-starts the video stream when the playback threshold is reached
+		-playback threshold is checked for every sub-frame offset
+	*Join and leave
+	(Every peer must be at least in the transporting trees for the video to play)
+		Joining
+		-depends on free download bandwidth
+		-sub-frame offsets are chosen randomly
+		-for every offset, peer selects parent peer in all transporting trees with sufficient free upload band width
+		-will only receive from parent after a time interval X (identification and selection of the new peer)
+		Leaving
+		-peers can leave without notification
+		-children peers of disconnected peer will wait for a time interval Y before attempting to find a new parent
+
+	Rejoin time = Y + X
+	Average permanence time of peers = time interval from join to leave
+	Playback threshold = threshold in peer's playout buffer (measured in seconds)
+
+	*Factors to consider
+		-playback delay  = time interval from when source provides content and it is extracted from peer's playout buffer
+		-received frames and sub-frames ratios = presence or absence of sub-frames when the playback threshold is reached
+======================================================================================================================================
