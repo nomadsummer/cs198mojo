@@ -8,5 +8,3 @@ VMTorrent: Virtual Appliances On-Demand
 		-similar to video streaming
 		-more unpredictable than video streaming but has a lower block usage
 
-VMTorrent: Scalable P2P Virtual Machine Streaming
-

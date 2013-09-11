@@ -1,0 +1,44 @@
+A Measurement Study of a Large-Scale P2P IPTV System (Mesh-Pull not BitTorrent)
+
+PPLive crawler for data gathering:
+	*super peers contribute significantly to upload
+
+Arguments against using BitTorrent:
+1) BitTorrent by itself is not a feasible video delivery architecture since it does not account for the real-time needs of IPTV. In mesh-pull streaming, each video chunk has corresponding playback deadline. Hence, video chunk scheduling is an indispensable component for assisting a timely video delivery.
+2) Due to the stringent need of video chunk availability before the deadline, fair resource sharing has not been carefully addressed in the current mesh-pull systems. There have been no reciprocity mechanisms deployed in the current meshpull systems to encourage resource sharing between peers.
+3) BitTorrent is targeted at group communication with medium size (< 1000); hence, peers retrieve peer neighbor information directly from the tracker server. However, a large-scale live streaming broadcast can easily attract thousands of users. To support large-scale group communication,gossip peer search algorithms have been used in various mesh-pull systems. Nevertheless, the deployment of gossip algorithms incur various implications, i.e., delay may occur in searching peers; tracker servers may only handle part of the peers in the system and hence lose the global view and the control of the network, and so on.
+
+
+A Survey of BitTorrent Performance
+
+Peer Selection 
+	Tit-for-Tat
+	-Chooses the current "best" peers among the given peer set to connect to but still reevaluates all other peers every 10 seconds.
+
+	Optimistic Unchoking
+	-unchokes a random peer every 30 seconds in hopes of discovering better peers to connect to.
+
+	*Assuming that all peers have the same upload and download rate:
+	All peers to be the "best" peers then Tit-for-Tat mechanism will make it so that the speed and quality of the stream depends on the number of peers of the stream and leaving the Optimistic Unchoking Mechanism practically redundant.
+
+Page 9 Table IV
+	Peers' download state most peers on seeding or justing starting the download
+
+	*Assuming that peers that are just starting to download cancel out the upload rate of seeders then the most common place to look for excessive bandwidth to help other streams would be in peers that download and upload at the same time.
+
+	*In application to livestreaming, peers that are just starting to download and seeders are almost the same with peers that download and upload at the same time so another way to find bandwidth to allocate in a stable stream would be in hostile peers that download only and FORCE them to upload and help albeit in another stream.
+
+Page 14~15
+	1) Collaboration among Peers: BitTorrent’s piece exchange mechanism is designed to enforce fairness among peers through the TFT mechanism. Garbacki et al. [56] pointed out three limitations of TFT: (1) the newcomers are bootstrapped at the bandwidth cost of the existing peers; (2) no incentives for seeding; (3) peers with asymmetric Internet connections cannot fully use their downloading links since they are forced to download at the speed of their uploading link.
+
+	*Based on (3) we could theoretically solve this by adding more upload capacity through the help of other peers in other streams.
+
+	The new protocol is named amortized tit-for-tat (ATFT). In this protocol peers choose the bandwidth borrowers with the highest chance of returning the borrowed bandwidth. ATFT employs the exploration and selection operations to select peers with the highest contributions as the borrowers.
+
+	*We could extend this to the peer selection step of the super peer of the stream that needs help.
+
+	The results show that ATFT improves the average download bandwidth of a peer by a factor of 2 to 6.
+
+	They presented several conclusions: (1) helpers are almost as effective as seeds though they only download a tiny fraction of the file; (2) helpers that download too many pieces will hurt the system performance; (3) average downloading time of a BitTorrent system with helpers is much shorter than that of the BitTorrent system without helpers; (4) it is more effective for BitTorrent to have a lot of helpers than to have a few extra seeds.
+
+	*As stated in (1) even if a the helper only download a tiny fraction of the file it can be of big help thus making it extensible to livestreaming where the file uploaded is limited to what is being streamed by the host.
