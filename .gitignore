@@ -1,5 +1,6 @@
 *.pyc
 *.mpegts
+PeerSimCode/peersim-1.0.5/bin
 TriblerCode/vlc
 TriblerCode/Unused
 Results/
