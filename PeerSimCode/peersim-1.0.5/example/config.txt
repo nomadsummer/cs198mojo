@@ -1,0 +1,61 @@
+# PEERSIM : OVERLAY STREAMING
+
+# simulation lenght and number of iterations
+CYCLE 100
+ITERATIONS 1
+
+# parameters of the protocol
+TOTALNODES 1000
+INITNODES 100
+NUMSTRIPES 10
+ACTIVESTRIPES 6
+PCHURN 1.0
+
+# parameters for the delay 
+MINDELAY 0
+MAXDELAY 0
+#MINDELAY 0.1
+#MAXDELAY 2
+
+################### basic settings ===========================
+
+random.seed 123456783
+network.size (NUMSTRIPES + 1)
+simulation.endtime CYCLE
+simulation.logtime CYCLE/10
+simulation.experiments ITERATIONS
+
+################### protocols ===========================
+
+protocol.link peersim.core.IdleProtocol
+
+protocol.streaming peersim.streaming.OverlayStreaming
+protocol.streaming.step CYCLE
+protocol.streaming.transport urt
+
+protocol.urt UniformRandomTransport
+protocol.urt.mindelay MINDELAY
+protocol.urt.maxdelay MAXDELAY
+
+################### initialization ======================
+
+# this protocol takes as input the total number of nodes, the initial nodes, 
+# the number of stripes, the number of active stripes and the probability of churn
+# If these parameters are not present, the values are initialized with 1000, 100, 
+# 10, 6 and 1.0 respectively.
+init.startos peersim.streaming.OSInitializer
+init.startos.protocol streaming
+init.startos.totalnodes TOTALNODES
+init.startos.initnodes INITNODES
+init.startos.numstripes NUMSTRIPES
+init.startos.activestripes ACTIVESTRIPES
+init.startos.pchurn PCHURN
+
+################ control ==============================
+
+control.oso OSObserver
+control.oso.protocol streaming
+control.oso.step CYCLE/10
+control.oso.FINAL
+
+

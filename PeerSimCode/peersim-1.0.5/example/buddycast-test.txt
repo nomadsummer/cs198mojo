@@ -1,0 +1,95 @@
+# network size
+SIZE 943
+
+# parameters of periodic execution
+CYCLES 5
+CYCLE SIZE
+
+# parameters of message transfer
+# delay values here are relative to cycle length, in percentage,
+# eg 50 means half the cycle length, 200 twice the cycle length, etc.
+MINDELAY 0
+MAXDELAY 0
+
+# drop is a probability, 0<=DROP<=1
+DROP 0
+
+# mean value of prediction scale
+MEAN 0
+
+random.seed 1234567890
+
+network.size SIZE
+simulation.endtime CYCLE*CYCLES
+simulation.logtime SIZE
+
+################### protocols ===========================
+
+protocol.bc peersim.buddycast.BuddyCast
+{
+step CYCLE
+transport tr
+preservememory true
+useprefs false
+}
+
+protocol.appprot peersim.recommendation.CoFeMethod
+protocol.appprot.linkable bc
+protocol.appprot.mean_value MEAN
+protocol.appprot.step 15
+
+protocol.tr peersim.transport.UniformRandomTransport
+protocol.tr.mindelay 0
+protocol.tr.maxdelay 0
+
+################### initialization ======================
+
+# this also uses WireKOut to set the initial random overlay network
+init.start peersim.recommendation.RecommendationInitializer
+init.start.protocol bc
+init.start.k 10
+init.start.filename test/ua_norm.base
+
+init.appinit peersim.recommendation.NodeInitializer
+init.appinit.appprotocol appprot
+init.appinit.linkable bc
+init.appinit.train ./test/ua_norm.base
+init.appinit.eval ./test/ua_norm.test
+init.appinit.similarity test/ua_norm.base_similarities_cofe_cos_cent
+
+#init.rand WireKOut
+#init.rand.protocol bc
+#init.rand.k 10
+
+init.predinit peersim.recommendation.PredictionInitializer
+init.predinit.protocol appprot
+
+init.sch peersim.edsim.CDScheduler
+init.sch.protocol appprot
+
+
+include.init appinit predinit start sch
+
+###################### reports ==========================
+
+control.mae peersim.recommendation.BuddyCastErrorObserver
+control.mae.protocol bc
+control.mae.appprotocol appprot
+control.mae.step 15
+
+
+#control.1 peersim.reports.DegreeStats
+#{
+#protocol bc
+#step 10
+#method freq
+#}
+
+#control.2 peersim.reports.GraphStats
+#{
+#protocol bc
+#nc SIZE
+#nl SIZE
+#step 10000
+#undir false
+#}
