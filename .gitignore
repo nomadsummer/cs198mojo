@@ -1,2 +1,5 @@
 *.pyc
+*.mpegts
 TriblerCode/vlc
+TriblerCode/Unused
+Results/

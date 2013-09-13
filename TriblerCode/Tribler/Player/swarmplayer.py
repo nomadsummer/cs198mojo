@@ -57,7 +57,7 @@ ALLOW_MULTIPLE = True
 RATELIMITADSL = False
 
 DISKSPACE_LIMIT = 5L * 1024L * 1024L * 1024L  # 5 GB
-DEFAULT_MAX_UPLOAD_SEED_WHEN_SEEDING = 75 # KB/s
+DEFAULT_MAX_UPLOAD_SEED_WHEN_SEEDING = 100 # KB/s
 I2I_LISTENPORT = 57894
 PLAYER_LISTENPORT = 8620
 VIDEOHTTP_LISTENPORT = 6879
@@ -162,6 +162,7 @@ class PlayerApp(wx.App):
             if False: # just play video file
                 self.videoplay.play_from_file(self.params[0])
                 return True
+            
             
             # Read config
             state_dir = Session.get_default_state_dir('.SwarmPlayer')
