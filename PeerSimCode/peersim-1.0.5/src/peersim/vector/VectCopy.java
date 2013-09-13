@@ -108,12 +108,6 @@ public void initialize(Node n) {
 	else setter.set(n,ret.doubleValue());
 }
 
-@Override
-public boolean execute(int exp) {
-	// TODO Auto-generated method stub
-	return false;
-}
-
 //--------------------------------------------------------------------------
 
 }

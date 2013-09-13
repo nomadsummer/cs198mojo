@@ -278,24 +278,6 @@ public static Graph wireScaleFreeBA( Graph g, int k, Random r ) {
 	return g;
 }
 
-
-public static Graph wireComplete( Graph g ) {
-
-	final int n = g.size();
-	for(int i=1; i<n-1; ++i)
-		for(int j=i+1; j<n; ++j){
-			g.setEdge(i,j);
-	        g.setEdge(j,i);
-		}
-	
-	return g;
-}
-
-public static Graph wireZero( Graph g ) {
-
-	return g;
-}
-
 // -------------------------------------------------------------------
 /*
 public static void main(String[] pars) {

@@ -321,16 +321,6 @@ public static void setConfig(Properties p)
 
 // -------------------------------------------------------------------
 
-public static void resetConfig(Properties p)
-{
-	
-		config=null;
-		config = new ConfigContainer(p, false);
-
-}
-
-// -------------------------------------------------------------------
-
 /**
  * Sets the system-wide configuration in Properties format. It can be
  * called only once. After that the configuration becomes unmodifiable

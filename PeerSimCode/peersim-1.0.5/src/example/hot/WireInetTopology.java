@@ -137,10 +137,4 @@ public class WireInetTopology extends WireGraph {
                     "Found un-initialized coordinate. Use e.g., InetInitializer class in the config file.");
         return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     }
-
-	@Override
-	public boolean execute() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

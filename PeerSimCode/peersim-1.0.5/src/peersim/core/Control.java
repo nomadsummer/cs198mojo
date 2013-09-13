@@ -31,7 +31,6 @@ public interface Control
  * components.
  * @return true if the simulation has to be stopped, false otherwise.
  */
-public boolean execute(int exp);
 public boolean execute();
 
 }

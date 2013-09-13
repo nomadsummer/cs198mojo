@@ -92,8 +92,4 @@ public class PeakDistributionInitializer implements Control {
 
         return false;
     }
-    
-    public boolean execute(int exp) {
-        return false;
-    }
 }

@@ -24,7 +24,6 @@ import peersim.cdsim.*;
 import peersim.config.*;
 import peersim.core.*;
 import peersim.edsim.*;
-import peersim.Simulator;
 
 
 /**
@@ -43,7 +42,7 @@ import peersim.Simulator;
 * </ul>
 * This list represents the order in which these alternatives are checked.
 * That is, if more than one return true, then the first will be taken.
-* Note that this claRss checks only for these clues and does not check if the
+* Note that this class checks only for these clues and does not check if the
 * configuration is consistent or valid.
 * @see #main
 */
@@ -51,11 +50,6 @@ public class Simulator {
 
 // ========================== static constants ==========================
 // ======================================================================
-
-public Simulator() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
 /** {@link CDSimulator} */
 public static final int CDSIM = 0;
@@ -114,84 +108,7 @@ public static int getSimID() {
 	return simID;
 }
 
-
 // ----------------------------------------------------------------------
-public static void setSimulatorConf(String[] config){
-	System.err.println("Simulator: loading configuration");
-	//Configuration.resetConfig(new ParsedProperties(config));
-	Configuration.setConfig( new ParsedProperties(config) );
-	//Configuration.
-}
-
-
-
-
-public void runSimulator(String[] config){
-	long time = System.currentTimeMillis();	
-	
-	//System.err.println("Simulator: loading configuration");
-	//Configuration.resetConfig(new ParsedProperties(config));
-	//Configuration.setConfig( new ParsedProperties(config) );
-
-	PrintStream newout =
-		(PrintStream)Configuration.getInstance(PAR_REDIRECT,System.out);
-	if(newout!=System.out) System.setOut(newout);
-	
-	int exps = Configuration.getInt(PAR_EXPS,1);
-
-	final int SIMID = getSimID();
-	if( SIMID == UNKNOWN )
-	{
-		System.err.println(
-		    "Simulator: unable to determine simulation engine type");
-		return;
-	}
-	
-	try {
-
-		for(int k=0; k<exps; ++k)
-		{
-			if( k>0 )
-			{
-				long seed = CommonState.r.nextLong();
-				CommonState.initializeRandom(seed);
-			}
-			System.err.print("Simulator: starting experiment "+k);
-			System.err.println(" invoking "+simName[SIMID]);
-			System.err.println("Random seed: "+
-				CommonState.r.getLastSeed());
-			System.out.println("\n\n");
-			
-			// XXX could be done through reflection, but
-			// this is easier to read.
-			switch(SIMID)
-			{
-			case CDSIM:
-				CDSimulator.nextExperiment(k);
-				break;
-			case EDSIM:
-				EDSimulator.nextExperiment();
-				break;
-			}
-		}
-	
-	} catch (MissingParameterException e) {
-		System.err.println(e+"");
-		System.exit(1);
-	} catch (IllegalParameterException e) {
-		System.err.println(e+"");
-		System.exit(1);
-	}
-
-	// undocumented testing capabilities
-	if(Configuration.contains("__t")) 
-		System.out.println(System.currentTimeMillis()-time);
-	if(Configuration.contains("__x")) Network.test();
-	
-	long end_time = System.currentTimeMillis();
-	
-	System.out.println("Runtime:"+(end_time - time));
-}
 
 /**
 * Loads the configuration and executes the experiments.
@@ -232,9 +149,8 @@ public void runSimulator(String[] config){
 public static void main(String[] args)
 {
 	long time = System.currentTimeMillis();	
-
-	System.err.println("Simulator: loading configuration");
 	
+	System.err.println("Simulator: loading configuration");
 	Configuration.setConfig( new ParsedProperties(args) );
 
 	PrintStream newout =
@@ -262,7 +178,8 @@ public static void main(String[] args)
 			}
 			System.err.print("Simulator: starting experiment "+k);
 			System.err.println(" invoking "+simName[SIMID]);
-			System.err.println("Random seed: "+ CommonState.r.getLastSeed());
+			System.err.println("Random seed: "+
+				CommonState.r.getLastSeed());
 			System.out.println("\n\n");
 			
 			// XXX could be done through reflection, but
@@ -270,7 +187,7 @@ public static void main(String[] args)
 			switch(SIMID)
 			{
 			case CDSIM:
-				CDSimulator.nextExperiment(k);
+				CDSimulator.nextExperiment();
 				break;
 			case EDSIM:
 				EDSimulator.nextExperiment();
@@ -291,9 +208,7 @@ public static void main(String[] args)
 		System.out.println(System.currentTimeMillis()-time);
 	if(Configuration.contains("__x")) Network.test();
 	
-	long end_time = System.currentTimeMillis();
 	
-	System.out.println("Runtime:"+(end_time - time));
 	
 }
 

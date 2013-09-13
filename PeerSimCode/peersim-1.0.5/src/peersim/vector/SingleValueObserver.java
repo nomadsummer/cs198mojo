@@ -119,13 +119,6 @@ public boolean execute()
 	return (stats.getStD()<=accuracy && CommonState.getTime()>0);
 }
 
-
-@Override
-public boolean execute(int exp) {
-	// TODO Auto-generated method stub
-	return false;
-}
-
 //--------------------------------------------------------------------------
 
 }

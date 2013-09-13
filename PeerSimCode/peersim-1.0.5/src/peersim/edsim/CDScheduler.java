@@ -219,14 +219,6 @@ protected long firstDelay(long cyclelength) {
 	else
 		return 0;
 }
-
-
-
-@Override
-public boolean execute(int exp) {
-	// TODO Auto-generated method stub
-	return false;
-}
 }
 
 

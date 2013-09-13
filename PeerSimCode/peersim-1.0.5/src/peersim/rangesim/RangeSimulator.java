@@ -436,7 +436,7 @@ private static void usage()
 
 //--------------------------------------------------------------------
 
-public RangeSimulator()
+RangeSimulator()
 {
 }
 

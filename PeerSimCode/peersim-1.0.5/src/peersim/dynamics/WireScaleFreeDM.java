@@ -122,12 +122,5 @@ public void wire(Graph g) {
 		len++;
 	}
 }
-
-
-@Override
-public boolean execute() {
-	// TODO Auto-generated method stub
-	return false;
-}
 		
 }

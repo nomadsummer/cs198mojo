@@ -968,10 +968,6 @@ private String getSimilarProperty(String property)
 	return bestProperty;
 }
 
-//private void changeValue(String property, ){
-	
-//}
-
 //-------------------------------------------------------------------
 
 private void manageDefault(String name, Object def, 

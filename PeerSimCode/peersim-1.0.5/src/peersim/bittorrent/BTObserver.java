@@ -123,15 +123,8 @@ import peersim.util.*;
 		nodeStatusStats.printAll(System.out);
 		
 		// prints the average number of neighbors per peer
-		System.out.println("Total number of nodes: " + numberOfNodes);
 		System.out.println("Avg number of neighbors per peer: " + neighborStats.getAverage());
 		
-		return false;
-	}
-
-	@Override
-	public boolean execute(int exp) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }

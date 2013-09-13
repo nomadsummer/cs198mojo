@@ -171,12 +171,6 @@ public double getStD() { return Math.sqrt(getVar()); }
 
 // --------------------------------------------------------------------
 
-/** the empirical standard deviation of the data items */
-public double getStE() { return getStD() / Math.sqrt(getN()); }
-
-// --------------------------------------------------------------------
-
-
 /**
 * Prints the following quantities separated by spaces in a single line
 * in this order.

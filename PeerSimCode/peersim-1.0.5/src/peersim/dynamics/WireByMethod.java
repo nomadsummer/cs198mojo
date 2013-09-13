@@ -219,11 +219,5 @@ public void wire(Graph g) {
 	catch( Exception e ) { throw new RuntimeException(e); }
 }
 
-@Override
-public boolean execute() {
-	// TODO Auto-generated method stub
-	return false;
-}
-
 }
 

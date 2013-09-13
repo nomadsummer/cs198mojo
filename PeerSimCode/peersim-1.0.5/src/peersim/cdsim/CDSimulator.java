@@ -127,7 +127,7 @@ private static void runInitializers()
 	for (int i = 0; i < inits.length; ++i) {
 		System.err.println("- Running initializer " + names[i] + ": "
 				+ inits[i].getClass());
-		((Control) inits[i]).execute(0);
+		((Control) inits[i]).execute();
 	}
 }
 
@@ -174,7 +174,7 @@ public static final boolean isConfigurationCycleDriven()
 /**
  * Runs an experiment, resetting everything except the random seed. 
  */
-public static final void nextExperiment(int exp)
+public static final void nextExperiment()
 {
 
 	// Reading parameter
@@ -202,7 +202,7 @@ public static final void nextExperiment(int exp)
 		boolean stop = false;
 		for (int j = 0; j < controls.length; ++j) {
 			if (ctrlSchedules[j].active(i))
-				stop = stop || controls[j].execute(exp);
+				stop = stop || controls[j].execute();
 		}
 		if (stop)
 			break;
@@ -214,7 +214,7 @@ public static final void nextExperiment(int exp)
 	// analysis after the simulation
 	for (int j = 0; j < controls.length; ++j) {
 		if (ctrlSchedules[j].fin)
-			controls[j].execute(exp);
+			controls[j].execute();
 	}
 }
 

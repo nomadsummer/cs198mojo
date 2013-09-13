@@ -80,12 +80,5 @@ public void wire(Graph g) {
 	GraphFactory.wireScaleFreeBA(g,k,CommonState.r );
 }
 
-
-@Override
-public boolean execute() {
-	// TODO Auto-generated method stub
-	return false;
-}
-
 }
 

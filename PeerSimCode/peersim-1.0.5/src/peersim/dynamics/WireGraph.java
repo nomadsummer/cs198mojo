@@ -121,7 +121,7 @@ protected WireGraph(String prefix) {
 * parameter {@value #PAR_PROT}. If neither {@link #g}, nor {@value #PAR_PROT}
 * is set, throws a RuntimException.
 */
-public final boolean execute(int exp) {
+public final boolean execute() {
 
 	Graph gr;
 	if(g==null && pid==-10)

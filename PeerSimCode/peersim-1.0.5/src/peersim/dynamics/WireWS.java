@@ -88,12 +88,5 @@ public void wire(Graph g) {
 	GraphFactory.wireWS(g,k,beta,CommonState.r);
 }
 
-
-@Override
-public boolean execute() {
-	// TODO Auto-generated method stub
-	return false;
-}
-
 }
 

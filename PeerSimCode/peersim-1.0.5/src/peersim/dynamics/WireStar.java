@@ -49,12 +49,6 @@ public void wire(Graph g) {
 	GraphFactory.wireStar(g);
 }
 
-@Override
-public boolean execute() {
-	// TODO Auto-generated method stub
-	return false;
-}
-
 
 }
 

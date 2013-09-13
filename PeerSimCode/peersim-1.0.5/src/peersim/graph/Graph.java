@@ -45,7 +45,7 @@ public interface Graph {
 	* may result in unspecified behavior.
 	*/
 	Collection<Integer> getNeighbours(int i);
-	
+
 	/**
 	* Returns the node object associated with the index. Optional
 	* operation.
