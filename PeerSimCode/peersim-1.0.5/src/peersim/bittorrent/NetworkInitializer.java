@@ -98,5 +98,11 @@ public class NetworkInitializer implements Control {
 		}
 		return true;
 	}
+
+	@Override
+	public boolean execute(int exp) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 	}

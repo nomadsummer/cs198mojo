@@ -97,7 +97,7 @@ public FullNextCycle(String prefix) {
  * It sets the {@link CDState} appropriately.
  * @return always false
  */
-public boolean execute() {
+public boolean execute(int exp) {
 
 	final int cycle=CDState.getCycle();
 	if( shuffle ) rperm.reset( Network.size() );
@@ -131,6 +131,12 @@ public boolean execute() {
 		}
 	}
 
+	return false;
+}
+
+@Override
+public boolean execute() {
+	// TODO Auto-generated method stub
 	return false;
 }
 

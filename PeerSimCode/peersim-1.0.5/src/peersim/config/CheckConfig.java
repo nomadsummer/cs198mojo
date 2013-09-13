@@ -144,7 +144,8 @@ public static void main(String[] args)
 		case CDSIM:
 			// Set cycles to 0, so no simulation is ever performed.
 			prop.setProperty(CDSimulator.PAR_CYCLES, "0");
-			CDSimulator.nextExperiment();
+			// Look onto this
+			CDSimulator.nextExperiment(1);
 			break;
 		case EDSIM:
 			// Set endtime to 0, so no simulation is ever performed.

@@ -114,4 +114,8 @@ public class AverageObserver implements Control {
         /* Terminate if accuracy target is reached */
         return (is.getStD() <= accuracy);
     }
+    
+    public boolean execute(int exp) {
+    	return false;
+    }
 }

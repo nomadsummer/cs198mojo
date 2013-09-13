@@ -75,6 +75,12 @@ public void wire(Graph g)
 	GraphFactory.wireRingLattice(g, k);
 }
 
+@Override
+public boolean execute() {
+	// TODO Auto-generated method stub
+	return false;
+}
+
 //--------------------------------------------------------------------------
 
 }
