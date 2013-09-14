@@ -18,15 +18,15 @@ import peersim.core.CommonState;
  * @since
  */
 public class StarStreamPlayer {
-  private boolean playbackStarted = false;
-  private long whenPlaybackStarted = -1;
-  private int lastPlayedChunkSeqId = -1;
-  private final int chunkPlaybackLength;
-  private final int howManyChunks;
-  private final StarStreamNode node;
-  private final UUID sessionId;
-  private final List<Integer> playedChunks = new LinkedList<Integer>();
-  private final List<Integer> missedChunks = new LinkedList<Integer>();
+	private boolean playbackStarted = false;
+	private long whenPlaybackStarted = -1;
+	private int lastPlayedChunkSeqId = -1;
+	private final int chunkPlaybackLength;
+	private final int howManyChunks;
+	private final StarStreamNode node;
+	private final UUID sessionId;
+	private final List<Integer> playedChunks = new LinkedList<Integer>();
+	private final List<Integer> missedChunks = new LinkedList<Integer>();
 
   public StarStreamPlayer(StarStreamNode node, UUID sessionId, int chunkLength, int howManyChunks) {
     chunkPlaybackLength = chunkLength;
@@ -38,6 +38,10 @@ public class StarStreamPlayer {
   @Override
   public String toString() {
     return "Node: "+node.getPastryId()+"\nPlayed: "+playedChunks+"\nMissed: "+missedChunks;
+  }
+  
+  public int getPBLength(){
+	  return chunkPlaybackLength;
   }
 
   List<Integer> getMissedChunks() {
@@ -61,6 +65,7 @@ public class StarStreamPlayer {
     whenPlaybackStarted = CommonState.getTime();
     lastPlayedChunkSeqId = 0;
     playedChunks.add(lastPlayedChunkSeqId);
+    System.out.println("[MOJO] "+whenPlaybackStarted+" "+node.getID()+" : Playback Started");
   }
 
   void tick() {

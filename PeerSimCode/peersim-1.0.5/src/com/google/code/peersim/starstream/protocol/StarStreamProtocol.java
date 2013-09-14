@@ -227,6 +227,15 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
   public int getChunksReceivedFromStarStream() {
     return chunksReceivedFromStarStream;
   }
+  
+  //MOJO
+  public int getUpload(){
+	  return usedUpStream;
+  }
+  
+  public int getDownload(){
+	  return usedDownStream;
+  }
 
   /**
    * Returns the number of unsent chunnks due to message timeout.
@@ -254,10 +263,13 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
    */
   @Override
   public void processEvent(Node localNode, int thisProtocolId, Object event) {
-    // event-handling logic begins
+    //System.out.println("[MOJO] " + CommonState.getTime() + " id: " + localNode.getID() + " upload: " + this.usedUpStream);
+    //System.out.println("[MOJO] " + CommonState.getTime() + " id: " + localNode.getID() + " download: " + this.usedDownStream);  
+	  // event-handling logic begins
     if (event instanceof StarStreamMessage) {
       // this is a known event, let's process it
       StarStreamMessage msg = (StarStreamMessage) event;
+      
       if (updateUsedDownStream(msg)) {
         // there is enough input-stream to consume the message...
         processEvent(msg);

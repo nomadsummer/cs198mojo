@@ -216,6 +216,15 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
   public void resetUsedBandwidth() {
     getStarStreamProtocol().resetUsedBandwidth();
   }
+  
+  //MOJO
+  public void getBandwidth(){
+	int thisup = getStarStreamProtocol().getUpload();
+	int thisdown = getStarStreamProtocol().getDownload();
+	
+	//System.out.println("[MOJO] " + CommonState.getTime() + " id: " + this.getID() + " upload: " + thisup);
+    //System.out.println("[MOJO] " + CommonState.getTime() + " id: " + this.getID() + " download: " + thisdown);
+  }
 
   public void streamingStartsAt(long start) {
     streamingStartTime = start;
@@ -227,6 +236,13 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
       checkForStartStreamingTimeout();
       proactiveSearch();
       player.tick();
+      System.out.println("[MOJO] "+ CommonState.getTime()+" "+ this.getID() + " " + player.getPBLength());
+      System.out.println("[MOJO] PlayedChunks: "+ this.getPlayedChunks().size());
+      System.out.println("[MOJO] MissedChunks: "+ this.getUnplayedChunks().size());
+      if(this.getUnplayedChunks().size() > 0){
+    	  System.out.println("[MOJO] PlayedChunksList: "+ this.getPlayedChunks());
+          System.out.println("[MOJO] MissedChunksList: "+ this.getUnplayedChunks());  
+      }
     }
   }
 
@@ -417,6 +433,8 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
 
   private void startPalyBack() {
     player.start();
+    System.out.println("[MOJO] "+ this.getID() +" StartUpDelay: "+ player.getWhenPlaybackStarted());
+    
     log("[*-STREAM] node " + this.getPastryId() + " has started playback");
   }
 
