@@ -114,16 +114,16 @@ public class StarStreamNodesObserver implements Control {
     log("Active nodes: "+activeNodes);
 
     // playback started
-    int nodesThatStartedPlayack = 0;
+    int nodesThatStartedPlayback = 0;
     List<PastryId> nodesThatDidNotStartedPlayback = new LinkedList<PastryId>();
     for (int i = 0; i < dim; i++) {
       StarStreamNode node = (StarStreamNode) Network.get(i);
       if(node.hasStartedPlayback())
-        nodesThatStartedPlayack++;
+        nodesThatStartedPlayback++;
       else
         nodesThatDidNotStartedPlayback.add(node.getPastryId());
     }
-    log("Started playbacks: "+nodesThatStartedPlayack);
+    log("Started playbacks: "+nodesThatStartedPlayback);
     log("Not started playbacks node-ids: "+nodesThatDidNotStartedPlayback);
 
     // start-streaming time window
@@ -239,6 +239,7 @@ public class StarStreamNodesObserver implements Control {
     // stats of perceived chunk delivery times
     for (int i = 0; i < dim; i++) {
       StarStreamNode node = (StarStreamNode) Network.get(i);
+      log("[MOJO] playback started:" + node.getWhenPlaybackStarted() + " unplayedChunks: " + node.getPercentageOfUnplayedChunks() + " "+ node.getUnplayedChunks() + " chunk delivery-time:  " + node.getID() + " avg: " + node.getPerceivedAvgChunkDeliveryTime() + " max: " + node.getPerceivedMaxChunkDeliveryTime());
       stats.add(node.getPerceivedAvgChunkDeliveryTime());
     }
     log("Perceived avg chunk delivery-time: "+stats.getAverage());

@@ -4,13 +4,9 @@
  */
 package com.google.code.peersim.starstream.protocol;
 
-import com.google.code.peersim.pastry.protocol.PastryId;
-import com.google.code.peersim.pastry.protocol.PastryNode;
-import com.google.code.peersim.pastry.protocol.PastryProtocol;
-import com.google.code.peersim.starstream.controls.ChunkUtils;
-import com.google.code.peersim.starstream.controls.ChunkUtils.Chunk;
-import com.google.code.peersim.starstream.controls.StarStreamSource;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,12 +14,29 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
+
 import peersim.config.Configuration;
 import peersim.config.FastConfig;
 import peersim.core.CommonState;
 import peersim.transport.Transport;
 import peersim.util.IncrementalStats;
+/**
+ * This class represents a node that leverages both the *-Stream and the Pastry
+ * protocols to take part to a P2P streaming event.<br>
+ * Extending {@link PastryNode} this class can take advantage of all the features
+ * and control classes available for {@link PastryNode}.
+ *
+ * @author frusso
+ * @version 0.1
+ * @since 0.1
+ */
 
+import com.google.code.peersim.pastry.protocol.PastryId;
+import com.google.code.peersim.pastry.protocol.PastryNode;
+import com.google.code.peersim.pastry.protocol.PastryProtocol;
+import com.google.code.peersim.starstream.controls.ChunkUtils;
+import com.google.code.peersim.starstream.controls.ChunkUtils.Chunk;
+import com.google.code.peersim.starstream.controls.StarStreamSource;
 /**
  * This class represents a node that leverages both the *-Stream and the Pastry
  * protocols to take part to a P2P streaming event.<br>
@@ -66,7 +79,8 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
   private StarStreamPlayer player;
   private int totalChunks;
   private Long streamingStartTime;
-
+  private boolean writerStart = false;
+  PrintWriter writer;
   /**
    * Default PeerSim-required constructor.
    *
@@ -88,6 +102,11 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
     advance = Configuration.getInt(prefix + SEPARATOR + "advance");
     chunkPlaybackLength = Configuration.getInt(prefix + SEPARATOR + "chunkPlaybackLength");
     totalChunks = Configuration.getInt(prefix + SEPARATOR + "totalChunks");
+    try {
+		  writer = new PrintWriter("resultsElijah.txt", "UTF-8");
+	  } catch (UnsupportedEncodingException e) {
+		  e.printStackTrace();
+	  };
     init();
   }
 
@@ -230,19 +249,24 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
     streamingStartTime = start;
   }
 
+  int played = -1;
+  int unplayed = -1;
   public void tick() {
     if (isJoined() && streamingStartTime!=null) {
       checkForStarStreamTimeouts();
       checkForStartStreamingTimeout();
       proactiveSearch();
       player.tick();
-      System.out.println("[MOJO] "+ CommonState.getTime()+" "+ this.getID() + " " + player.getPBLength());
-      System.out.println("[MOJO] PlayedChunks: "+ this.getPlayedChunks().size());
-      System.out.println("[MOJO] MissedChunks: "+ this.getUnplayedChunks().size());
-      if(this.getUnplayedChunks().size() > 0){
-    	  System.out.println("[MOJO] PlayedChunksList: "+ this.getPlayedChunks());
-          System.out.println("[MOJO] MissedChunksList: "+ this.getUnplayedChunks());  
-      }
+
+      if(this.getPlayedChunks().size() >  0 && this.getPlayedChunks().size()+1 < 101 && played != this.getPlayedChunks().size())
+    	  writer.println("[MOJO] "+ CommonState.getTime()+" "+ this.getID() + " PlayedChunks: "+ this.getPlayedChunks().size());
+      	  //writer.println("[MOJO] "+ this.perceivedChunkDeliveryTimes.getAverage());
+      played = this.getPlayedChunks().size();
+      
+      if(this.getUnplayedChunks().size() >  0 && this.getUnplayedChunks().size()+1 < 101 && unplayed != this.getUnplayedChunks().size())
+       	  writer.println("[MOJO] "+ CommonState.getTime()+" "+ this.getID() + " UnPlayedChunks: "+ this.getUnplayedChunks().size() + " " + this.getUnplayedChunks());
+      unplayed = this.getUnplayedChunks().size();
+      
     }
   }
 
@@ -385,7 +409,7 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
   private void checkIfPlaybackIsAllowed() {
     int contiguousChunks = getStore().countContiguousChunksFromStart(StarStreamSource.getStarStreamSessionId());
     if (contiguousChunks >= MIN_CONTIGUOUS_CHUNKS_IN_BUFFER) {
-      startPalyBack();
+      startPlayBack();
     }
   }
 
@@ -431,9 +455,10 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
     issuedChunkRequests.remove(sequenceId);
   }
 
-  private void startPalyBack() {
+  private void startPlayBack() {
     player.start();
-    System.out.println("[MOJO] "+ this.getID() +" StartUpDelay: "+ player.getWhenPlaybackStarted());
+    //writer.println("[MOJO] "+ this.getID() +" StartUpDelay: "+ player.getWhenPlaybackStarted());
+    //writer.println("[MOJO] "+ this.getID() +" StartUpDelay: "+ player.getWhenPlaybackStarted());
     
     log("[*-STREAM] node " + this.getPastryId() + " has started playback");
   }

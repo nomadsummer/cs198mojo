@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/bitpeer/!svn/ver/85/src/example/bittorrent
+END
+SimpleMsg.java
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/bitpeer/!svn/ver/82/src/example/bittorrent/SimpleMsg.java
+END
+IntMsg.java
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/bitpeer/!svn/ver/85/src/example/bittorrent/IntMsg.java
+END
+NetworkDynamics.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/bitpeer/!svn/ver/85/src/example/bittorrent/NetworkDynamics.java
+END
+BitfieldMsg.java
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/bitpeer/!svn/ver/85/src/example/bittorrent/BitfieldMsg.java
+END
+NodeInitializer.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/bitpeer/!svn/ver/85/src/example/bittorrent/NodeInitializer.java
+END
+SimpleEvent.java
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/bitpeer/!svn/ver/82/src/example/bittorrent/SimpleEvent.java
+END
+BitTorrent.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/bitpeer/!svn/ver/83/src/example/bittorrent/BitTorrent.java
+END
+BTObserver.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/bitpeer/!svn/ver/85/src/example/bittorrent/BTObserver.java
+END
+NetworkInitializer.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/bitpeer/!svn/ver/80/src/example/bittorrent/NetworkInitializer.java
+END
+PeerSetMsg.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/bitpeer/!svn/ver/85/src/example/bittorrent/PeerSetMsg.java
+END
