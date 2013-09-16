@@ -21,7 +21,7 @@
  *
  */
 
-package peersim.bittorrent;
+package example.bittorrent;
 
 import peersim.core.*;
 import peersim.config.*;
@@ -182,13 +182,13 @@ public class BitTorrent implements EDProtocol {
 	 *	Stores the neighbors ordered by ID.
 	 *  @see Element
 	 */
-	private peersim.bittorrent.Element byPeer[];
+	private example.bittorrent.Element byPeer[];
 	
 	/**
 	 *	Contains the neighbors ordered by bandwidth as needed by the unchocking
 	 *	algorithm.
 	 */
-	private peersim.bittorrent.Element byBandwidth[];
+	private example.bittorrent.Element byBandwidth[];
 	
 	/**
 	 *	The Neighbors list.
@@ -1520,7 +1520,6 @@ public class BitTorrent implements EDProtocol {
 	 */
 	private int getPiece(){
 		int piece = -1;
-		//piece = CommonState.getTime() + 1;
 		if(nPieceCompleted < 4){ //Uses random first piece
 			piece = CommonState.r.nextInt(nPieces);
 			while(status[piece]==16 || piece == currentPiece) // until the piece is owned

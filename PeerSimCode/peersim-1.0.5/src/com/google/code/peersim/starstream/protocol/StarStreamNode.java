@@ -258,13 +258,16 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
       proactiveSearch();
       player.tick();
 
-      if(this.getPlayedChunks().size() >  0 && this.getPlayedChunks().size()+1 < 101 && played != this.getPlayedChunks().size())
-    	  writer.println("[MOJO] "+ CommonState.getTime()+" "+ this.getID() + " PlayedChunks: "+ this.getPlayedChunks().size());
+      if(CommonState.getTime() % 1000 == 0) 
+    	  writer.println("[MOJO] "+ CommonState.getTime()+" "+ this.getID() + " DL: "+ this.getPlayedChunks().size()*16);
+      
+      //if(this.getPlayedChunks().size() >  0 && this.getPlayedChunks().size()+1 < 101 && played != this.getPlayedChunks().size())
+    	  //writer.println("[MOJO] "+ CommonState.getTime()+" "+ this.getID() + " PlayedChunks: "+ this.getPlayedChunks().size());
       	  //writer.println("[MOJO] "+ this.perceivedChunkDeliveryTimes.getAverage());
       played = this.getPlayedChunks().size();
       
-      if(this.getUnplayedChunks().size() >  0 && this.getUnplayedChunks().size()+1 < 101 && unplayed != this.getUnplayedChunks().size())
-       	  writer.println("[MOJO] "+ CommonState.getTime()+" "+ this.getID() + " UnPlayedChunks: "+ this.getUnplayedChunks().size() + " " + this.getUnplayedChunks());
+      //if(this.getUnplayedChunks().size() >  0 && this.getUnplayedChunks().size()+1 < 101 && unplayed != this.getUnplayedChunks().size())
+       	  //writer.println("[MOJO] "+ CommonState.getTime()+" "+ this.getID() + " UnPlayedChunks: "+ this.getUnplayedChunks().size() + " " + this.getUnplayedChunks());
       unplayed = this.getUnplayedChunks().size();
       
     }
