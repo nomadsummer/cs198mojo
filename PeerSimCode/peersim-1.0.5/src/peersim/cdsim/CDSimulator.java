@@ -120,7 +120,7 @@ private CDSimulator()
  */
 private static void runInitializers()
 {
-
+	// [MOJO]
 	Object[] inits = Configuration.getInstanceArray(PAR_INIT);
 	String names[] = Configuration.getNames(PAR_INIT);
 
@@ -176,7 +176,7 @@ public static final boolean isConfigurationCycleDriven()
  */
 public static final void nextExperiment()
 {
-
+	// [MOJO]
 	// Reading parameter
 	cycles = Configuration.getInt(PAR_CYCLES);
 	if (CommonState.getEndTime() < 0) // not initialized yet

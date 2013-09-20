@@ -102,7 +102,6 @@ public static Node prototype = null;
 // ====================== initialization ===========================
 // =================================================================
 
-
 /**
 * Reads configuration parameters, constructs the prototype node, and
 * populates the network by cloning the prototype.
@@ -196,7 +195,6 @@ public static int getCapacity() { return node.length; }
 * capacity of the internal array is increased.
 */
 public static void add( Node n ) {
-	
 	if(len==node.length) setCapacity(3*node.length/2+1);
 	node[len] = n;
 	n.setIndex(len);

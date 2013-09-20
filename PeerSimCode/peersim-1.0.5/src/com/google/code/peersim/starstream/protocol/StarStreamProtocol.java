@@ -4,22 +4,6 @@
  */
 package com.google.code.peersim.starstream.protocol;
 
-import com.google.code.peersim.pastry.protocol.PastryId;
-import com.google.code.peersim.pastry.protocol.PastryJoinLsnrIfc.JoinedInfo;
-import com.google.code.peersim.pastry.protocol.PastryProtocol;
-import com.google.code.peersim.pastry.protocol.PastryProtocolListenerIfc;
-import com.google.code.peersim.pastry.protocol.PastryResourceAssignLsnrIfc.ResourceAssignedInfo;
-import com.google.code.peersim.pastry.protocol.PastryResourceDiscoveryLsnrIfc.ResourceDiscoveredInfo;
-import com.google.code.peersim.starstream.controls.StarStreamSource;
-import com.google.code.peersim.starstream.controls.ChunkUtils.Chunk;
-import com.google.code.peersim.starstream.protocol.messages.ChunkAdvertisement;
-import com.google.code.peersim.starstream.protocol.messages.ChunkKo;
-import com.google.code.peersim.starstream.protocol.messages.ChunkMessage;
-import com.google.code.peersim.starstream.protocol.messages.ChunkMissing;
-import com.google.code.peersim.starstream.protocol.messages.ChunkOk;
-import com.google.code.peersim.starstream.protocol.messages.ChunkRequest;
-import com.google.code.peersim.starstream.protocol.messages.StarStreamMessage;
-import com.google.code.peersim.starstream.protocol.messages.StarStreamMessage.Type;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -31,12 +15,30 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
+
+import org.nfunk.jep.function.Random;
+
+import peersim.cdsim.CDProtocol;
 import peersim.config.Configuration;
 import peersim.core.CommonState;
 import peersim.core.Node;
 import peersim.edsim.EDProtocol;
 import peersim.transport.Transport;
 import peersim.util.FileNameGenerator;
+
+import com.google.code.peersim.pastry.protocol.PastryId;
+import com.google.code.peersim.pastry.protocol.PastryProtocol;
+import com.google.code.peersim.pastry.protocol.PastryProtocolListenerIfc;
+import com.google.code.peersim.starstream.controls.ChunkUtils.Chunk;
+import com.google.code.peersim.starstream.controls.StarStreamSource;
+import com.google.code.peersim.starstream.protocol.messages.ChunkAdvertisement;
+import com.google.code.peersim.starstream.protocol.messages.ChunkKo;
+import com.google.code.peersim.starstream.protocol.messages.ChunkMessage;
+import com.google.code.peersim.starstream.protocol.messages.ChunkMissing;
+import com.google.code.peersim.starstream.protocol.messages.ChunkOk;
+import com.google.code.peersim.starstream.protocol.messages.ChunkRequest;
+import com.google.code.peersim.starstream.protocol.messages.StarStreamMessage;
+import com.google.code.peersim.starstream.protocol.messages.StarStreamMessage.Type;
 
 /**
  * Implementation of the *-Stream Protocol.
@@ -45,7 +47,7 @@ import peersim.util.FileNameGenerator;
  * @version 0.1
  * @since 0.1
  */
-public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc {
+public class StarStreamProtocol implements EDProtocol, CDProtocol, PastryProtocolListenerIfc {
 
   /**
    * Configurable timeout for *-Stream messages.
@@ -147,6 +149,15 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
   private Map<UUID, ChunkRequest> pendingChunkRequests = new HashMap<UUID, ChunkRequest>();
   private int downStream;
   private int upStream;
+  // [MOJO]
+  private static int downStreamAdd = 0;
+  private static int upStreamAdd = 0;
+  private int downStreamPerPeer;
+  private int upStreamPerPeer;
+  private double aggressionFactor;
+  private double eqnReliance;
+  private double defaultResourceFactor;
+  // [MOJO]
   private int usedDownStream = 0;
   private int usedUpStream = 0;
   private SortedSet<StarStreamMessage> delayedInMessages = new TreeSet<StarStreamMessage>();
@@ -183,6 +194,18 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
     }
     downStream = Configuration.getInt(prefix + SEPARATOR + "downStream");
     upStream = Configuration.getInt(prefix + SEPARATOR + "upStream");
+    // [MOJO]
+    downStreamPerPeer = Configuration.getInt("protocol.mojocollab.downStreamPerPeer");
+    upStreamPerPeer = Configuration.getInt("protocol.mojocollab.upStreamPerPeer");
+    aggressionFactor = Configuration.getDouble("protocol.mojocollab.aggressionFactor");
+    eqnReliance = Configuration.getDouble("protocol.mojocollab.eqnReliance");
+    defaultResourceFactor = Configuration.getDouble("protocol.mojocollab.defaultResourceFactor");
+    System.err.println("Down: "+ downStream + "| Up: "+ upStream);
+    System.err.println("DownPerPeer: "+ downStreamPerPeer + "| UpPerPeer: "+ upStreamPerPeer);
+    System.err.println("AggressionFactor: "+ aggressionFactor + "| EquationReliance: "+ eqnReliance);
+    System.err.println("DefaultResourceFactor: "+ defaultResourceFactor);
+    // [MOJO]
+    
     maxChunkRetries = Configuration.getInt(prefix + SEPARATOR + MAX_CHUNK_RETRIES);
     store = new StarStreamStore(starStoreSize);
     aggressive = Configuration.getBoolean(prefix + SEPARATOR + "aggressive");
@@ -211,6 +234,28 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
       throw new RuntimeException("Cloning failed. See nested exceptions, please.", e);
     }
   }
+  
+  //[MOJO]
+  public int getUpStream(){
+	  return upStream + upStreamAdd;
+  }
+ 
+  //[MOJO]
+  public int getDownStream(){
+	  return downStream + downStreamAdd;
+  }
+  
+  //[MOJO]
+  public void AddStreams(){
+	  upStreamAdd += (upStreamPerPeer * defaultResourceFactor);
+	  downStreamAdd += (downStreamPerPeer * defaultResourceFactor);
+  }
+  
+  //[MOJO]
+  public void RemoveStreams(){
+	  upStreamAdd -= (upStreamPerPeer * defaultResourceFactor);
+	  downStreamAdd -= (downStreamPerPeer * defaultResourceFactor);
+  }
 
   /**
    * Returns the number of chunnks received by means of the Pastry API.
@@ -226,15 +271,6 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
    */
   public int getChunksReceivedFromStarStream() {
     return chunksReceivedFromStarStream;
-  }
-  
-  //MOJO
-  public int getUpload(){
-	  return usedUpStream;
-  }
-  
-  public int getDownload(){
-	  return usedDownStream;
   }
 
   /**
@@ -264,7 +300,7 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
   @Override
   public void processEvent(Node localNode, int thisProtocolId, Object event) {
     //System.out.println("[MOJO] " + CommonState.getTime() + " id: " + localNode.getID() + " upload: " + this.usedUpStream);
-    //System.out.println("[MOJO] " + CommonState.getTime() + " id: " + localNode.getID() + " download: " + this.usedDownStream);  
+    //System.out.println("[MOJO] " + CommonState.getTime() + " id: " + localNode.getID() + " download: " + this.usedDownStream);
 	  // event-handling logic begins
     if (event instanceof StarStreamMessage) {
       // this is a known event, let's process it
@@ -644,7 +680,7 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
    * @return The maximum number of connections available for the given message type
    */
   private int availableInDeg(Type type) {
-    return (downStream - usedDownStream) / type.getEstimatedBandwidth();
+    return (getDownStream() - usedDownStream) / type.getEstimatedBandwidth();
   }
 
   /**
@@ -656,7 +692,7 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
    * @return The maximum number of connections available for the given message type
    */
   private int availableOutDeg(Type type) {
-    return (upStream - usedUpStream) / type.getEstimatedBandwidth();
+    return (getUpStream() - usedUpStream) / type.getEstimatedBandwidth();
   }
 
   /**
@@ -1135,7 +1171,7 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
    */
   private boolean updateUsedDownStream(StarStreamMessage msg) {
     boolean proceed = false;
-    if(usedDownStream+msg.getType().getEstimatedBandwidth()<=downStream) {
+    if(usedDownStream+msg.getType().getEstimatedBandwidth()<=getDownStream()) {
       usedDownStream+=msg.getType().getEstimatedBandwidth();
       proceed = true;
     }
@@ -1154,11 +1190,17 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
    */
   private boolean updateUsedUpStream(StarStreamMessage msg) {
     boolean proceed = false;
-    if(usedUpStream+msg.getType().getEstimatedBandwidth()<=upStream) {
+    if(usedUpStream+msg.getType().getEstimatedBandwidth()<=getUpStream()) {
       usedUpStream+=msg.getType().getEstimatedBandwidth();
       proceed = true;
     }
     return proceed;
 //    return true;
   }
+
+	@Override
+	public void nextCycle(Node node, int protocolID) {
+		// TODO Auto-generated method stub
+		System.err.println(new java.util.Random().nextInt());
+	}
 }

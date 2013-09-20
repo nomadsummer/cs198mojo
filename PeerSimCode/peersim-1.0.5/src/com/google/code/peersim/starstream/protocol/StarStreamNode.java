@@ -81,6 +81,9 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
   private Long streamingStartTime;
   private boolean writerStart = false;
   PrintWriter writer;
+  
+  // [MOJO] priority
+  private double priority;
   /**
    * Default PeerSim-required constructor.
    *
@@ -115,6 +118,7 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
    */
   @Override
   public Object clone() {
+	// [MOJO]
     StarStreamNode clone = (StarStreamNode) super.clone();
     clone.init();
     return clone;
@@ -236,13 +240,13 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
     getStarStreamProtocol().resetUsedBandwidth();
   }
   
-  //MOJO
+  //[MOJO]
   public void getBandwidth(){
-	int thisup = getStarStreamProtocol().getUpload();
-	int thisdown = getStarStreamProtocol().getDownload();
+	int thisup = getStarStreamProtocol().getUpStream();
+	int thisdown = getStarStreamProtocol().getDownStream();
 	
-	//System.out.println("[MOJO] " + CommonState.getTime() + " id: " + this.getID() + " upload: " + thisup);
-    //System.out.println("[MOJO] " + CommonState.getTime() + " id: " + this.getID() + " download: " + thisdown);
+	System.err.println("Current Time: " + CommonState.getTime() + " | UpStream: " + thisup);
+    System.err.println("Current Time: " + CommonState.getTime() + " | DownStream: " + thisdown);
   }
 
   public void streamingStartsAt(long start) {
@@ -252,14 +256,15 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
   int played = -1;
   int unplayed = -1;
   public void tick() {
+	// [MOJO] jiggle
     if (isJoined() && streamingStartTime!=null) {
       checkForStarStreamTimeouts();
       checkForStartStreamingTimeout();
       proactiveSearch();
       player.tick();
 
-      if(CommonState.getTime() % 1000 == 0) 
-    	  writer.println("[MOJO] "+ CommonState.getTime()+" "+ this.getID() + " DL: "+ this.getPlayedChunks().size()*16);
+      //if(CommonState.getTime() % 1000 == 0) 
+    	  //writer.println("[MOJO] "+ CommonState.getTime()+" "+ this.getID() + " DL: "+ this.getPlayedChunks().size()*16);
       
       //if(this.getPlayedChunks().size() >  0 && this.getPlayedChunks().size()+1 < 101 && played != this.getPlayedChunks().size())
     	  //writer.println("[MOJO] "+ CommonState.getTime()+" "+ this.getID() + " PlayedChunks: "+ this.getPlayedChunks().size());
@@ -295,7 +300,8 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
    * Returns a reference to this node's assigned {@link StarStreamProtocol} instance.
    * @return The {@link StarStreamProtocol} instance
    */
-  protected StarStreamProtocol getStarStreamProtocol() {
+  //[MOJO]
+  public StarStreamProtocol getStarStreamProtocol() {
     return (StarStreamProtocol) getProtocol(STAR_STREAM_PID);
   }
 
@@ -452,6 +458,9 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
     this.issuedChunkRequests = new LinkedHashSet<Integer>();
     this.deliveredChunks = new TreeSet<Integer>();
     this.chunkRequestsForSeqIdsWithoutPastryIdYet = new LinkedList<Integer>();
+    
+    // [MOJO] node init
+    this.priority = CommonState.r.nextDouble();
   }
 
   private void removeFromIssuedChunkRequests(int sequenceId) {

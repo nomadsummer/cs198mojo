@@ -184,6 +184,7 @@ public static void main(String[] args)
 			
 			// XXX could be done through reflection, but
 			// this is easier to read.
+			// [MOJO]
 			switch(SIMID)
 			{
 			case CDSIM:

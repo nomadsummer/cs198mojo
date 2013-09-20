@@ -40,8 +40,7 @@ public class StarStreamProtocolBandwidthReset implements Control {
     int dim = Network.size();
     for(int i=0; i<dim; i++) {
       StarStreamNode node = (StarStreamNode) Network.get(i);
-      //MOJO
-      node.getBandwidth();
+      //[MOJO]
       node.resetUsedBandwidth();
       node.processDelayedMessages();
     }
