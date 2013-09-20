@@ -154,9 +154,12 @@ public class StarStreamProtocol implements EDProtocol, CDProtocol, PastryProtoco
   private static int upStreamAdd = 0;
   private int downStreamPerPeer;
   private int upStreamPerPeer;
+  private int helpingPeers;
   private double aggressionFactor;
   private double eqnReliance;
   private double defaultResourceFactor;
+  private int timeIn;
+  private int timeStay;
   // [MOJO]
   private int usedDownStream = 0;
   private int usedUpStream = 0;
@@ -197,13 +200,17 @@ public class StarStreamProtocol implements EDProtocol, CDProtocol, PastryProtoco
     // [MOJO]
     downStreamPerPeer = Configuration.getInt("protocol.mojocollab.downStreamPerPeer");
     upStreamPerPeer = Configuration.getInt("protocol.mojocollab.upStreamPerPeer");
+    helpingPeers = Configuration.getInt("protocol.mojocollab.helpingPeers");
+    timeIn = Configuration.getInt("protocol.mojocollab.timeIn");
+    timeStay = Configuration.getInt("protocol.mojocollab.timeStay");
     aggressionFactor = Configuration.getDouble("protocol.mojocollab.aggressionFactor");
     eqnReliance = Configuration.getDouble("protocol.mojocollab.eqnReliance");
     defaultResourceFactor = Configuration.getDouble("protocol.mojocollab.defaultResourceFactor");
-    System.err.println("Down: "+ downStream + "| Up: "+ upStream);
-    System.err.println("DownPerPeer: "+ downStreamPerPeer + "| UpPerPeer: "+ upStreamPerPeer);
-    System.err.println("AggressionFactor: "+ aggressionFactor + "| EquationReliance: "+ eqnReliance);
-    System.err.println("DefaultResourceFactor: "+ defaultResourceFactor);
+    System.err.println("Down: "+ downStream + " | Up: "+ upStream);
+    System.err.println("DownPerPeer: "+ downStreamPerPeer + " | UpPerPeer: "+ upStreamPerPeer);
+    System.err.println("AggressionFactor: "+ aggressionFactor + " | EquationReliance: "+ eqnReliance);
+    System.err.println("DefaultResourceFactor: "+ defaultResourceFactor + " | HelpingPeers: "+ helpingPeers);
+    System.err.println("TimeIn: "+ timeIn + " | TimeStay: "+ timeStay);
     // [MOJO]
     
     maxChunkRetries = Configuration.getInt(prefix + SEPARATOR + MAX_CHUNK_RETRIES);
@@ -255,6 +262,21 @@ public class StarStreamProtocol implements EDProtocol, CDProtocol, PastryProtoco
   public void RemoveStreams(){
 	  upStreamAdd -= (upStreamPerPeer * defaultResourceFactor);
 	  downStreamAdd -= (downStreamPerPeer * defaultResourceFactor);
+  }
+  
+  //[MOJO]
+  public int numHelpingPeers(){
+	  return helpingPeers;
+  }
+  
+  //[MOJO]
+  public int getTimeIn(){
+	  return timeIn;
+  }
+  
+  //[MOJO]
+  public int getTimeStay(){
+	  return timeStay;
   }
 
   /**

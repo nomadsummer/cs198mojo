@@ -57,32 +57,32 @@ public class StarStreamTimeTicker implements Control {
 		}
 
 		// [MOJO]
-		if (CommonState.getTime() % 10 == 0)
-			System.err.println("Current time: " + CommonState.getTime() + " | Size: " + Network.size());
+		//if (CommonState.getTime() % 10 == 0)
+			//System.err.println("Current time: " + CommonState.getTime() + " | Size: " + Network.size());
+		
+		StarStreamNode n = (StarStreamNode) Network.get(0);
 
-		if (CommonState.getTime() == 500) {
-			for (int i = 0; i < 10; i++) {
-				StarStreamNode n = (StarStreamNode) (Network.get(i)).clone();
+		if (CommonState.getTime() == n.getStarStreamProtocol().getTimeIn()) {
+			for (int i = 0; i < n.getStarStreamProtocol().numHelpingPeers(); i++) {
+				n = (StarStreamNode) (Network.get(i)).clone();
 				Network.add(n);
-				//n.AddStreams();
 				n.getStarStreamProtocol().AddStreams();
-				n.getBandwidth();
+				//n.getBandwidth();
 
 				Object[] inits = Configuration.getInstanceArray(EDSimulator.PAR_INIT);
 				for (int o = 0; o < inits.length; o++)
 					((NodeInitializer) inits[o]).initialize(n);
-				System.err.println("Current time: " + CommonState.getTime() + " | Size: " + Network.size());
+				//System.err.println("Current time: " + CommonState.getTime() + " | Size: " + Network.size());
 			}
 		}
 
-		if (CommonState.getTime() == 1000) {
-			for (int i = 0; i < 10; i++) {
-				StarStreamNode n = (StarStreamNode) Network.remove();
-				//n.RemoveStreams();
+		if (CommonState.getTime() == (n.getStarStreamProtocol().getTimeIn() + n.getStarStreamProtocol().getTimeStay())) {
+			for (int i = 0; i < n.getStarStreamProtocol().numHelpingPeers(); i++) {
+				n = (StarStreamNode) Network.remove();
 				n.getStarStreamProtocol().RemoveStreams();
-				n.getBandwidth();
+				//n.getBandwidth();
 				
-				System.err.println("Current time: " + CommonState.getTime() + " | Size: " + Network.size());
+				//System.err.println("Current time: " + CommonState.getTime() + " | Size: " + Network.size());
 			}
 		}
 
