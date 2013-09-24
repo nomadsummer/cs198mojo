@@ -16,6 +16,8 @@ from threading import Condition
 from Tribler.Core.API import *
 import Tribler.Core.BitTornado.parseargs as parseargs
 
+from Tribler.mjlogger import *
+
 argsdef = [('name', '', 'name of the stream'),
            ('source', '-', 'source to stream (url, file or "-" to indicate stdin)'),
            ('destdir', '.','dir to save torrent (and stream)'),
@@ -26,6 +28,7 @@ argsdef = [('name', '', 'name of the stream'),
            ('port', 7764, 'the TCP+UDP listen port'),
            ('thumb', '', 'filename of image in JPEG format, preferably 171x96')]
 
+x = MJLogger()
 
 def state_callback(ds):
     d = ds.get_download()
@@ -34,20 +37,40 @@ def state_callback(ds):
     print >>sys.stderr, "[MJ-ServerStats]\t%s\t%s\t%s\t%.1f\t%s\tup\t%.1f\tdown\t%.1f" % (mjtime,`d.get_def().get_name()`,dlstatus_strings[ds.get_status()],ds.get_progress(),ds.get_error(),ds.get_current_speed(UPLOAD),ds.get_current_speed(DOWNLOAD))
 
     mjpeers = ds.get_peerlist()
-    peercount = 0
-    CRI = ds.get_current_speed(UPLOAD)
     if mjpeers is not None :
         # ip, uprate, downrate, utotal, dtotal, speed
         for mjpeer in mjpeers:
             print >>sys.stderr,"[MJ-PL-spd]\t%s\t%s\t%s " % (mjtime, mjpeer['ip'], mjpeer['speed'])
             print >>sys.stderr,"[MJ-PL-drur]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['downrate'], mjpeer['uprate'])
             print >>sys.stderr,"[MJ-PL-dtut]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['dtotal'], mjpeer['utotal'])
-            CRI += float(mjpeer['uprate'])
-            peercount += 1
+
+    if(x.is_existing("PEERS")):
+        if(ds.get_peerid() not in x.data["PEERS"]):
+            x.log("PEERS", ds.get_peerid())
+    else:
+        x.log("PEERS", ds.get_peerid())
+
+    if(x.is_existing(ds.get_peerid())):
+        x.update(ds.get_peerid(), ds.get_current_speed(UPLOAD))
+    else:
+        x.log(ds.get_peerid(), ds.get_current_speed(UPLOAD))
+
+    print >>sys.stderr, "[MJ-Log-Peers]\t%s" % (x.data["PEERS"])
+    print >>sys.stderr, "[MJ-Log-PeerUpload]\t%s" % (x.data[ds.get_peerid()])
 
     #CRI
-    if peercount > 0:
-        print >>sys.stderr,"[MJ-CRI-bit512]\t%f" % (CRI/(peercount*512))
+    totalUpload = 0.0
+    for mjpeer in x.data["PEERS"]:
+        totalUpload = totalUpload + float(x.data[mjpeer][0])
+
+    if(x.is_existing("PEERS")):
+        peercount = len(x.data["PEERS"])
+        CRI = totalUpload/(peercount*512)
+        print >>sys.stderr,"[MJ-CRI-bit512]\t%f" % (CRI)
+
+    #AC
+    #add boundary for observing window (wrt time) for each peer
+    #average all AC
 
     return (1.0,False)
 

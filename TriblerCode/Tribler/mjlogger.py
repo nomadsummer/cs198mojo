@@ -31,7 +31,7 @@ class MJLogger(object):
         else:
             self.data[logname] = [data]
         return
-    
+
     def debuglog(self, logname):
         if logname in self.data:
             print >>sys.stderr, "[MJ-Log_%s]:" % logname
@@ -40,6 +40,16 @@ class MJLogger(object):
         else:
             print >>sys.stderr, '>> No Log of that type found!'
         return
+
+    def update(self, logname, data):
+        self.data[logname] = [data]
+        return
+
+    def is_existing(self, logname):
+        if logname in self.data:
+            return True
+        else:
+            return False
 
 # a = MJLogger()
 # b = MJLogger()
