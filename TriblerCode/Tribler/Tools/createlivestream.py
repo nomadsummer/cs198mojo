@@ -15,6 +15,8 @@ from threading import Condition
 from Tribler.Core.API import *
 import Tribler.Core.BitTornado.parseargs as parseargs
 
+from Tribler.mjlogger import *
+
 argsdef = [('name', '', 'name of the stream'),
            ('source', '-', 'source to stream (url, file or "-" to indicate stdin)'),
            ('destdir', '.','dir to save torrent (and stream)'),
@@ -43,6 +45,11 @@ def get_usage(defs):
     
 
 if __name__ == "__main__":
+
+    # mjl = MJLogger()
+    # mjl.log("Main", (1000, 12345))
+    # mjl.log("Main", (2000, 4421, "Who?"))
+    # mjl.debuglog("Main")
 
     config, fileargs = parseargs.parseargs(sys.argv, argsdef, presets = {})
     print >>sys.stderr,"config is",config
