@@ -263,7 +263,11 @@ public class StarStreamNodesObserver implements Control {
 
     // players statistics
     int nodesWithUncompletePlaybacks = 0;
-    for (int i = 0; i < dim; i++) {
+    int helping = 0;
+    if(CommonState.getTime() >= ((StarStreamNode) Network.get(0)).getStarStreamProtocol().getTimeIn() || CommonState.getTime() <= (((StarStreamNode) Network.get(0)).getStarStreamProtocol().getTimeIn() + ((StarStreamNode) Network.get(0)).getStarStreamProtocol().getTimeStay())){
+    	helping = ((StarStreamNode) Network.get(0)).getStarStreamProtocol().numHelpingPeers();
+    }
+    for (int i = 0; i < dim - helping; i++) {
       StarStreamNode node = (StarStreamNode) Network.get(i);
       List<Integer> missed = node.getUnplayedChunks();
       if(missed.size()>0)

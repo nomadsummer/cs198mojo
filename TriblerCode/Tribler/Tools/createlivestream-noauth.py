@@ -34,12 +34,20 @@ def state_callback(ds):
     print >>sys.stderr, "[MJ-ServerStats]\t%s\t%s\t%s\t%.1f\t%s\tup\t%.1f\tdown\t%.1f" % (mjtime,`d.get_def().get_name()`,dlstatus_strings[ds.get_status()],ds.get_progress(),ds.get_error(),ds.get_current_speed(UPLOAD),ds.get_current_speed(DOWNLOAD))
 
     mjpeers = ds.get_peerlist()
+    peercount = 0
+    CRI = ds.get_current_speed(UPLOAD)
     if mjpeers is not None :
         # ip, uprate, downrate, utotal, dtotal, speed
         for mjpeer in mjpeers:
             print >>sys.stderr,"[MJ-PL-spd]\t%s\t%s\t%s " % (mjtime, mjpeer['ip'], mjpeer['speed'])
             print >>sys.stderr,"[MJ-PL-drur]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['downrate'], mjpeer['uprate'])
             print >>sys.stderr,"[MJ-PL-dtut]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['dtotal'], mjpeer['utotal'])
+            CRI += float(mjpeer['uprate'])
+            peercount += 1
+
+    #CRI
+    if peercount > 0:
+        print >>sys.stderr,"[MJ-CRI-bit512]\t%f" % (CRI/(peercount*512))
 
     return (1.0,False)
 
@@ -145,10 +153,10 @@ if __name__ == "__main__":
 
     dscfg.set_max_uploads(config['nuploads'])
     # MENMA EX
-    dscfg.set_max_speed(UPLOAD, 300)
+    dscfg.set_max_speed(UPLOAD, 200)
 
     d = s.start_download(tdef,dscfg)
-    d.set_state_callback(state_callback,getpeerlist=False)
+    d.set_state_callback(state_callback,getpeerlist=True)
    
     # condition variable would be prettier, but that don't listen to 
     # KeyboardInterrupt

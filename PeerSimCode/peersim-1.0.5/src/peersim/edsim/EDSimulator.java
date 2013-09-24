@@ -124,7 +124,7 @@ private static final String PAR_PQ = "simulation.eventqueue";
  * @config
  * @config
  */
-private static final String PAR_INIT = "init";
+public static final String PAR_INIT = "init";
 
 /**
  * This is the prefix for {@link Control} components.
@@ -135,7 +135,7 @@ private static final String PAR_INIT = "init";
  * @see Configuration
  * @config
  */
-private static final String PAR_CTRL = "control";
+public static final String PAR_CTRL = "control";
 
 
 //---------------------------------------------------------------------
@@ -173,7 +173,7 @@ private EDSimulator() {}
  * Load and run initializers.
  */
 private static void runInitializers() {
-	
+	// [MOJO]
 	Object[] inits = Configuration.getInstanceArray(PAR_INIT);
 	String names[] = Configuration.getNames(PAR_INIT);
 	
@@ -188,7 +188,7 @@ private static void runInitializers() {
 // --------------------------------------------------------------------
 
 private static void scheduleControls()
-{
+{	
 	// load controls
 	String[] names = Configuration.getNames(PAR_CTRL);
 	controls = new Control[names.length];
@@ -206,6 +206,7 @@ private static void scheduleControls()
 		throw new IllegalArgumentException(
 		"Too many control objects");
 	for (int i=0; i < controls.length; i++) {
+		// [MOJO]
 		new ControlEvent(controls[i], ctrlSchedules[i], i);
 	}
 }
@@ -227,6 +228,7 @@ private static void scheduleControls()
  */
 static void addControlEvent(long time, int order, ControlEvent event)
 {
+	// [MOJO]
 // we don't check whether time is negative or in the past: we trust
 // the caller, which must be from this package
 	if (time >= endtime) return;
@@ -264,7 +266,8 @@ private static boolean executeNext() {
 	long time = ev.time;
 	if (time >= nextlog)
 	{
-		//[MOJO] System.err.println("Current time: " + time);
+		//[MOJO] 
+		//System.err.println("Current time: " + time);
 		// seemingly complicated: to prevent overflow
 		while( time-nextlog >= logtime ) nextlog+=logtime;
 		if( endtime-nextlog >= logtime ) nextlog+=logtime;
@@ -328,6 +331,7 @@ private static boolean executeNext() {
  */
 public static void nextExperiment() 
 {
+	// [MOJO]
 	// Reading parameter
 	if( Configuration.contains(PAR_PQ) ) 
 		heap = (PriorityQ) Configuration.getInstance(PAR_PQ);

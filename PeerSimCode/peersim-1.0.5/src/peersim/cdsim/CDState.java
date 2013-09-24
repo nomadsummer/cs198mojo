@@ -89,6 +89,7 @@ public static int getCycle()
  */
 public static void setCycle(int t)
 {
+	// [MOJO]
 	cycle = t;
 	ctime = 0;
 	setTime(t);

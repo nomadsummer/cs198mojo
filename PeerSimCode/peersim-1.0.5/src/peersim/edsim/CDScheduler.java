@@ -151,6 +151,7 @@ public boolean execute() {
 	
 	for(int i=0; i<Network.size(); ++i)
 	{
+		// [MOJO]
 		initialize(Network.get(i));
 	}
 	

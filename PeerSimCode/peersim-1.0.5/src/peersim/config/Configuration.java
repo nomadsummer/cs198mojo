@@ -312,7 +312,8 @@ private Configuration()
  *          The Properties object containing configuration info
  */
 public static void setConfig(Properties p)
-{
+{	
+	// [MOJO]
 	if (config != null) {
 		throw new RuntimeException("Setting configuration was attempted twice.");
 	}
@@ -643,6 +644,7 @@ public static Object getInstance(String name, Object def)
  */
 public static Object[] getInstanceArray(String name)
 {
+	// [MOJO]
 	return config.getInstanceArray(name);
 }
 
@@ -662,6 +664,7 @@ public static Object[] getInstanceArray(String name)
  */
 public static String[] getNames(String name)
 {
+	// [MOJO]
 	return config.getNames(name);
 }
 

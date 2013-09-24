@@ -118,6 +118,7 @@ public ConfigContainer(Properties config, boolean check)
  */
 public boolean contains(String name)
 {
+	// [MOJO]
 	boolean ret = config.containsKey(name);
 	debug(name, "" + ret);
 	return ret;
@@ -727,7 +728,7 @@ public Object getInstance(String name, Object def)
  */
 public Object[] getInstanceArray(String name)
 {
-
+	// [MOJO]
 	String names[] = getNames(name);
 	Object[] result = new Object[names.length];
 
@@ -754,6 +755,7 @@ public Object[] getInstanceArray(String name)
  */
 public String[] getNames(String name)
 {
+	// [MOJO]
 	ArrayList<String> ll = new ArrayList<String>();
 	final String pref = name + ".";
 

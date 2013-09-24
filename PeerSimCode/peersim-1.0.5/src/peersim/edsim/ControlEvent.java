@@ -61,6 +61,7 @@ private Scheduler scheduler;
  */
 public ControlEvent(Control control, Scheduler scheduler, int order)
 {
+	// [MOJO]
 	this.control = control;
 	this.order = order;
 	this.scheduler = scheduler;
@@ -77,7 +78,7 @@ public ControlEvent(Control control, Scheduler scheduler, int order)
 * adding it to the priority queue of the event driven simulation.
 */
 public boolean execute() {
-
+	// [MOJO]
 	boolean ret = control.execute();
 	long next = scheduler.getNext();
 	if( next>=0 ) EDSimulator.addControlEvent(next, order, this);
