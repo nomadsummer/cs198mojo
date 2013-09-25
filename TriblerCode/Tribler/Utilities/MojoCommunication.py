@@ -57,9 +57,9 @@ class MojoCommunicationServer(Thread):
                 msg = readn(conn,size,buffer)
                 print "[MJ-Notif] Received Message: ", msg
                 
-                if msg.startswith('START '):
-                    url = msg[len('START '):]
-                    self.callback('START',url)
+                #if msg.startswith('START '):
+                #    url = msg[len('START '):]
+                self.callback(msg)
                 conn.close()
                 
             except:

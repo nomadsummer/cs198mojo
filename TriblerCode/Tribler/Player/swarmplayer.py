@@ -432,9 +432,10 @@ class PlayerApp(wx.App):
             # Switch to GUI thread
             wx.CallAfter(self.remote_start_download,torrentfilename)
     
-    def mjcallback(self,cmd,param):
+    def mjcallback(self,msg):
         """ Called by MojoCommunication thread """
-        # do what you want to do
+        # do what you want to do to the recieved message in the main thread. hekhek
+        print "[MJ-Notif] Callback function in main received: ", msg
 
     def remote_start_download(self,torrentfilename):
         """ Called by GUI thread """
