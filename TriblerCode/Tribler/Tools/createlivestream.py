@@ -145,12 +145,12 @@ if __name__ == "__main__":
    
     # condition variable would be prettier, but that don't listen to 
     # KeyboardInterrupt
-    #time.sleep(sys.maxint/2048)
-    #try:
-    #    while True:
-    #        x = sys.stdin.read()
-    #except:
-    #    print_exc()
+    time.sleep(sys.maxint/2048)
+    try:
+        while True:
+            x = sys.stdin.read()
+    except:
+        print_exc()
     cond = Condition()
     cond.acquire()
     cond.wait()
