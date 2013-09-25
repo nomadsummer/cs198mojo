@@ -45,7 +45,11 @@ def vod_ready_callback(d,mimetype,stream,filename):
 
 def get_usage(defs):
     return parseargs.formatDefinitions(defs,80)
-    
+
+def mjcallback(self,msg):
+    """ Called by MojoCommunication thread """
+    # do what you want to do to the recieved message in the main thread. hekhek
+    print "[MJ-Notif] Callback function in main received: ", msg
 
 if __name__ == "__main__":
 
@@ -66,8 +70,8 @@ if __name__ == "__main__":
     print "Press Ctrl-C to stop the download"
 
     # Start server for MojoCommunication
-    self.mojoServer = MojoCommunicationServer(MJ_LISTENPORT,self.mjcallback) 
-    self.mojoServer.start()
+    mojoServer = MojoCommunicationServer(MJ_LISTENPORT,mjcallback) 
+    mojoServer.start()
             
     try:
         os.remove(os.path.join(config['destdir'],config['name']))
@@ -165,4 +169,3 @@ if __name__ == "__main__":
     s.shutdown()
     time.sleep(3)    
     shutil.rmtree(statedir)
-    
