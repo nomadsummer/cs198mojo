@@ -47,6 +47,7 @@ from Tribler.Video.VideoPlayer import VideoPlayer, VideoChooser, PLAYBACKMODE_IN
 from Tribler.Player.systray import PlayerTaskBarIcon
 from Tribler.Player.Reporter import Reporter
 from Tribler.Utilities.Instance2Instance import *
+from Tribler.Utilities.MojoCommunication import *
 
 from Tribler.Main.Utility.utility import Utility # TO REMOVE
 from Tribler.Video.utils import videoextdefaults
@@ -59,6 +60,7 @@ RATELIMITADSL = False
 DISKSPACE_LIMIT = 5L * 1024L * 1024L * 1024L  # 5 GB
 DEFAULT_MAX_UPLOAD_SEED_WHEN_SEEDING = 100 # KB/s
 I2I_LISTENPORT = 57894
+MJ_LISTENPORT = 6969
 PLAYER_LISTENPORT = 8620
 VIDEOHTTP_LISTENPORT = 6879
 
@@ -139,6 +141,13 @@ class PlayerApp(wx.App):
             # Start server for instance2instance communication
             self.i2is = Instance2InstanceServer(I2I_LISTENPORT,self.i2icallback) 
             self.i2is.start()
+            
+            # Start server for MojoCommunication
+            self.mojoServer = MojoCommunicationServer(MJ_LISTENPORT,self.mjcallback) 
+            self.mojoServer.start()
+            
+            # How to send message with MojoCommunication (port, msg, ipaddr)
+            MojoCommunicationClient(MJ_LISTENPORT,'Your message goes here','127.0.0.1')
 
             self.videoplay = None 
             self.start_video_frame()
@@ -422,6 +431,10 @@ class PlayerApp(wx.App):
                 
             # Switch to GUI thread
             wx.CallAfter(self.remote_start_download,torrentfilename)
+    
+    def mjcallback(self,cmd,param):
+        """ Called by MojoCommunication thread """
+        # do what you want to do
 
     def remote_start_download(self,torrentfilename):
         """ Called by GUI thread """

@@ -1,4 +1,4 @@
-# Written by MoJo based in Instance2Instance.py
+# Written by MoJo based on Instance2Instance.py
 # see LICENSE.txt for license information
 
 import sys
