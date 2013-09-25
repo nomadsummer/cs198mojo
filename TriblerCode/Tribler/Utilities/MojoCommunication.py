@@ -43,6 +43,8 @@ class MojoCommunicationServer(Thread):
         
         self.ss = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.ss.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        print "IP addr: ", socket.gethostbyname(socket.gethostname())
+        # print "socket name: ", self.ss.getsockname()
         self.ss.bind(('127.0.0.1', self.port))
         self.ss.listen(1)
         

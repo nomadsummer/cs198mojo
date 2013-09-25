@@ -16,6 +16,9 @@ from Tribler.Core.API import *
 import Tribler.Core.BitTornado.parseargs as parseargs
 
 from Tribler.mjlogger import *
+from Tribler.Utilities.MojoCommunication import *
+
+MJ_LISTENPORT = 6969
 
 argsdef = [('name', '', 'name of the stream'),
            ('source', '-', 'source to stream (url, file or "-" to indicate stdin)'),
@@ -62,6 +65,10 @@ if __name__ == "__main__":
     
     print "Press Ctrl-C to stop the download"
 
+    # Start server for MojoCommunication
+    self.mojoServer = MojoCommunicationServer(MJ_LISTENPORT,self.mjcallback) 
+    self.mojoServer.start()
+            
     try:
         os.remove(os.path.join(config['destdir'],config['name']))
     except:
