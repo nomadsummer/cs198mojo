@@ -51,6 +51,11 @@ class MJLogger(object):
         else:
             return False
 
+    def delete(self, logname):
+        self.data[logname] = []
+
+        return
+
 # a = MJLogger()
 # b = MJLogger()
 

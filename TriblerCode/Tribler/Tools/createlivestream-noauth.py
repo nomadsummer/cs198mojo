@@ -29,6 +29,8 @@ argsdef = [('name', '', 'name of the stream'),
            ('thumb', '', 'filename of image in JPEG format, preferably 171x96')]
 
 x = MJLogger()
+x.log("TIME", time.time())
+twin = 30.0
 
 def state_callback(ds):
     d = ds.get_download()
@@ -71,6 +73,39 @@ def state_callback(ds):
     #AC
     #add boundary for observing window (wrt time) for each peer
     #average all AC
+    print >>sys.stderr,"[MJ-TIME]\t%f" % (time.time() - float(x.data["TIME"][0]))
+    if(time.time() - float(x.data["TIME"][0]) >= twin):
+        for mjpeer in x.data["PEERS"]:
+            x.update("AAC-"+str(mjpeer), 0.0)
+            for mjpeerup in x.data["AC-"+str(mjpeer)]:
+                x.update("AAC-"+str(mjpeer), float(x.data["AAC-"+str(mjpeer)][0]) + float(mjpeerup))
+            x.update("AAC-"+str(mjpeer), float(x.data["AAC-"+str(mjpeer)][0])/twin)
+            x.delete("AC-"+str(mjpeer))
+            print >>sys.stderr,"[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
+        x.update("TIME", time.time())
+    else:
+        x.log("AC-"+str(ds.get_peerid()), ds.get_current_speed(UPLOAD))
+    print >>sys.stderr,"[MJ-AC-%s]\t%s" % (str(ds.get_peerid()), x.data["AC-"+str(ds.get_peerid())])
+
+    #ATFT
+    #Compute and rank
+    if(x.is_existing("PEERS")):
+        if(x.is_existing("RANKED")):
+            x.delete("RANKED")
+        #RANK PEERS
+        for mjpeer in x.data["PEERS"]:
+            ranked.append(float(x.data[mjpeer][0]))
+        ranked = sorted(ranked, reverse=True)
+
+        peerrank = []
+        for mjpeerup in ranked:
+            for mjpeer in x.data["PEERS"]:
+                if(float(x.data[mjpeer][0]) == float(mjpeerup)):
+                    peerrank.append(mjpeer)
+
+        for mjpeer in ranked:
+            x.log("RANKED", mjpeer)
+    print >>sys.stderr,"[MJ-RANKED]\t%s" % (x.data["RANKED"])
 
     return (1.0,False)
 
@@ -183,12 +218,12 @@ if __name__ == "__main__":
    
     # condition variable would be prettier, but that don't listen to 
     # KeyboardInterrupt
-    #time.sleep(sys.maxint/2048)
-    #try:
-    #    while True:
-    #        x = sys.stdin.read()
-    #except:
-    #    print_exc()
+    time.sleep(sys.maxint/2048)
+    try:
+        while True:
+            x = sys.stdin.read()
+    except:
+        print_exc()
     cond = Condition()
     cond.acquire()
     cond.wait()
