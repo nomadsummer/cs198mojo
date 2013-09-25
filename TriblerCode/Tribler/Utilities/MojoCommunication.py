@@ -43,16 +43,19 @@ class MojoCommunicationServer(Thread):
         
         self.ss = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.ss.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        print "IP addr: ", socket.gethostbyname(socket.gethostname())
+        # print "IP addr: ", socket.gethostbyname(socket.gethostname())
         # print "socket name: ", self.ss.getsockname()
-        self.ss.bind(('127.0.0.1', self.port))
-        self.ss.listen(1)
+        # TODO: Check for timeout in establishing connections
+        # Check if it can listen to more than 1 client
+        self.ss.bind(('0.0.0.0', self.port))
+        self.ss.listen(5)
         
     def run(self):
         print "MojoCommunication listening..."
         while True:
             try:
                 conn, addr = self.ss.accept()
+                print "IP Address: ", addr
                 buffer = StringIO()
                 sizedata = readn(conn,4,buffer)
                 size = toint(sizedata)
@@ -65,6 +68,7 @@ class MojoCommunicationServer(Thread):
                 conn.close()
                 
             except:
+                print "Unexpected error:", sys.exc_info()[0]
                 print_exc()
         
 
