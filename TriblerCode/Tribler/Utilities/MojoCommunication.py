@@ -47,6 +47,7 @@ class MojoCommunicationServer(Thread):
         self.ss.listen(1)
         
     def run(self):
+        print "MojoCommunication listening..."
         while True:
             try:
                 conn, addr = self.ss.accept()
@@ -54,6 +55,7 @@ class MojoCommunicationServer(Thread):
                 sizedata = readn(conn,4,buffer)
                 size = toint(sizedata)
                 msg = readn(conn,size,buffer)
+                print "[MJ-Notif] Received Message: ", msg
                 
                 if msg.startswith('START '):
                     url = msg[len('START '):]
