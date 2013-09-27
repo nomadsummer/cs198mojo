@@ -148,7 +148,18 @@ class DownloadImpl:
 
         # Note: BT1Download is started with copy of d.dlconfig, not direct access
         # Set IP to report to tracker. 
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
         self.dlconfig['ip'] = self.session.lm.get_ext_ip()
+        print >>sys.stderr,"IP Address to connect to other!", self.session.lm.get_ext_ip()
         kvconfig = copy.copy(self.dlconfig)
 
         # Define which file to DL in VOD mode

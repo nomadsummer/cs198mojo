@@ -47,7 +47,7 @@ class MojoCommunicationServer(Thread):
         # print "socket name: ", self.ss.getsockname()
         # TODO: Check for timeout in establishing connections
         # Check if it can listen to more than 1 client
-        self.ss.bind(('0.0.0.0', self.port))
+        self.ss.bind(('127.0.0.1', self.port))
         self.ss.listen(5)
         
     def run(self):
