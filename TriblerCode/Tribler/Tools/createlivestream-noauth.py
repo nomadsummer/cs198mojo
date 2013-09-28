@@ -10,6 +10,7 @@ import tempfile
 import random
 import urllib2
 import datetime
+import math
 from traceback import print_exc
 from threading import Condition
 
@@ -31,6 +32,7 @@ argsdef = [('name', '', 'name of the stream'),
 x = MJLogger()
 x.log("TIME", time.time())
 twin = 30.0
+numhelp = 5
 
 def state_callback(ds):
     d = ds.get_download()
@@ -48,16 +50,19 @@ def state_callback(ds):
             
     mjlog_data(ds)
     if mjpeers is not None :
-        mjcompute_criterion()
+        mjcompute_criterion(ds)
 
     return (1.0,False)
 
 def mjlog_data(ds):
     mjpeers = ds.get_peerlist()
     if mjpeers is not None :
+        if(x.is_existing("PEERS")):
+            x.delete("PEERS")
+
         for mjpeer in mjpeers:
             x.update("DT-"+str(mjpeer['id']),mjpeer['dtotal'])
-            ''' LOGS FROM PEERLIST
+            
             if(x.is_existing("PEERS")):
                 if(mjpeer['id'] not in x.data["PEERS"]):
                     x.log("PEERS", mjpeer['id'])
@@ -74,9 +79,9 @@ def mjlog_data(ds):
             print >>sys.stderr, "[MJ-Log-PeerUpload]\t%s" % (x.data[mjpeer['id']])
             print >>sys.stderr, "[MJ-AC-%s]\t%s" % (mjpeer['id'], x.data["AC-"+str(mjpeer['id'])])    
 
-        print >>sys.stderr, "[MJ-Log-Peers]\t%s" % (x.data["PEERS"])
-            TEST ''' 
-
+            print >>sys.stderr, "[MJ-Log-Peers]\t%s" % (x.data["PEERS"])
+            
+    '''
     if(x.is_existing("PEERS")):
         if(ds.get_peerid() not in x.data["PEERS"]):
             x.log("PEERS", ds.get_peerid())
@@ -93,42 +98,43 @@ def mjlog_data(ds):
     print >>sys.stderr, "[MJ-Log-Peers]\t%s" % (x.data["PEERS"])
     print >>sys.stderr, "[MJ-Log-PeerUpload]\t%s" % (x.data[ds.get_peerid()])
     print >>sys.stderr, "[MJ-AC-%s]\t%s" % (str(ds.get_peerid()), x.data["AC-"+str(ds.get_peerid())])
-
-def mjcompute_criterion():
+    '''
+def mjcompute_criterion(ds):
+    mjpeers = ds.get_peerlist()
+    
     #CRI
-    totalUpload = 0.0
-    for mjpeer in x.data["PEERS"]:
-        totalUpload = totalUpload + float(x.data[mjpeer][0])
-
     if(x.is_existing("PEERS")):
+        totalUpload = 0.0
+        for mjpeer in x.data["PEERS"]:
+            totalUpload = totalUpload + float(x.data[mjpeer][0])
+
         peercount = len(x.data["PEERS"])
         CRI = totalUpload/(peercount*512)
         print >>sys.stderr,"[MJ-CRI-bit512]\t%f" % (CRI)
 
-    #AC
-    #add boundary for observing window (wrt time) for each peer
-    #average all AC
-    aac = False
-    print >>sys.stderr,"[MJ-TIME]\t%f" % (time.time() - float(x.data["TIME"][0]))
-    if(time.time() - float(x.data["TIME"][0]) >= twin):
-        for mjpeer in x.data["PEERS"]:
-            x.update("AAC-"+str(mjpeer), 0.0)
-            for mjpeerup in x.data["AC-"+str(mjpeer)]:
-                x.update("AAC-"+str(mjpeer), float(x.data["AAC-"+str(mjpeer)][0]) + float(mjpeerup))
-            x.update("AAC-"+str(mjpeer), float(x.data["AAC-"+str(mjpeer)][0])/twin)
-            x.delete("AC-"+str(mjpeer))
-            print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
-        x.update("TIME", time.time())
-        aac = True
-        
-    if(x.is_existing("AACFLAG")):
-        if(aac):
-            x.update("AACFLAG", True)
-    else:
-        x.log("AACFLAG", False)
+        #AC
+        #add boundary for observing window (wrt time) for each peer
+        #average all AC
+        aac = False
+        print >>sys.stderr,"[MJ-TIME]\t%f" % (time.time() - float(x.data["TIME"][0]))
+        if(time.time() - float(x.data["TIME"][0]) >= twin):
+            for mjpeer in x.data["PEERS"]:
+                x.update("AAC-"+str(mjpeer), 0.0)
+                for mjpeerup in x.data["AC-"+str(mjpeer)]:
+                    x.update("AAC-"+str(mjpeer), float(x.data["AAC-"+str(mjpeer)][0]) + float(mjpeerup))
+                x.update("AAC-"+str(mjpeer), float(x.data["AAC-"+str(mjpeer)][0])/twin)
+                x.delete("AC-"+str(mjpeer))
+                print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
+            x.update("TIME", time.time())
+            aac = True
+            
+        if(x.is_existing("AACFLAG")):
+            if(aac):
+                x.update("AACFLAG", True)
+        else:
+            x.log("AACFLAG", False)
 
-    #ATFT
-    if(x.is_existing("PEERS")):
+        #ATFT
         if(x.is_existing("AAC-RANKED")):
             x.delete("AAC-RANKED")
         if(x.is_existing("DT-RANKED")):
@@ -136,55 +142,83 @@ def mjcompute_criterion():
         if(x.is_existing("FIN-RANKED")):
             x.delete("FIN-RANKED")   
 
-        #RANK PEERS ACCORDING TO AAC IS POSSIBLE
-        if(x.data["AACFLAG"][0]):
-            ranked = []
-            for mjpeer in x.data["PEERS"]:
-                ranked.append(float(x.data["AAC-"+str(mjpeer)][0]))
-            ranked = sorted(ranked, reverse=True)
-
-            peerrank = []
-            for mjpeerup in ranked:
+            #RANK PEERS ACCORDING TO AAC IS POSSIBLE
+            if(x.data["AACFLAG"][0]):
+                ranked = []
                 for mjpeer in x.data["PEERS"]:
-                    if(float(x.data["AAC-"+str(mjpeer)][0]) == float(mjpeerup)):
-                        peerrank.append(mjpeer)
+                    ranked.append(float(x.data["AAC-"+str(mjpeer)][0]))
+                ranked = sorted(ranked, reverse=True)
 
-            for mjpeer in peerrank:
-                x.log("AAC-RANKED", mjpeer)
+                peerrank = []
+                for mjpeerup in ranked:
+                    for mjpeer in x.data["PEERS"]:
+                        if(float(x.data["AAC-"+str(mjpeer)][0]) == float(mjpeerup)):
+                            peerrank.append(mjpeer)
 
-            print >>sys.stderr, "[MJ-AAC-RANKED]\t%s" % (x.data["AAC-RANKED"])
+                for mjpeer in peerrank:
+                    x.log("AAC-RANKED", mjpeer)
 
-        #RANK PEERS ACCORDING TO TOTAL DOWNLOADED DATA FROM PEER
-        ranked = []
-        for mjpeer in x.data["PEERS"]:
-            ranked.append(float(x.data["DT-"+str(mjpeer)][0]))
-        ranked = sorted(ranked, reverse=True)
+                print >>sys.stderr, "[MJ-AAC-RANKED]\t%s" % (x.data["AAC-RANKED"])
 
-        peerrank = []
-        for mjpeerup in ranked:
-            for mjpeer in x.data["PEERS"]:
-                if(float(x.data["DT-"+str(mjpeer)][0]) == float(mjpeerup)):
-                    peerrank.append(mjpeer)
+            #RANK PEERS ACCORDING TO TOTAL DOWNLOADED DATA FROM PEER
+            if mjpeers is not None :
+                ranked = []
+                for mjpeer in x.data["PEERS"]:
+                    ranked.append(float(x.data["DT-"+str(mjpeer)][0]))
+                ranked = sorted(ranked, reverse=True)
 
-        for mjpeer in peerrank:
-            x.log("DT-RANKED", mjpeer)
+                peerrank = []
+                for mjpeerup in ranked:
+                    for mjpeer in x.data["PEERS"]:
+                        if(float(x.data["DT-"+str(mjpeer)][0]) == float(mjpeerup)):
+                            peerrank.append(mjpeer)
 
-        print >>sys.stderr, "[MJ-DT-RANKED]\t%s" % (x.data["DT-RANKED"])
+                for mjpeer in peerrank:
+                    x.log("DT-RANKED", mjpeer)
 
-        '''
-        #COMPARE RANKINGS
-        if(x.data["AACFLAG"][0]):
-            ranked = []
-            #CREATE COMPARISON METHOD
+                print >>sys.stderr, "[MJ-DT-RANKED]\t%s" % (x.data["DT-RANKED"])
 
-            for mjpeer in ranked:
-                x.log("FIN-RANKED", mjpeer)
-        else:
-            for mjpeer in x.data["DT-RANKED"]:
-                x.log("FIN-RANKED", mjpeer)
-        
-        print >>sys.stderr, "[MJ-FIN-RANKED]\t%s" % (x.data["FIN-RANKED"])        
-        '''
+            #COMPARE RANKINGS
+            if(x.data["AACFLAG"][0]):
+                ranked1 = []
+                ranked2 = []
+                torank = []
+                finranked = []
+
+                for i in range(0, peercount-1):
+                    ranked1.append(i+1)
+
+                for mjpeer in x.data["AAC-RANKED"]:
+                    ranked2.append(x.data["DT-RANKED"].index(mjpeer)+1)
+
+                for i in range(0, peercount-1):
+                    torank.append(math.fabs(ranked1[i] - ranked2[i]))
+                finranked = sorted(torank)
+
+                for i in range(0, peercount-1):
+                    for j in range(0, len(torank)-1):
+                        if(finranked[i] == torank[j]):
+                            torank[j] = -1
+                            finranked[i] = x.data["AAC-RANKED"][j]
+
+                for mjpeer in finranked:
+                    x.log("FIN-RANKED", mjpeer)
+            else:
+                for mjpeer in x.data["DT-RANKED"]:
+                    x.log("FIN-RANKED", mjpeer)
+            
+            print >>sys.stderr, "[MJ-FIN-RANKED]\t%s" % (x.data["FIN-RANKED"]) 
+
+        if(CRI < 1):
+            helpingpeers = []
+            if(numhelp > peercount):
+                for i in range(0, peercount-1):
+                    helpingpeers.append(x.data["FIN-RANKED"][i])
+            else:
+                for i in range(0, numhelp-1):
+                    helpingpeers.append(x.data["FIN-RANKED"][i])
+
+            print >>sys.stderr,"SWARM NEEDS HELP PEERS TO HELP:\t%s" % (helpingpeers)
 
 def vod_ready_callback(d,mimetype,stream,filename):
     """ Called by the Session when the content of the Download is ready
