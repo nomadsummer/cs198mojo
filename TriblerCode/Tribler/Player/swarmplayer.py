@@ -147,7 +147,7 @@ class PlayerApp(wx.App):
             self.mojoServer.start()
             
             # How to send message with MojoCommunication (port, msg, ipaddr)
-            MojoCommunicationClient(MJ_LISTENPORT,'Your message goes here','127.0.0.1')
+            MojoCommunicationClient(MJ_LISTENPORT,'Your message goes here','192.168.0.12')
 
             self.videoplay = None 
             self.start_video_frame()
@@ -435,7 +435,18 @@ class PlayerApp(wx.App):
     def mjcallback(self,msg):
         """ Called by MojoCommunication thread """
         # do what you want to do to the recieved message in the main thread. hekhek
-        print "[MJ-Notif] Callback function in main received: ", msg
+        print >>sys.stderr,"[MJ-Notif] Callback function in main received: ", msg
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"MOJO"
 
     def remote_start_download(self,torrentfilename):
         """ Called by GUI thread """

@@ -28,6 +28,11 @@ from Tribler.Core.DecentralizedTracking.ut_pex import *
 
 from Tribler.Core.BitTornado.CurrentRateMeasure import Measure
 
+# MOJO
+from Tribler.Utilities.MojoCommunication import *
+
+MJ_LISTENPORT = 6969
+
 try:
     True
 except:
@@ -636,6 +641,7 @@ class Connecter:
     def connection_made(self, connection):
         c = Connection(connection, self)
         
+        MojoCommunicationClient(MJ_LISTENPORT,'[MOJO] disconnect',c.get_ip())
         print >>sys.stderr,"Connecter: live: setting",connection.get_ip(),c.get_ip()
         print >>sys.stderr,"MOJO"
         print >>sys.stderr,"MOJO"
