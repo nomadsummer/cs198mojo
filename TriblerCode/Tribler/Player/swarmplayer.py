@@ -147,7 +147,7 @@ class PlayerApp(wx.App):
             self.mojoServer.start()
             
             # How to send message with MojoCommunication (port, msg, ipaddr)
-            MojoCommunicationClient(MJ_LISTENPORT,'Your message goes here','192.168.0.12')
+            #MojoCommunicationClient(MJ_LISTENPORT,'Your message goes here','192.168.0.12')
 
             self.videoplay = None 
             self.start_video_frame()
