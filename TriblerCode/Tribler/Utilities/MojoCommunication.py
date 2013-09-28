@@ -55,16 +55,14 @@ class MojoCommunicationServer(Thread):
         while True:
             try:
                 conn, addr = self.ss.accept()
-                print "IP Address: ", addr
+                print >>sys.stderr, "IP Address: ", addr
                 buffer = StringIO()
                 sizedata = readn(conn,4,buffer)
                 size = toint(sizedata)
                 msg = readn(conn,size,buffer)
-                print "[MJ-Notif] Received Message: ", msg
+                #print >>sys.stderr, "[MJ-Notif] Received Message: ", msg
                 
-                #if msg.startswith('START '):
-                #    url = msg[len('START '):]
-                self.callback(msg)
+		self.callback(msg, addr[0])
                 conn.close()
                 
             except:

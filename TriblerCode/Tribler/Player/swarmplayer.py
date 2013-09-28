@@ -286,10 +286,13 @@ class PlayerApp(wx.App):
         return filename
 
 
-    def start_download(self,torrentfilename):
+    def start_download(self,torrentfilename, newTdef = None):
         
-        tdef = TorrentDef.load(torrentfilename)
-        print >>sys.stderr,"main: Starting download, infohash is",`tdef.get_infohash()`
+	if newTdef is None:
+        	tdef = TorrentDef.load(torrentfilename)
+	else:
+		tdef = newTdef        
+	print >>sys.stderr,"main: Starting download, infohash is",`tdef.get_infohash()`
         
         # Select which video to play (if multiple)
         videofiles = tdef.get_files(exts=videoextdefaults)
@@ -432,7 +435,7 @@ class PlayerApp(wx.App):
             # Switch to GUI thread
             wx.CallAfter(self.remote_start_download,torrentfilename)
     
-    def mjcallback(self,msg):
+    def mjcallback(self,msg,ipAddr):
         """ Called by MojoCommunication thread """
         # do what you want to do to the recieved message in the main thread. hekhek
         print >>sys.stderr,"[MJ-Notif] Callback function in main received: ", msg
@@ -447,6 +450,16 @@ class PlayerApp(wx.App):
         print >>sys.stderr,"MOJO"
         print >>sys.stderr,"MOJO"
         print >>sys.stderr,"MOJO"
+	if(msg == "[MOJO] disconnect"):
+		print >>sys.stderr,"ELIJAH hekhek: ", ipAddr
+		self.clear_session_state()
+		self.videoplay.stop_playback()
+		self.OnExit()
+	if msg.startswith('[download-tstream] '):
+        	tstream = msg[19:]
+		tdef = pickle.loads(tstream)
+		self.start_download("mojoTstream", tdef)
+		#print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
 
     def remote_start_download(self,torrentfilename):
         """ Called by GUI thread """
@@ -549,6 +562,7 @@ class PlayerApp(wx.App):
         if not ALLOW_MULTIPLE:
             del self.single_instance_checker
         self.ExitMainLoop()
+	sys.exit(1)
 
     def sesscb_states_callback(self,dslist):
         """ Called by Session thread """
