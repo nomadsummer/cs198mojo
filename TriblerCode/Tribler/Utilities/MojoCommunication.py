@@ -62,7 +62,7 @@ class MojoCommunicationServer(Thread):
                 msg = readn(conn,size,buffer)
                 #print >>sys.stderr, "[MJ-Notif] Received Message: ", msg
                 
-		self.callback(msg, addr[0])
+                self.callback(msg)
                 conn.close()
                 
             except:
