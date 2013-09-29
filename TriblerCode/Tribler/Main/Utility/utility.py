@@ -176,9 +176,9 @@ class Utility:
             # abc.conf file in INI-file format. The code that starts the player will add quotes
             # if there is a space in this string.
             progfilesdir = os.path.expandvars('${PROGRAMFILES}')
-            #defaults['videoplayerpath'] = progfilesdir+'\\VideoLAN\\VLC\\vlc.exe'
+            defaults['videoplayerpath'] = progfilesdir+'\\VideoLAN\\VLC\\vlc.exe'
             # Path also valid on MS Vista
-            defaults['videoplayerpath'] = progfilesdir+'\\Windows Media Player\\wmplayer.exe'
+            # defaults['videoplayerpath'] = progfilesdir+'\\Windows Media Player\\wmplayer.exe'
             defaults['videoanalyserpath'] = self.getPath()+'\\ffmpeg.exe'
         elif sys.platform == 'darwin':
             profiledir = os.path.expandvars('${HOME}')

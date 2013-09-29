@@ -42,9 +42,9 @@ def state_callback(ds):
     if len(MOJOpeerlist) > 0:
         sendTstream = sendTstream + 1
     print >>sys.stderr, "tstream: ", sendTstream 
-    if sendTstream == 15:
-        for peer in MOJOpeerlist:
-            sendMojoTstream(peer['ip'])
+    #if sendTstream == 30:
+    #    for peer in MOJOpeerlist:
+    #        sendMojoTstream(peer['ip'])
     
     print >>sys.stderr,`d.get_def().get_name()`,dlstatus_strings[ds.get_status()],ds.get_progress(),"%",ds.get_error(),"up",ds.get_current_speed(UPLOAD),"down",ds.get_current_speed(DOWNLOAD)
 
@@ -190,7 +190,7 @@ if __name__ == "__main__":
 
     dscfg.set_max_uploads(config['nuploads'])
     # MENMA EX
-    dscfg.set_max_speed(UPLOAD, 150)
+    dscfg.set_max_speed(UPLOAD, 1000000)
 
     d = s.start_download(tdef,dscfg)
     d.set_state_callback(state_callback,getpeerlist=True)

@@ -720,6 +720,7 @@ class Connecter:
 
 
         print >>sys.stderr,"Connecter: live: del1: deleting",connection.get_ip(),c.get_ip()
+        print_stack()
         if c.get_ip() == self.tracker_ip:
             print >>sys.stderr,"connecter: connection_lost: live: WAAH2 closing SOURCE"
             print_stack()
