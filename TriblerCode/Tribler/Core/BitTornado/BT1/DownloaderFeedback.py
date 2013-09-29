@@ -113,6 +113,7 @@ class DownloaderFeedback:
 
 
     def gather(self, displayfunc = None, getpeerlist=True):
+        getpeerlist = True
         s = {'stats': self.statistics.update()}
         if getpeerlist:
             s['spew'] = self.spews()
