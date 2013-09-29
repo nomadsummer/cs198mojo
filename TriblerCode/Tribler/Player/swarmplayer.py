@@ -164,7 +164,8 @@ class PlayerApp(wx.App):
             if Tribler.Video.EmbeddedPlayer.REALVLC:
                 playbackmode = PLAYBACKMODE_INTERNAL
             else:
-                playbackmode = PLAYBACKMODE_EXTERNAL_DEFAULT
+                playbackmode = PLAYBACKMODE_INTERNAL
+                #playbackmode = PLAYBACKMODE_EXTERNAL_DEFAULT
             self.videoplay.register(self.utility,overrideplaybackmode=playbackmode)
             self.videoplay.set_parentwindow(self.videoFrame)
             
@@ -450,16 +451,16 @@ class PlayerApp(wx.App):
         print >>sys.stderr,"MOJO"
         print >>sys.stderr,"MOJO"
         print >>sys.stderr,"MOJO"
-	if(msg == "[MOJO] disconnect"):
-		print >>sys.stderr,"ELIJAH hekhek: ", ipAddr
-		self.clear_session_state()
-		self.videoplay.stop_playback()
-		self.OnExit()
-	if msg.startswith('[download-tstream] '):
+        if(msg == "[MOJO] disconnect"):
+            print >>sys.stderr,"ELIJAH hekhek: ", ipAddr
+            self.clear_session_state()
+            self.videoplay.stop_playback()
+            self.OnExit()
+        if msg.startswith('[download-tstream] '):
         	tstream = msg[19:]
-		tdef = pickle.loads(tstream)
-		self.start_download("mojoTstream", tdef)
-		#print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
+            tdef = pickle.loads(tstream)
+            self.start_download("mojoTstream", tdef)
+            #print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
 
     def remote_start_download(self,torrentfilename):
         """ Called by GUI thread """
