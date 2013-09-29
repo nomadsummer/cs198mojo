@@ -91,9 +91,45 @@ def sendMojoTstream(ipAddr):
     print >>sys.stderr,"MOJO"
     print >>sys.stderr,"MOJO"
     print >>sys.stderr,"MOJO"
+    
+def createTorrentDef():
+    global tdef
+    config['name'] = 'ejbc2.mpegts'
+    config['piecesize'] = 32768
+    config['destdir'] = '.'
+    config['source'] = 'http://localhost:8080/'
+    config['nuploads'] = 7
+    config['duration'] = '1:00:00'
+    config['bitrate'] = 65536
+    config['port'] = 7764
+    config['thumb'] = ''
+    
+    authfilename = os.path.join(config['destdir'],config['name']+'.sauth')
+    try:
+        authcfg = ECDSALiveSourceAuthConfig.load(authfilename)
+    except:
+        print_exc()
+        authcfg = ECDSALiveSourceAuthConfig()
+        authcfg.save(authfilename)
+
+    print >>sys.stderr,"main: Source auth pubkey",`str(authcfg.get_pubkey())`
+
+    tdef = TorrentDef()
+    # hint: to derive bitrate and duration from a file, use
+    #    ffmpeg -i file.mpeg /dev/null
+    tdef.create_live(config['name'],config['bitrate'],config['duration'],authcfg)
+    tdef.set_tracker(s.get_internal_tracker_url())
+    tdef.set_piece_length(config['piecesize']) #TODO: auto based on bitrate?
+    if len(config['thumb']) > 0:
+        tdef.set_thumbnail(config['thumb'])
+    tdef.finalize()
+    
+    torrentbasename = config['name']+'.tstream'
+    torrentfilename = os.path.join(config['destdir'],torrentbasename)
+    tdef.save(torrentfilename)
 
 if __name__ == "__main__":
-    global tdef
+    # global tdef
     # mjl = MJLogger()
     # mjl.log("Main", (1000, 12345))
     # mjl.log("Main", (2000, 4421, "Who?"))

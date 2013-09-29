@@ -18,6 +18,11 @@ from Tribler.Core.API import *
 import Tribler.Core.BitTornado.parseargs as parseargs
 
 from Tribler.mjlogger import *
+from Tribler.Utilities.MojoCommunication import *
+
+MJ_LISTENPORT = 6969
+sendTstream = 0
+tdef = None
 
 argsdef = [('name', '', 'name of the stream'),
            ('source', '-', 'source to stream (url, file or "-" to indicate stdin)'),
@@ -35,7 +40,16 @@ twin = 15.0
 numhelp = 5
 
 def state_callback(ds):
+    global sendTstream
     d = ds.get_download()
+    
+    MOJOpeerlist = ds.get_peerlist()
+    if len(MOJOpeerlist) > 0:
+        sendTstream = sendTstream + 1
+    print >>sys.stderr, "tstream: ", sendTstream 
+    if sendTstream == 30:
+        for peer in MOJOpeerlist:
+            sendMojoTstream(peer['ip'])
     # MENMA EX
     mjtime = datetime.datetime.now().time()
     print >>sys.stderr, "[MJ-ServerStats]\t%s\t%s\t%s\t%.1f\t%s\tup\t%.1f\tdown\t%.1f" % (mjtime,`d.get_def().get_name()`,dlstatus_strings[ds.get_status()],ds.get_progress(),ds.get_error(),ds.get_current_speed(UPLOAD),ds.get_current_speed(DOWNLOAD))
@@ -218,6 +232,65 @@ def vod_ready_callback(d,mimetype,stream,filename):
 def get_usage(defs):
     return parseargs.formatDefinitions(defs,80)
     
+def mjcallback(msg):
+    """ Called by MojoCommunication thread """
+    # do what you want to do to the recieved message in the main thread. hekhek
+    print >>sys.stderr,"[MJ-Notif] Callback function in main received: ", msg
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+
+def sendMojoTstream(ipAddr):
+    """ Called by MojoCommunication thread """
+    # do what you want to do to the recieved message in the main thread. hekhek
+    print >>sys.stderr,"Sending tstream... ", ipAddr
+    MojoCommunicationClient(MJ_LISTENPORT,'[download-tstream] ' + pickle.dumps(tdef),ipAddr)
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    
+def createTorrentDef(config):
+    global tdef
+    config['name'] = 'ejbc2.mpegts'
+    config['piecesize'] = 32768
+    config['destdir'] = '.'
+    config['source'] = 'http://localhost:8080/'
+    config['nuploads'] = 7
+    config['duration'] = '1:00:00'
+    config['bitrate'] = 65536
+    config['port'] = 7764
+    config['thumb'] = ''
+    
+    tdef = TorrentDef()
+    # hint: to derive bitrate and duration from a file, use
+    #    ffmpeg -i file.mpeg /dev/null
+    tdef.create_live(config['name'],config['bitrate'],config['duration'])
+    tdef.set_tracker(s.get_internal_tracker_url())
+    tdef.set_piece_length(config['piecesize']) #TODO: auto based on bitrate?
+    if len(config['thumb']) > 0:
+        tdef.set_thumbnail(config['thumb'])
+    tdef.finalize()
+    
+    torrentbasename = config['name']+'.tstream'
+    torrentfilename = os.path.join(config['destdir'],torrentbasename)
+    tdef.save(torrentfilename)
+    
 
 if __name__ == "__main__":
 
@@ -232,6 +305,10 @@ if __name__ == "__main__":
     
     print "Press Ctrl-C to stop the download"
 
+    # Start server for MojoCommunication
+    mojoServer = MojoCommunicationServer(MJ_LISTENPORT,mjcallback) 
+    mojoServer.start()
+    
     try:
         os.remove(os.path.join(config['destdir'],config['name']))
     except:
