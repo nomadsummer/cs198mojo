@@ -42,9 +42,9 @@ def state_callback(ds):
     if len(MOJOpeerlist) > 0:
         sendTstream = sendTstream + 1
     print >>sys.stderr, "tstream: ", sendTstream 
-    #if sendTstream == 30:
-    #    for peer in MOJOpeerlist:
-    #        sendMojoTstream(peer['ip'])
+    if sendTstream == 30:
+        for peer in MOJOpeerlist:
+            sendMojoTstream(peer['ip'])
     
     print >>sys.stderr,`d.get_def().get_name()`,dlstatus_strings[ds.get_status()],ds.get_progress(),"%",ds.get_error(),"up",ds.get_current_speed(UPLOAD),"down",ds.get_current_speed(DOWNLOAD)
 
