@@ -190,7 +190,7 @@ if __name__ == "__main__":
 
     dscfg.set_max_uploads(config['nuploads'])
     # MENMA EX
-    dscfg.set_max_speed(UPLOAD, 1000000)
+    dscfg.set_max_speed(UPLOAD, 100)
 
     d = s.start_download(tdef,dscfg)
     d.set_state_callback(state_callback,getpeerlist=True)
