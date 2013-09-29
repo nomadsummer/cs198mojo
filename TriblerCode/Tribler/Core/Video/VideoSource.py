@@ -18,7 +18,7 @@ from Tribler.Core.Video.LiveSourceAuth import NullAuthenticator,ECDSAAuthenticat
 
 from sha import sha
 
-DEBUG = True
+DEBUG = False
 
 class SimpleThread(Thread):
     """ Wraps a thread around a single function. """

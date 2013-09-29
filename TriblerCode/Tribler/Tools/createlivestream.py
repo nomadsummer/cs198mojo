@@ -19,6 +19,8 @@ from Tribler.mjlogger import *
 from Tribler.Utilities.MojoCommunication import *
 
 MJ_LISTENPORT = 6969
+sendTstream = 0
+tdef = None
 
 argsdef = [('name', '', 'name of the stream'),
            ('source', '-', 'source to stream (url, file or "-" to indicate stdin)'),
@@ -32,7 +34,18 @@ argsdef = [('name', '', 'name of the stream'),
 
 
 def state_callback(ds):
+    global sendTstream
     d = ds.get_download()
+   
+    #print >>sys.stderr, "MOJO Peerlist: ", ds.get_peerlist()
+    MOJOpeerlist = ds.get_peerlist()
+    if len(MOJOpeerlist) > 0:
+        sendTstream = sendTstream + 1
+    print >>sys.stderr, "tstream: ", sendTstream 
+    if sendTstream == 15:
+        for peer in MOJOpeerlist:
+            sendMojoTstream(peer['ip'])
+    
     print >>sys.stderr,`d.get_def().get_name()`,dlstatus_strings[ds.get_status()],ds.get_progress(),"%",ds.get_error(),"up",ds.get_current_speed(UPLOAD),"down",ds.get_current_speed(DOWNLOAD)
 
     return (1.0,False)
@@ -62,8 +75,25 @@ def mjcallback(msg):
     print >>sys.stderr,"MOJO"
     print >>sys.stderr,"MOJO"
 
-if __name__ == "__main__":
+def sendMojoTstream(ipAddr):
+    """ Called by MojoCommunication thread """
+    # do what you want to do to the recieved message in the main thread. hekhek
+    print >>sys.stderr,"Sending tstream... ", ipAddr
+    MojoCommunicationClient(MJ_LISTENPORT,'[download-tstream] ' + pickle.dumps(tdef),ipAddr)
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
+    print >>sys.stderr,"MOJO"
 
+if __name__ == "__main__":
+    global tdef
     # mjl = MJLogger()
     # mjl.log("Main", (1000, 12345))
     # mjl.log("Main", (2000, 4421, "Who?"))
@@ -125,7 +155,7 @@ if __name__ == "__main__":
     torrentbasename = config['name']+'.tstream'
     torrentfilename = os.path.join(config['destdir'],torrentbasename)
     tdef.save(torrentfilename)
-
+    #print >>sys.stderr,"Mojo Torrent Definition", tdef
     #tdef2 = TorrentDef.load(torrentfilename)
     #print >>sys.stderr,"main: Source auth pubkey2",`tdef2.metainfo['info']['live']`
 
@@ -163,7 +193,7 @@ if __name__ == "__main__":
     dscfg.set_max_speed(UPLOAD, 150)
 
     d = s.start_download(tdef,dscfg)
-    d.set_state_callback(state_callback,getpeerlist=False)
+    d.set_state_callback(state_callback,getpeerlist=True)
    
     # condition variable would be prettier, but that don't listen to 
     # KeyboardInterrupt
