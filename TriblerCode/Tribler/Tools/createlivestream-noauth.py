@@ -122,7 +122,7 @@ def mjcompute_criterion(ds):
                     x.update("AAC-"+str(mjpeer), float(x.data["AAC-"+str(mjpeer)][0]) + float(mjpeerup))
                 x.update("AAC-"+str(mjpeer), float(x.data["AAC-"+str(mjpeer)][0])/twin)
                 x.delete("AC-"+str(mjpeer))
-                print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
+                #print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
             x.update("TIME", time.time())
             aac = True
             
@@ -164,7 +164,7 @@ def mjcompute_criterion(ds):
             ranked = []
             for mjpeer in x.data["PEERS"]:
                 ranked.append(float(x.data["DT-"+str(mjpeer)][0]))
-                print >>sys.stderr, "[DT-%s]\t%s" % (mjpeer, x.data["DT-"+str(mjpeer)][0])
+                #print >>sys.stderr, "[DT-%s]\t%s" % (mjpeer, x.data["DT-"+str(mjpeer)][0])
             ranked = sorted(ranked, reverse=True)
 
             peerrank = []
@@ -196,7 +196,7 @@ def mjcompute_criterion(ds):
                 torank.append(math.fabs(ranked1[i] - ranked2[i]))
             finranked = sorted(torank)
 
-            print >>sys.stderr, "ranked1\t%s\nranked2\t%s" % (ranked1, ranked2) 
+            #print >>sys.stderr, "ranked1\t%s\nranked2\t%s" % (ranked1, ranked2) 
             aacranked = x.data["AAC-RANKED"]
             for i in range(0, peercount):
                 for j in range(0, len(torank)):

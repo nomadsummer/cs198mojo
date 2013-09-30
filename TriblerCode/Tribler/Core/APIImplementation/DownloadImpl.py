@@ -242,6 +242,7 @@ class DownloadImpl:
     #
     # Retrieving DownloadState
     #
+    # MENMA EX
     def set_state_callback(self,usercallback,getpeerlist=True):
         """ Called by any thread """
         self.dllock.acquire()
@@ -449,6 +450,7 @@ class DownloadImpl:
             self.dllock.release()
         
 
+    # MENMMA EX
     def network_get_persistent_state(self):
         """ Assume dllock already held """
         pstate = {}

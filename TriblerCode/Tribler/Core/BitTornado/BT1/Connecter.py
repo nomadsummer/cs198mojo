@@ -802,6 +802,7 @@ class Connecter:
         except:
             print_exc()
 
+    # MENMA EX
     def got_message(self, connection, message):
         # connection: Encrypter.Connection; c: Connecter.Connection
         c = self.connections[connection]    

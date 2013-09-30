@@ -180,6 +180,7 @@ class SingleDownload:
     #
     # For DownloadState
     #
+    # MENMA EX
     def get_stats(self,getpeerlist):
         logmsgs = self.logmsgs[:] # copy
         coopdl_helpers = []
