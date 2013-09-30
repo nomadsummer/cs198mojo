@@ -79,6 +79,7 @@ def sendMojoTstream(ipAddr):
     """ Called by MojoCommunication thread """
     # do what you want to do to the recieved message in the main thread. hekhek
     print >>sys.stderr,"Sending tstream... ", ipAddr
+    createTorrentDef()
     MojoCommunicationClient(MJ_LISTENPORT,'[download-tstream] ' + pickle.dumps(tdef),ipAddr)
     print >>sys.stderr,"MOJO"
     print >>sys.stderr,"MOJO"
@@ -97,7 +98,7 @@ def createTorrentDef():
     config['name'] = 'ejbc2.mpegts'
     config['piecesize'] = 32768
     config['destdir'] = '.'
-    config['source'] = 'http://localhost:8080/'
+    config['source'] = 'http://192.168.0.12:8081/'
     config['nuploads'] = 7
     config['duration'] = '1:00:00'
     config['bitrate'] = 65536
@@ -118,7 +119,7 @@ def createTorrentDef():
     # hint: to derive bitrate and duration from a file, use
     #    ffmpeg -i file.mpeg /dev/null
     tdef.create_live(config['name'],config['bitrate'],config['duration'],authcfg)
-    tdef.set_tracker(s.get_internal_tracker_url())
+    tdef.set_tracker('http://192.168.0.92:7764/announce/')
     tdef.set_piece_length(config['piecesize']) #TODO: auto based on bitrate?
     if len(config['thumb']) > 0:
         tdef.set_thumbnail(config['thumb'])
@@ -226,7 +227,7 @@ if __name__ == "__main__":
 
     dscfg.set_max_uploads(config['nuploads'])
     # MENMA EX
-    dscfg.set_max_speed(UPLOAD, 100)
+    dscfg.set_max_speed(UPLOAD, 1000000)
 
     d = s.start_download(tdef,dscfg)
     d.set_state_callback(state_callback,getpeerlist=True)
