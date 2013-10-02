@@ -100,9 +100,12 @@ if __name__ == "__main__":
     else:
         #tdef = TorrentDef.load('/tmp/bla3multi.torrent')
         tdef = TorrentDef.load('/tmp/bla.torrent')
-        
+    
+    # MENMA EX
     dcfg = DownloadStartupConfig()
     dcfg.set_max_rate_period(4.0)
+    #dcfg.set_max_speed(UPLOAD, 100)
+    #dcfg.set_max_speed(DOWNLOAD, 50)
     #dcfg.set_dest_dir('/arno/tmp/scandir')
     """
     dcfg.set_video_start_callback(vod_ready_callback)

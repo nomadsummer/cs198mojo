@@ -335,6 +335,9 @@ class PlayerApp(wx.App):
         dcfg.set_video_event_callback(self.sesscb_vod_event_callback)
         dcfg.set_video_events([VODEVENT_START,VODEVENT_PAUSE,VODEVENT_RESUME])
         dcfg.set_dest_dir(destdir)
+        # MENMA EX
+        dcfg.set_max_speed(UPLOAD, 100)
+        dcfg.set_max_speed(DOWNLOAD, 300)
         
         if tdef.is_multifile_torrent():
             dcfg.set_selected_files([dlfile])
@@ -620,7 +623,7 @@ class PlayerApp(wx.App):
             for dir in [UPLOAD,DOWNLOAD]:
                 totalspeed[dir] += ds2.get_current_speed(dir)
             totalhelping += ds2.get_num_peers()
-
+        
         # Report statistics on all downloads to research server, every 10 secs
         if haspeerlist:
             try:
@@ -658,7 +661,7 @@ class PlayerApp(wx.App):
                 print >>sys.stderr,"[MJ-VS-plydrp]\t%s\t%s\t%s" % (mjtime, mjvstats['played'], mjvstats['dropped'])
                 print >>sys.stderr,"[MJ-VS-ltst]\t%s\t%s\t%s" % (mjtime, mjvstats['late'], mjvstats['stall'])
             # TODO print >>sys.stderr, "[MJ-Report]\tStats:\t%s" % (self.reporter.report_stat(ds).stats)
-
+        
         # If we're done playing we can now restart any previous downloads to 
         # seed them.
         if playermode != DLSTATUS_SEEDING and ds.get_status() == DLSTATUS_SEEDING:

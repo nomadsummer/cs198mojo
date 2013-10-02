@@ -873,8 +873,8 @@ class Connecter:
             if c.download is not None:
                 c.download.got_have_bitfield(b)
         elif t == REQUEST:
-            print >>sys.stderr, "MOJO message: PoPOPOPO...Poker Face"
-            print >>sys.stderr,"connecter: Got REQUEST(",toint(message[1:5]),") from",connection.get_ip()
+            #print >>sys.stderr, "MOJO message: PoPOPOPO...Poker Face"
+            #print >>sys.stderr,"connecter: Got REQUEST(",toint(message[1:5]),") from",connection.get_ip()
             if len(message) != 13:
                 if DEBUG:
                     print >>sys.stderr,"Close on bad REQUEST: msg len"

@@ -65,7 +65,10 @@ public class StarStreamNodesObserver implements Control {
     super();
     doLog = Configuration.getBoolean(prefix + SEPARATOR + DO_LOG);
     if (doLog) {
-      logFile = new FileNameGenerator(Configuration.getString(prefix + SEPARATOR + LOG_FILE), ".log").nextCounterName();
+      String currentDir = System.getProperty("user.dir");
+      currentDir = currentDir + "\\ExperimentResults\\";
+      logFile = currentDir + CommonState.getNetworkSize() + "-" + (int) (((float) CommonState.getHelping()/(float) CommonState.getNetworkSize())*100) + ".log";
+      //logFile = new FileNameGenerator(Configuration.getString(prefix + SEPARATOR + LOG_FILE), ".log").nextCounterName();
       stream = new PrintStream(new FileOutputStream(logFile));
     }
   }
@@ -211,7 +214,8 @@ public class StarStreamNodesObserver implements Control {
       StarStreamNode node = (StarStreamNode) Network.get(i);
       int pChunks = node.getChunksReceivedFromPastry();
       int sChunks = node.getChunksReceivedFromStarStream();
-      double res = pChunks * 100 / (pChunks+sChunks);
+      double res = 0;
+      if(pChunks+sChunks > 0) res = pChunks * 100 / (pChunks+sChunks);
       stats.add(res);
     }
     log("Avg % of chunks received by Pastry: "+stats.getAverage());
@@ -226,7 +230,8 @@ public class StarStreamNodesObserver implements Control {
       StarStreamNode node = (StarStreamNode) Network.get(i);
       int pChunks = node.getChunksReceivedFromPastry();
       int sChunks = node.getChunksReceivedFromStarStream();
-      double res = sChunks * 100 / (pChunks+sChunks);
+      double res = 0;
+      if(pChunks+sChunks > 0) res = sChunks * 100 / (pChunks+sChunks);
       stats.add(res);
     }
     log("Avg % of chunks received by StarStream: "+stats.getAverage());
@@ -265,22 +270,45 @@ public class StarStreamNodesObserver implements Control {
     int nodesWithUncompletePlaybacks = 0;
     int helping = 0;
     if(CommonState.getTime() >= ((StarStreamNode) Network.get(0)).getStarStreamProtocol().getTimeIn() || CommonState.getTime() <= (((StarStreamNode) Network.get(0)).getStarStreamProtocol().getTimeIn() + ((StarStreamNode) Network.get(0)).getStarStreamProtocol().getTimeStay())){
-    	helping = ((StarStreamNode) Network.get(0)).getStarStreamProtocol().numHelpingPeers();
+    	helping = CommonState.getHelping();
     }
-    for (int i = 0; i < dim - helping; i++) {
-      StarStreamNode node = (StarStreamNode) Network.get(i);
-      List<Integer> missed = node.getUnplayedChunks();
-      if(missed.size()>0)
-        nodesWithUncompletePlaybacks++;
-      stats.add(node.getPercentageOfUnplayedChunks());
-      for(int id : missed) {
-        Integer nodesCount = chunksTmpMap.get(id);
-        if(nodesCount==null) {
-          chunksTmpMap.put(id, 1);
-        } else {
-          chunksTmpMap.put(id, ++nodesCount);
-        }
-      }
+    if (CommonState.getHelping() < 0){
+    	System.err.println("\nHELPING:"+ helping);
+    	System.err.println("DIM:"+ dim);
+    	for (int i = 0; i < dim; i++) {
+  	      StarStreamNode node = (StarStreamNode) Network.get(i);
+  	      List<Integer> missed = node.getUnplayedChunks();
+  	      if(missed.size()>0)
+  	        nodesWithUncompletePlaybacks++;
+  	      stats.add(node.getPercentageOfUnplayedChunks());
+  	      for(int id : missed) {
+  	        Integer nodesCount = chunksTmpMap.get(id);
+  	        if(nodesCount==null) {
+  	          chunksTmpMap.put(id, 1);
+  	        } else {
+  	          chunksTmpMap.put(id, ++nodesCount);
+  	        }
+  	      }
+  	    }
+    }
+    else{
+    	System.err.println("\nHELPING:"+ helping);
+	    for (int i = 0; i < dim - helping; i++) {
+	      StarStreamNode node = (StarStreamNode) Network.get(i);
+	      List<Integer> missed = node.getUnplayedChunks();
+	      if(missed.size()>0)
+	        nodesWithUncompletePlaybacks++;
+	      stats.add(node.getPercentageOfUnplayedChunks());
+	      //System.out.println("STRING");
+	      for(int id : missed) {
+	        Integer nodesCount = chunksTmpMap.get(id);
+	        if(nodesCount==null) {
+	          chunksTmpMap.put(id, 1);
+	        } else {
+	          chunksTmpMap.put(id, ++nodesCount);
+	        }
+	      }
+	    }
     }
     log("Nodes with incomplete playbacks: "+nodesWithUncompletePlaybacks);
     log("Avg % of not played chunks: "+stats.getAverage());

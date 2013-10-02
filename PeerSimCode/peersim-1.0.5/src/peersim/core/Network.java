@@ -116,7 +116,9 @@ public static void reset() {
 		node = null;
 	}
 	
-	len = Configuration.getInt(PAR_SIZE);
+	// [MOJO]
+	//len = Configuration.getInt(PAR_SIZE);
+	len = CommonState.getNetworkSize();
 	int maxlen = Configuration.getInt(PAR_MAXSIZE,len);
 	if( maxlen < len ) throw new IllegalArgumentException(
 			PAR_MAXSIZE+" is less than "+PAR_SIZE);

@@ -96,6 +96,10 @@ def mjlog_data(ds):
 
         if(x.is_existing("PEERS")):
             print >>sys.stderr, "[MJ-Log-Peers]\t%s" % (x.data["PEERS"])
+            
+        for mjpeer in mjpeers:
+            print >>sys.stderr, "[MJ-Log-Peers-IP]\t%s" % (mjpeer['ip'])
+
        
 def mjcompute_criterion(ds):
     mjpeers = ds.get_peerlist()
@@ -103,12 +107,13 @@ def mjcompute_criterion(ds):
     #CRI
     if(x.is_existing("PEERS")):
         totalUpload = ds.get_current_speed(UPLOAD)
-        for mjpeer in x.data["PEERS"]:
-            totalUpload = totalUpload + float(x.data[mjpeer][0])
+        if(peercount > 0):
+            for mjpeer in x.data["PEERS"]:
+                totalUpload = totalUpload + float(x.data[mjpeer][0])
 
-        peercount = len(x.data["PEERS"])
-        CRI = totalUpload/(peercount*512)
-        print >>sys.stderr,"[MJ-CRI-bit512]\t%f" % (CRI)
+            peercount = len(x.data["PEERS"])
+            CRI = totalUpload/(peercount*512)
+            print >>sys.stderr,"[MJ-CRI-bit512]\t%f" % (CRI)
 
         #AC
         #add boundary for observing window (wrt time) for each peer
@@ -125,6 +130,11 @@ def mjcompute_criterion(ds):
                 #print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
             x.update("TIME", time.time())
             aac = True
+        else:
+            if(x.is_existing("AACFLAG")):
+                x.update("AACFLAG", False)
+            else:
+                x.log("AACFLAG", False)
             
         if(x.is_existing("AACFLAG")):
             if(aac):
@@ -388,7 +398,7 @@ if __name__ == "__main__":
 
     dscfg.set_max_uploads(config['nuploads'])
     # MENMA EX
-    dscfg.set_max_speed(UPLOAD, 90)
+    dscfg.set_max_speed(UPLOAD, 200)
 
     d = s.start_download(tdef,dscfg)
     d.set_state_callback(state_callback,getpeerlist=True)

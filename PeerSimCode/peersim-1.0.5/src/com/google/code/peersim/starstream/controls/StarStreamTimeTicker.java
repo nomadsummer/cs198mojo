@@ -61,28 +61,48 @@ public class StarStreamTimeTicker implements Control {
 			//System.err.println("Current time: " + CommonState.getTime() + " | Size: " + Network.size());
 		
 		StarStreamNode n = (StarStreamNode) Network.get(0);
-
-		if (CommonState.getTime() == n.getStarStreamProtocol().getTimeIn()) {
-			for (int i = 0; i < n.getStarStreamProtocol().numHelpingPeers(); i++) {
-				n = (StarStreamNode) (Network.get(i)).clone();
-				Network.add(n);
-				n.getStarStreamProtocol().AddStreams();
-				//n.getBandwidth();
-
-				Object[] inits = Configuration.getInstanceArray(EDSimulator.PAR_INIT);
-				for (int o = 0; o < inits.length; o++)
-					((NodeInitializer) inits[o]).initialize(n);
-				//System.err.println("Current time: " + CommonState.getTime() + " | Size: " + Network.size());
+		int numHelping = CommonState.getHelping();
+		
+		if (numHelping < 0){
+			if (CommonState.getTime() == n.getStarStreamProtocol().getTimeIn()) {
+				for (int i = 0; i < Math.abs(numHelping); i++) {
+					StarStreamNode node = (StarStreamNode) Network.get(i);
+					node.getStarStreamProtocol().RemoveStreams();
+					//n.getBandwidth();
+				}
+			}
+			
+			if (CommonState.getTime() == (n.getStarStreamProtocol().getTimeIn() + n.getStarStreamProtocol().getTimeStay())) {
+				for (int i = 0; i < Math.abs(numHelping); i++) {
+					StarStreamNode node = (StarStreamNode) Network.get(i);
+					node.getStarStreamProtocol().AddStreams();
+					//n.getBandwidth();
+				}
 			}
 		}
+		else{
+			if (CommonState.getTime() == n.getStarStreamProtocol().getTimeIn()) {
+				for (int i = 0; i < numHelping; i++) {
+					n = (StarStreamNode) (Network.get(i)).clone();
+					Network.add(n);
+					n.getStarStreamProtocol().AddStreams();
+					//n.getBandwidth();
 
-		if (CommonState.getTime() == (n.getStarStreamProtocol().getTimeIn() + n.getStarStreamProtocol().getTimeStay())) {
-			for (int i = 0; i < n.getStarStreamProtocol().numHelpingPeers(); i++) {
-				n = (StarStreamNode) Network.remove();
-				n.getStarStreamProtocol().RemoveStreams();
-				//n.getBandwidth();
-				
-				//System.err.println("Current time: " + CommonState.getTime() + " | Size: " + Network.size());
+					Object[] inits = Configuration.getInstanceArray(EDSimulator.PAR_INIT);
+					for (int o = 0; o < inits.length; o++)
+						((NodeInitializer) inits[o]).initialize(n);
+					//System.err.println("Current time: " + CommonState.getTime() + " | Size: " + Network.size());
+				}
+			}
+
+			if (CommonState.getTime() == (n.getStarStreamProtocol().getTimeIn() + n.getStarStreamProtocol().getTimeStay())) {
+				for (int i = 0; i < numHelping; i++) {
+					n = (StarStreamNode) Network.remove();
+					n.getStarStreamProtocol().RemoveStreams();
+					//n.getBandwidth();
+					
+					//System.err.println("Current time: " + CommonState.getTime() + " | Size: " + Network.size());
+				}
 			}
 		}
 

@@ -154,7 +154,7 @@ public class StarStreamProtocol implements EDProtocol, CDProtocol, PastryProtoco
   private static int upStreamAdd = 0;
   private int downStreamPerPeer;
   private int upStreamPerPeer;
-  private int helpingPeers;
+  //private int helpingPeers;
   private double aggressionFactor;
   private double eqnReliance;
   private double defaultResourceFactor;
@@ -195,12 +195,12 @@ public class StarStreamProtocol implements EDProtocol, CDProtocol, PastryProtoco
     if (corruptedMessages) {
       corruptedMessagesProbability = (float) Configuration.getDouble(prefix + SEPARATOR + CORRUPTED_MESSAGES_PROB);
     }
-    downStream = Configuration.getInt(prefix + SEPARATOR + "downStream");
-    upStream = Configuration.getInt(prefix + SEPARATOR + "upStream");
+    downStream = Configuration.getInt(prefix + SEPARATOR + "downStream") * CommonState.getNetworkSize();
+    upStream = Configuration.getInt(prefix + SEPARATOR + "upStream") * CommonState.getNetworkSize();
     // [MOJO]
     downStreamPerPeer = Configuration.getInt("protocol.mojocollab.downStreamPerPeer");
     upStreamPerPeer = Configuration.getInt("protocol.mojocollab.upStreamPerPeer");
-    helpingPeers = Configuration.getInt("protocol.mojocollab.helpingPeers");
+    //helpingPeers = Configuration.getInt("protocol.mojocollab.helpingPeers");
     timeIn = Configuration.getInt("protocol.mojocollab.timeIn");
     timeStay = Configuration.getInt("protocol.mojocollab.timeStay");
     aggressionFactor = Configuration.getDouble("protocol.mojocollab.aggressionFactor");
@@ -209,7 +209,7 @@ public class StarStreamProtocol implements EDProtocol, CDProtocol, PastryProtoco
     System.err.println("Down: "+ downStream + " | Up: "+ upStream);
     System.err.println("DownPerPeer: "+ downStreamPerPeer + " | UpPerPeer: "+ upStreamPerPeer);
     System.err.println("AggressionFactor: "+ aggressionFactor + " | EquationReliance: "+ eqnReliance);
-    System.err.println("DefaultResourceFactor: "+ defaultResourceFactor + " | HelpingPeers: "+ helpingPeers);
+    System.err.println("DefaultResourceFactor: "+ defaultResourceFactor + " | HelpingPeers: "+ CommonState.getHelping());
     System.err.println("TimeIn: "+ timeIn + " | TimeStay: "+ timeStay);
     // [MOJO]
     
@@ -265,9 +265,9 @@ public class StarStreamProtocol implements EDProtocol, CDProtocol, PastryProtoco
   }
   
   //[MOJO]
-  public int numHelpingPeers(){
+  /*public int numHelpingPeers(){
 	  return helpingPeers;
-  }
+  }*/
   
   //[MOJO]
   public int getTimeIn(){

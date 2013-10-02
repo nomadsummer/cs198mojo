@@ -57,6 +57,11 @@ public static final int PHASE_UNKNOWN = 0;
 // ======================= fields ==================================
 // =================================================================
 
+// [MOJO]
+private static int expnum = 0;
+private static int networkSize = 0;
+private static int chunkTTL = 0;
+private static int helping = 0;
 /**
  * Current time. Note that this value is simulator independent, all simulation
  * models have a notion related to time. For example, in the cycle based model,
@@ -141,6 +146,47 @@ protected CommonState() {}
 // ======================= methods =================================
 // =================================================================
 
+// [MOJO]
+
+public static void setExpNum(int e)
+{
+	expnum = e;
+}
+
+public static int getExpNum()
+{
+	return expnum;
+}
+
+public static void setHelping(double h)
+{
+	helping = (int) h;
+}
+
+public static int getHelping()
+{
+	return helping;
+}
+
+public static void setNetworkSize(int s)
+{
+	networkSize = s;
+}
+
+public static int getNetworkSize()
+{
+	return networkSize;
+}
+
+public static void setChunkTTL(int c)
+{
+	chunkTTL = c;
+}
+
+public static int getChunkTTL()
+{
+	return chunkTTL;
+}
 
 /**
  * Returns current time. In event-driven simulations, returns the current
