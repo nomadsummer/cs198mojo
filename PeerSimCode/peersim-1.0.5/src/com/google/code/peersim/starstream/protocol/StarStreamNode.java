@@ -97,7 +97,8 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
     // initialized by the PeerSim runtime, so this is the right time for takeing
     // references to Pastry and *-Stream and tight the two instance enabling the
     // latter to receive notifications from the former
-    MIN_CONTIGUOUS_CHUNKS_IN_BUFFER = Configuration.getInt(prefix + SEPARATOR + "minContiguousChunksInBuffer");
+    //MIN_CONTIGUOUS_CHUNKS_IN_BUFFER = Configuration.getInt(prefix + SEPARATOR + "minContiguousChunksInBuffer");
+    MIN_CONTIGUOUS_CHUNKS_IN_BUFFER = 0;
 //    START_STREAMING_TIME = Configuration.getLong(prefix + SEPARATOR + "startStreaming");
     START_STREAMING_TIMEOUT = (int) Math.ceil(Configuration.getDouble(prefix + SEPARATOR + "startStreamingTimeout"));
     WAIT_BETWEEN_FORCES = Configuration.getInt(prefix + SEPARATOR + "waitBetweenForces");
@@ -469,7 +470,6 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
 
   private void startPlayBack() {
     player.start();
-    //writer.println("[MOJO] "+ this.getID() +" StartUpDelay: "+ player.getWhenPlaybackStarted());
     //writer.println("[MOJO] "+ this.getID() +" StartUpDelay: "+ player.getWhenPlaybackStarted());
     
     log("[*-STREAM] node " + this.getPastryId() + " has started playback");

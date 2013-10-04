@@ -242,11 +242,15 @@ public class StarStreamNodesObserver implements Control {
     stats.reset();
 
     // stats of perceived chunk delivery times
+    double avgpb = 0;
     for (int i = 0; i < dim; i++) {
       StarStreamNode node = (StarStreamNode) Network.get(i);
-      log("[MOJO] playback started:" + node.getWhenPlaybackStarted() + " unplayedChunks: " + node.getPercentageOfUnplayedChunks() + " "+ node.getUnplayedChunks() + " chunk delivery-time:  " + node.getID() + " avg: " + node.getPerceivedAvgChunkDeliveryTime() + " max: " + node.getPerceivedMaxChunkDeliveryTime());
+      //log("[MOJO] playback started:" + node.getWhenPlaybackStarted() + " unplayedChunks: " + node.getPercentageOfUnplayedChunks() + " "+ node.getUnplayedChunks() + " chunk delivery-time:  " + node.getID() + " avg: " + node.getPerceivedAvgChunkDeliveryTime() + " max: " + node.getPerceivedMaxChunkDeliveryTime());
+      //log("[MOJO] playback started:" + node.getWhenPlaybackStarted());
+      avgpb += node.getWhenPlaybackStarted();
       stats.add(node.getPerceivedAvgChunkDeliveryTime());
     }
+    log("[MOJO] avg playback start:" + avgpb/dim);
     log("Perceived avg chunk delivery-time: "+stats.getAverage());
     log("Min of perceived avg chunk delivery-time: "+stats.getMin());
     log("Max of perceived avg chunk delivery-time: "+stats.getMax());
