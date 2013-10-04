@@ -61,12 +61,12 @@ public class StarStreamTimeTicker implements Control {
 
 		if (CommonState.getTime() == n.getStarStreamProtocol().getTimeIn()) {
 			for (int i = 0; i < Math.abs(numHelping); i++) {
-				StarStreamNode node = (StarStreamNode) Network.get(i);
 				if (numHelping <= 0) {
-					n = (StarStreamNode) (Network.get(i)).clone();
-					Network.add(n);
+					StarStreamNode node = (StarStreamNode) Network.get(i);
 					node.getStarStreamProtocol().RemoveStreams();
 				} else {
+					n = (StarStreamNode) (Network.get(i)).clone();
+					Network.add(n);
 					n.getStarStreamProtocol().AddStreams();
 					
 					Object[] inits = Configuration
@@ -77,8 +77,7 @@ public class StarStreamTimeTicker implements Control {
 			}
 		}
 
-		if (CommonState.getTime() == (n.getStarStreamProtocol().getTimeIn() + n
-				.getStarStreamProtocol().getTimeStay())) {
+		if (CommonState.getTime() == (n.getStarStreamProtocol().getTimeIn() + n.getStarStreamProtocol().getTimeStay())) {
 			for (int i = 0; i < Math.abs(numHelping); i++) {
 				if (numHelping < 0) {
 					StarStreamNode node = (StarStreamNode) Network.get(i);
