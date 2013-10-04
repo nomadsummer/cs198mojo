@@ -195,7 +195,6 @@ public class Simulator {
 				// [MOJO]
 				for (int j = 0; j < collabexps+1; j++) {
 					CommonState.setHelping((((float) helping / 100) * CommonState.getNetworkSize()) + (j * (collabint * CommonState.getNetworkSize())));
-					System.err.println(CommonState.getHelping());
 					switch (SIMID) {
 					case CDSIM:
 						CDSimulator.nextExperiment();

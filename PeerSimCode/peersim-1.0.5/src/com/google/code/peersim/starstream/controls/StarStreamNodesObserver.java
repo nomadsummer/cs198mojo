@@ -70,8 +70,6 @@ public class StarStreamNodesObserver implements Control {
 			String currentDir = System.getProperty("user.dir");
 			currentDir = currentDir + "\\ExperimentResults\\";
 			logFile = currentDir + CommonState.getNetworkSize() + "-" + (int) (((float) CommonState.getHelping() / (float) CommonState.getNetworkSize()) * 100) + ".log";
-			// logFile = new FileNameGenerator(Configuration.getString(prefix +
-			// SEPARATOR + LOG_FILE), ".log").nextCounterName();
 			stream = new PrintStream(new FileOutputStream(logFile));
 		}
 	}
@@ -104,15 +102,15 @@ public class StarStreamNodesObserver implements Control {
 		int helping = CommonState.getHelping() <= 0 ? 0 : CommonState.getHelping();
 
 		// total chunks
-		log("Total chunks: " + StarStreamSource.getTotalChunks());
-
+		/*log("Total chunks: " + StarStreamSource.getTotalChunks());
+		*/
 		// nodes x chunk
-		log("Nodes x chunk: " + StarStreamSource.getNodesPerChunk());
-
+		/*log("Nodes x chunk: " + StarStreamSource.getNodesPerChunk());
+		*/
 		// total nodes
 		int dim = Network.size();
-		log("Total nodes: " + dim);
-
+		/*log("Total nodes: " + dim);
+		*/
 		// active nodes
 		int activeNodes = 0;
 		for (int i = helping; i < dim; i++) {
@@ -120,8 +118,8 @@ public class StarStreamNodesObserver implements Control {
 			if (node.isUp())
 				activeNodes++;
 		}
-		log("Active nodes: " + activeNodes);
-
+		/*log("Active nodes: " + activeNodes);
+		*/
 		// playback started
 		int nodesThatStartedPlayback = 0;
 		List<PastryId> nodesThatDidNotStartedPlayback = new LinkedList<PastryId>();
@@ -132,9 +130,9 @@ public class StarStreamNodesObserver implements Control {
 			else
 				nodesThatDidNotStartedPlayback.add(node.getPastryId());
 		}
-		log("Started playbacks: " + nodesThatStartedPlayback);
+		/*log("Started playbacks: " + nodesThatStartedPlayback);
 		log("Not started playbacks node-ids: " + nodesThatDidNotStartedPlayback);
-
+		*/
 		// start-streaming time window
 		long lastPlaybackStart = 0;
 		long firstPlaybackStart = Long.MAX_VALUE;
@@ -160,8 +158,8 @@ public class StarStreamNodesObserver implements Control {
 				chunksTmpMap.put(missingChunks, ++nodesCount);
 			}
 		}
-		log("Missing chunks distribution [missed-chunks/nodes]: " + chunksTmpMap);
-		chunksTmpMap.clear();
+		/*log("Missing chunks distribution [missed-chunks/nodes]: " + chunksTmpMap);
+		*/chunksTmpMap.clear();
 
 		// TTL-rejected chunks stats
 		for (int i = helping; i < dim; i++) {
@@ -176,8 +174,8 @@ public class StarStreamNodesObserver implements Control {
 				}
 			}
 		}
-		log("Rejected chunks for ttl expiration [chunk-id/nodes]: " + chunksTmpMap.size() + " " + chunksTmpMap);
-		chunksTmpMap.clear();
+		/*log("Rejected chunks for ttl expiration [chunk-id/nodes]: " + chunksTmpMap.size() + " " + chunksTmpMap);
+		*/chunksTmpMap.clear();
 
 		// capacity-rejected chunks stats
 		for (int i = helping; i < dim; i++) {
@@ -192,28 +190,28 @@ public class StarStreamNodesObserver implements Control {
 				}
 			}
 		}
-		log("Rejected chunks for capacity limit [chunk-id/nodes]: " + chunksTmpMap.size() + " " + chunksTmpMap);
-		chunksTmpMap.clear();
+		/*log("Rejected chunks for capacity limit [chunk-id/nodes]: " + chunksTmpMap.size() + " " + chunksTmpMap);
+		*/chunksTmpMap.clear();
 
 		// chunks not sent due to max-retries count
 		for (int i = helping; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
 			stats.add(node.getUnsentChunkMsgsDueToTimeout());
 		}
-		log("Avg # of unsent chunk for max-retries: " + stats.getAverage());
+		/*log("Avg # of unsent chunk for max-retries: " + stats.getAverage());
 		log("Min # of unsent chunk for max-retries: " + stats.getMin());
 		log("Max # of unsent chunk for max-retries: " + stats.getMax());
-		stats.reset();
+		*/stats.reset();
 
 		// chunk requests not sent due to max-retries count
 		for (int i = helping; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
 			stats.add(node.getUnsentChunkReqDueToTimeout());
 		}
-		log("Avg # of unsent chunk-reqs for max-retries: " + stats.getAverage());
+		/*log("Avg # of unsent chunk-reqs for max-retries: " + stats.getAverage());
 		log("Min # of unsent chunk-reqs for max-retries: " + stats.getMin());
 		log("Max # of unsent chunk-reqs for max-retries: " + stats.getMax());
-		stats.reset();
+		*/stats.reset();
 
 		// chunk received by means of Pastry
 		for (int i = helping; i < dim; i++) {
@@ -225,12 +223,12 @@ public class StarStreamNodesObserver implements Control {
 				res = pChunks * 100 / (pChunks + sChunks);
 			stats.add(res);
 		}
-		log("Avg % of chunks received by Pastry: " + stats.getAverage());
+		/*log("Avg % of chunks received by Pastry: " + stats.getAverage());
 		log("Min % of chunks received by Pastry: " + stats.getMin());
 		log("Max % of chunks received by Pastry: " + stats.getMax());
 		log("StD of chunks received by Pastry: " + stats.getStD());
 		log("Var of chunks received by Pastry: " + stats.getVar());
-		stats.reset();
+		*/stats.reset();
 
 		// chunk received by means of StarStream
 		for (int i = helping; i < dim; i++) {
@@ -242,12 +240,12 @@ public class StarStreamNodesObserver implements Control {
 				res = sChunks * 100 / (pChunks + sChunks);
 			stats.add(res);
 		}
-		log("Avg % of chunks received by StarStream: " + stats.getAverage());
+		/*log("Avg % of chunks received by StarStream: " + stats.getAverage());
 		log("Min % of chunks received by StarStream: " + stats.getMin());
 		log("Max % of chunks received by StarStream: " + stats.getMax());
 		log("StD of chunks received by StarStream: " + stats.getStD());
 		log("Var of chunks received by StarStream: " + stats.getVar());
-		stats.reset();
+		*/stats.reset();
 
 		// stats of perceived chunk delivery times
 		double avgpb = 0;
@@ -258,26 +256,26 @@ public class StarStreamNodesObserver implements Control {
 			avgpb += node.getWhenPlaybackStarted();
 			stats.add(node.getPerceivedAvgChunkDeliveryTime());
 		}
-		log("[MOJO] avg playback start:" + avgpb / (dim - helping));
-
-		log("Perceived avg chunk delivery-time: " + stats.getAverage());
-		log("Min of perceived avg chunk delivery-time: " + stats.getMin());
+		/*log("[MOJO] Startup Delay: " + avgpb / (dim - helping));
+		*/log("[MOJO] Latency: " + stats.getAverage());
+		//log("Perceived avg chunk delivery-time: " + stats.getAverage());
+		/*log("Min of perceived avg chunk delivery-time: " + stats.getMin());
 		log("Max of perceived avg chunk delivery-time: " + stats.getMax());
 		log("Variance of perceived avg chunk delivery-time: " + stats.getVar());
 		log("StD of perceived avg chunk delivery-time: " + stats.getStD());
-
+		*/
 		// avg sent messages per node
 		stats.reset();
 		for (int i = helping; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
 			stats.add(node.getSentMessages());
 		}
-		log("Avg messages sent per node: " + stats.getAverage());
+		/*log("Avg messages sent per node: " + stats.getAverage());
 		log("Min messages sent per node: " + stats.getMin());
 		log("Max messages sent per node: " + stats.getMax());
 		log("Variance of messages sent per node: " + stats.getVar());
 		log("StD of messages sent per node: " + stats.getStD());
-		stats.reset();
+		*/stats.reset();
 
 		// players statistics
 		int nodesWithUncompletePlaybacks = 0;
@@ -290,7 +288,7 @@ public class StarStreamNodesObserver implements Control {
 		 * Network.get(0)).getStarStreamProtocol().getTimeStay())) { helping =
 		 * CommonState.getHelping(); }
 		 */
-		System.err.println("\nHELPING:" + helping);
+		System.err.println("\nHELPING:" + CommonState.getHelping());
 		System.err.println("DIM:" + dim);
 		for (int i = helping; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
@@ -308,12 +306,13 @@ public class StarStreamNodesObserver implements Control {
 			}
 		}
 
-		log("Nodes with incomplete playbacks: " + nodesWithUncompletePlaybacks);
-		log("Avg % of not played chunks: " + stats.getAverage());
-		log("Min % of not played chunks: " + stats.getMin());
+		/*log("Nodes with incomplete playbacks: " + nodesWithUncompletePlaybacks);
+		*/log("[MOJO] Packet Loss: " + stats.getAverage());
+		//log("Avg % of not played chunks: " + stats.getAverage());
+		/*log("Min % of not played chunks: " + stats.getMin());
 		log("Max % of not played chunks: " + stats.getMax());
 		log("Not played chunks [chunk-id/nodes]: " + chunksTmpMap);
-		chunksTmpMap.clear();
+		*/chunksTmpMap.clear();
 		stats.reset();
 
 		// distances between not played chunks
@@ -332,11 +331,11 @@ public class StarStreamNodesObserver implements Control {
 			}
 			_stats.reset();
 		}
-		log("Avg distance between not played chunks: " + stats.getAverage());
+		/*log("Avg distance between not played chunks: " + stats.getAverage());
 		log("Min distance between not played chunks: " + stats.getMin());
 		log("Max distance between not played chunks: " + stats.getMax());
 		log("");
-		stats.reset();
+		*/stats.reset();
 
 		// players detail
 		/*

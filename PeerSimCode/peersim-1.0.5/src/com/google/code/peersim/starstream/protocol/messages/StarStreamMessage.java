@@ -46,7 +46,8 @@ public abstract class StarStreamMessage implements Comparable<StarStreamMessage>
        */
       @Override
       public int getEstimatedBandwidth() {
-        return 1024 + 180*8;
+        //return 1024 + 180*8;
+    	return 1000;
       }
 
       /**
@@ -68,7 +69,8 @@ public abstract class StarStreamMessage implements Comparable<StarStreamMessage>
        */
       @Override
       public int getEstimatedBandwidth() {
-        return 1024;
+        //return 1024;
+    	return 600;
       }
 
       /**
@@ -90,7 +92,8 @@ public abstract class StarStreamMessage implements Comparable<StarStreamMessage>
        */
       @Override
       public int getEstimatedBandwidth() {
-        return 1024;
+    	return 600;
+        //return 1024;
       }
 
       /**
@@ -113,7 +116,8 @@ public abstract class StarStreamMessage implements Comparable<StarStreamMessage>
        */
       @Override
       public int getEstimatedBandwidth() {
-        return 1024;
+        //return 1024;
+    	return 600;
       }
 
       /**
@@ -135,7 +139,8 @@ public abstract class StarStreamMessage implements Comparable<StarStreamMessage>
        */
       @Override
       public int getEstimatedBandwidth() {
-        return 1024;
+        //return 1024;
+    	return 600;
       }
 
       /**
@@ -157,7 +162,8 @@ public abstract class StarStreamMessage implements Comparable<StarStreamMessage>
        */
       @Override
       public int getEstimatedBandwidth() {
-        return 1024;
+        //return 1024;
+    	return 600;
       }
 
       /**

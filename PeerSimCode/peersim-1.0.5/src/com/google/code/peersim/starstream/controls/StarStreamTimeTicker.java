@@ -100,7 +100,6 @@ public class StarStreamTimeTicker implements Control {
 					n = (StarStreamNode) Network.remove();
 					n.getStarStreamProtocol().RemoveStreams();
 					//n.getBandwidth();
-					
 					//System.err.println("Current time: " + CommonState.getTime() + " | Size: " + Network.size());
 				}
 			}

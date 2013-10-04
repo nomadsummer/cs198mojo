@@ -470,7 +470,6 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
 
   private void startPlayBack() {
     player.start();
-    //writer.println("[MOJO] "+ this.getID() +" StartUpDelay: "+ player.getWhenPlaybackStarted());
     
     log("[*-STREAM] node " + this.getPastryId() + " has started playback");
   }

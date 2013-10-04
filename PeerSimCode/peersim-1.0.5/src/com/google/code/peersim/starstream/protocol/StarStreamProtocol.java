@@ -254,14 +254,14 @@ public class StarStreamProtocol implements EDProtocol, CDProtocol, PastryProtoco
   
   //[MOJO]
   public void AddStreams(){
-	  upStreamAdd += (upStreamPerPeer * defaultResourceFactor);
-	  downStreamAdd += (downStreamPerPeer * defaultResourceFactor);
+	  upStreamAdd += (upStreamPerPeer * (aggressionFactor*eqnReliance*defaultResourceFactor));
+	  downStreamAdd += (downStreamPerPeer * (aggressionFactor*eqnReliance*defaultResourceFactor));
   }
   
   //[MOJO]
   public void RemoveStreams(){
-	  upStreamAdd -= (upStreamPerPeer * defaultResourceFactor);
-	  downStreamAdd -= (downStreamPerPeer * defaultResourceFactor);
+	  upStreamAdd -= (upStreamPerPeer * (aggressionFactor*eqnReliance*defaultResourceFactor));
+	  downStreamAdd -= (downStreamPerPeer * (aggressionFactor*eqnReliance*defaultResourceFactor));
   }
   
   //[MOJO]
