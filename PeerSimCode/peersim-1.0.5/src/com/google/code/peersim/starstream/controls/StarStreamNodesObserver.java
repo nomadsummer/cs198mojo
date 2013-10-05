@@ -108,12 +108,13 @@ public class StarStreamNodesObserver implements Control {
 		for (int i = 0; i < Network.size(); i++) {
 			StarStreamNode n = (StarStreamNode) (Network.get(i));
 			// System.out.println("PID "+n.getPastryPID());
-			if(!n.isHelping()){
-				System.out.println("ID "+n.getID());
-			}
+			/*if (!n.isHelping()) {
+				System.out.println("ID " + n.getID());
+			}*/
 		}
 
-		int helping = CommonState.getHelping() <= 0 ? 0 : CommonState.getHelping();
+		int helping = CommonState.getHelping() <= 0 ? 0 : CommonState
+				.getHelping();
 
 		// total chunks
 		log("Total chunks: " + StarStreamSource.getTotalChunks());

@@ -250,6 +250,7 @@ public class StarStreamSource implements Control, OverlayBuilderListenerIfc {
 	 */
 	@Override
 	public boolean execute() {
+		// [MOJO]
 		boolean stop = false;
 		if (enabled) {
 			if (isTimeForChunk()) {
@@ -274,8 +275,8 @@ public class StarStreamSource implements Control, OverlayBuilderListenerIfc {
 	public void overlayBuilt() {
 		if (!enabled) {
 			// [MOJO]
-			//start = CommonState.getTime() * 2;
-			start = CommonState.getTime() * 5;
+			start = CommonState.getTime() * 2;
+			//start = CommonState.getTime() * 5;
 			int dim = Network.size();
 			for (int i = 0; i < dim; i++) {
 				((StarStreamNode) Network.get(i)).streamingStartsAt(start);
@@ -384,6 +385,7 @@ public class StarStreamSource implements Control, OverlayBuilderListenerIfc {
 	 * @return The chunks
 	 */
 	private Set<Chunk<?>> produceChunks(UUID sessionId, int n) {
+		// [MOJO]
 		Set<Chunk<?>> batch = new HashSet<Chunk<?>>();
 		for (int i = 0; i < n; i++) {
 			if (createdChunksCounter < chunks) {

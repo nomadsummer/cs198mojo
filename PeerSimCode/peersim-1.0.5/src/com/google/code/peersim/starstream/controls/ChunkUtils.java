@@ -63,6 +63,7 @@ public class ChunkUtils {
    * @param seqNumber The chunk sequence number
    * @return The new chunk
    */
+  // [MOJO]
   static <T> Chunk<T> createChunk(T data, UUID sid, int seqNumber, int ttl) {
     // TODO multisession minSeqNum
     minSeqNumber = Math.min(seqNumber, minSeqNumber);
@@ -146,7 +147,8 @@ public class ChunkUtils {
 
     private final UUID sessionId;
     private final int sequenceId;
-    private final long timeStamp;
+    // [MOJO]
+    private long timeStamp;
     private final int ttl;
 
     /**
@@ -155,12 +157,14 @@ public class ChunkUtils {
      * @param sid The streaming-session identifier
      * @param seq The sequence number
      */
+    // [MOJO]
     private Chunk(T chunk, UUID sid, int seq, int ttl) {
       super(chunk);
       sessionId = sid;
       sequenceId = seq;
       timeStamp = CommonState.getTime();
-      this.ttl = ttl;
+      //this.ttl = ttl;
+      this.ttl = CommonState.getChunkTTL();
     }
 
     /**
@@ -232,6 +236,11 @@ public class ChunkUtils {
 
     public boolean isExpired() {
       return CommonState.getTime() > timeStamp + ttl;
+    }
+    
+    // [MOJO]
+    public void updateTimestamp(long t){
+    	timeStamp = t;
     }
 
     @Override

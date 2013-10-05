@@ -55,7 +55,8 @@ public class StarStreamTimeTicker implements Control {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
 			node.tick();
 		}
-
+		
+		// [MOJO]
 		StarStreamNode n = (StarStreamNode) Network.get(0);
 		int numHelping = CommonState.getHelping();
 
@@ -74,10 +75,12 @@ public class StarStreamTimeTicker implements Control {
 					for (int o = 0; o < inits.length; o++)
 						((NodeInitializer) inits[o]).initialize(n);
 
-					System.out.println(n.getID());
+					//System.out.println(n.getID());
 				}
 			}
-
+			CommonState.setNetworkSize(Network.size());
+			//CommonState.setChunkTTL(CommonState.getNetworkSize());
+			
 			if (numHelping > 0) {
 				for (int i = 0; i < Network.size(); i++) {
 					n = (StarStreamNode) (Network.get(i));
