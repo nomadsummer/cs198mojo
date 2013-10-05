@@ -168,6 +168,7 @@ public class Simulator {
 		CommonState.setNetworkSize(netsize);
 		CommonState.setChunkTTL(chunkttl);
 		CommonState.setHelping(helping);
+		CommonState.setFileHelping(helping);
 
 		final int SIMID = getSimID();
 		if (SIMID == UNKNOWN) {

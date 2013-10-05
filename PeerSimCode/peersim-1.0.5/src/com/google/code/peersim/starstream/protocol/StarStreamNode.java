@@ -328,8 +328,9 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
             issueChunkRequest(sessionId, id);
           }
         }
-      }
+      }      
     }
+    
   }
 
   private void issueChunkRequest(UUID sessionId, int nextChunkSeqId) {

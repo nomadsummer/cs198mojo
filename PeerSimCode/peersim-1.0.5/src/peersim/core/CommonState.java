@@ -62,6 +62,7 @@ private static int expnum = 0;
 private static int networkSize = 0;
 private static int chunkTTL = 0;
 private static int helping = 0;
+private static int filehelping = 0;
 /**
  * Current time. Note that this value is simulator independent, all simulation
  * models have a notion related to time. For example, in the cycle based model,
@@ -166,6 +167,16 @@ public static void setHelping(double h)
 public static int getHelping()
 {
 	return helping;
+}
+
+public static void setFileHelping(int f)
+{
+	filehelping = f;
+}
+
+public static int getFileHelping()
+{
+	return filehelping;
 }
 
 public static void setNetworkSize(int s)
