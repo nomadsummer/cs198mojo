@@ -25,6 +25,7 @@ import peersim.core.Node;
 import peersim.edsim.EDProtocol;
 import peersim.transport.Transport;
 import peersim.util.FileNameGenerator;
+import peersim.util.IncrementalStats;
 
 import com.google.code.peersim.pastry.protocol.PastryId;
 import com.google.code.peersim.pastry.protocol.PastryProtocol;
@@ -168,6 +169,9 @@ public class StarStreamProtocol implements EDProtocol, CDProtocol, PastryProtoco
   private boolean aggressive;
   private long sentMessages = 0;
   private int unsentChunkMsgsDueToTimeout;
+  public IncrementalStats[] bandwidthUtilDown;
+  public IncrementalStats[] bandwidthUtilUp;
+  private int executeCount = 0;
   /**
    * Counter of chunks received by means of the Pastry API.
    */
@@ -184,6 +188,12 @@ public class StarStreamProtocol implements EDProtocol, CDProtocol, PastryProtoco
    * @param prefix The configuration prefix
    */
   public StarStreamProtocol(String prefix) throws FileNotFoundException {
+	bandwidthUtilDown = new IncrementalStats[CommonState.getNetworkSize()];
+	bandwidthUtilUp = new IncrementalStats[CommonState.getNetworkSize()];
+	for(int i = 0; i < CommonState.getNetworkSize(); i++) {
+		bandwidthUtilDown[i] = new IncrementalStats();
+		bandwidthUtilUp[i] = new IncrementalStats();
+	}
     msgTimeout = Configuration.getInt(prefix + SEPARATOR + MSG_TIMEOUT);
     starStoreSize = Configuration.getInt(prefix + SEPARATOR + STAR_STORE_SIZE);
     reliableTransportPid = Configuration.getPid(prefix + SEPARATOR + REL_TRANSPORT);
@@ -211,6 +221,8 @@ public class StarStreamProtocol implements EDProtocol, CDProtocol, PastryProtoco
     System.err.println("AggressionFactor: "+ aggressionFactor + " | EquationReliance: "+ eqnReliance);
     System.err.println("DefaultResourceFactor: "+ defaultResourceFactor + " | HelpingPeers: "+ CommonState.getHelping());
     System.err.println("TimeIn: "+ timeIn + " | TimeStay: "+ timeStay);
+    //bandwidthUtilDown = new double[CommonState.getNetworkSize()];
+    //bandwidthUtilUp = new double[CommonState.getNetworkSize()];
     // [MOJO]
     
     maxChunkRetries = Configuration.getInt(prefix + SEPARATOR + MAX_CHUNK_RETRIES);
@@ -244,12 +256,14 @@ public class StarStreamProtocol implements EDProtocol, CDProtocol, PastryProtoco
   
   //[MOJO]
   public int getUpStream(){
-	  return upStream + upStreamAdd;
+	  // return upStream + upStreamAdd;
+	  return upStream;
   }
  
   //[MOJO]
   public int getDownStream(){
-	  return downStream + downStreamAdd;
+	  //return downStream + downStreamAdd;
+	  return downStream;
   }
   
   //[MOJO]
@@ -362,6 +376,7 @@ public class StarStreamProtocol implements EDProtocol, CDProtocol, PastryProtoco
       if (i < inMsgs.length) {
         // if the index is valid we try and process the message
         StarStreamMessage msg = inMsgs[i];
+        System.out.println(msg);
         if (updateUsedDownStream(msg)) {
           removeFromDelayedInMessages(msg);
           // since there is enough bandwidth we process the message
@@ -619,7 +634,17 @@ public class StarStreamProtocol implements EDProtocol, CDProtocol, PastryProtoco
    * can be reset to their original levels.
    */
   void resetUsedBandwidth() {
-    usedDownStream = 0;
+	//System.out.println(this.owner.getID() + " Remaining Bandwidth before resetting... up: " + usedUpStream + " down: " + usedDownStream);
+	double remainingBandwidth; 
+	double bandWidthUtil;
+	executeCount++;
+	remainingBandwidth = getUpStream() - usedUpStream;
+	bandWidthUtil = 1 - (remainingBandwidth)/getUpStream();
+	bandwidthUtilUp[(int)this.owner.getID()].add(bandWidthUtil);
+	remainingBandwidth = getDownStream() - usedDownStream;
+	bandWidthUtil = 1 - (remainingBandwidth)/getDownStream();
+	bandwidthUtilDown[(int)this.owner.getID()].add(bandWidthUtil);
+	usedDownStream = 0;
     usedUpStream = 0;
   }
 
@@ -1196,6 +1221,9 @@ public class StarStreamProtocol implements EDProtocol, CDProtocol, PastryProtoco
     if(usedDownStream+msg.getType().getEstimatedBandwidth()<=getDownStream()) {
       usedDownStream+=msg.getType().getEstimatedBandwidth();
       proceed = true;
+      //System.out.println(this.owner.getID() + " chunk message required bandwidth: " + msg.getType().getEstimatedBandwidth());
+      //System.out.println("used downstream: " + usedDownStream);
+      //System.out.println("system downstream: " + getDownStream());
     }
     return proceed;
 //    return true;

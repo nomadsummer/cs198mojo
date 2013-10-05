@@ -61,7 +61,7 @@ public class StarStreamTimeTicker implements Control {
 
 		if (CommonState.getTime() == n.getStarStreamProtocol().getTimeIn()) {
 			for (int i = 0; i < Math.abs(numHelping); i++) {
-				if (numHelping <= 0) {
+				if (numHelping < 0) {
 					StarStreamNode node = (StarStreamNode) Network.get(i);
 					node.getStarStreamProtocol().RemoveStreams();
 				} else {

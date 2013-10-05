@@ -221,6 +221,25 @@ public class StarStreamNodesObserver implements Control {
 				+ chunksTmpMap.size() + " " + chunksTmpMap);
 		chunksTmpMap.clear();
 
+		// bandwidthUtil - ELIJAH reprezent yea!
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (!node.isHelping()) {
+				stats.add(node.getStarStreamProtocol().bandwidthUtilUp[(int)node.getID()].getAverage());
+			}
+		}
+		System.out.println(stats.getAverage());
+		stats.reset();
+		
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (!node.isHelping()) {
+				stats.add(node.getStarStreamProtocol().bandwidthUtilDown[(int)node.getID()].getAverage());
+			}
+		}
+		System.out.println(stats.getAverage());
+		stats.reset();
+		
 		// chunks not sent due to max-retries count
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
