@@ -67,27 +67,23 @@ public class StarStreamTimeTicker implements Control {
 				} else {
 					n = (StarStreamNode) (Network.get(i)).clone();
 					Network.add(n);
-					n.getStarStreamProtocol().AddStreams();
+					//n.getStarStreamProtocol().AddStreams();
 
 					Object[] inits = Configuration
 							.getInstanceArray(EDSimulator.PAR_INIT);
 					for (int o = 0; o < inits.length; o++)
 						((NodeInitializer) inits[o]).initialize(n);
-<<<<<<< HEAD
 
 					// System.out.println("[HELPING "+i+"] "+n.getPastryPID());
-					//System.out.println(n.getPastryPID());
+					// System.out.println(n.getID());
 				}
 			}
 
 			if (numHelping > 0) {
 				for (int i = 0; i < Network.size() - Math.abs(numHelping); i++) {
-					n = (StarStreamNode) (Network.get(i)).clone();
+					n = (StarStreamNode) Network.get(i);
 					n.getStarStreamProtocol().AddStreams();
-=======
-					
 					System.out.println(n.getID());
->>>>>>> ......
 				}
 			}
 		}
