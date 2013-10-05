@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Total chunks: 100
 Nodes x chunk: 3
 Total nodes: 25
@@ -44,3 +45,8 @@ Avg distance between not played chunks: 2.3473709799509392
 Min distance between not played chunks: 1.0
 Max distance between not played chunks: 5.411764705882353
 
+=======
+Playbacks time-window: 161
+[MOJO] Latency: 6.93686968400606
+[MOJO] Packet Loss: 23.52
+>>>>>>> ......
