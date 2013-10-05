@@ -66,29 +66,45 @@ public class StarStreamTimeTicker implements Control {
 					node.getStarStreamProtocol().RemoveStreams();
 				} else {
 					n = (StarStreamNode) (Network.get(i)).clone();
+					n.changeHelping(true);
 					Network.add(n);
+<<<<<<< HEAD
 					//n.getStarStreamProtocol().AddStreams();
+=======
+>>>>>>> isHelping
 
 					Object[] inits = Configuration
 							.getInstanceArray(EDSimulator.PAR_INIT);
 					for (int o = 0; o < inits.length; o++)
 						((NodeInitializer) inits[o]).initialize(n);
+<<<<<<< HEAD
 
 					// System.out.println("[HELPING "+i+"] "+n.getPastryPID());
 					// System.out.println(n.getID());
+=======
+					System.out.println(n.getID());
+>>>>>>> isHelping
 				}
 			}
 
 			if (numHelping > 0) {
+<<<<<<< HEAD
 				for (int i = 0; i < Network.size() - Math.abs(numHelping); i++) {
 					n = (StarStreamNode) Network.get(i);
 					n.getStarStreamProtocol().AddStreams();
 					System.out.println(n.getID());
+=======
+				for (int i = 0; i < Network.size(); i++) {
+					n = (StarStreamNode) (Network.get(i));
+					if(!n.isHelping()){
+						n.getStarStreamProtocol().AddStreams();
+					}
+>>>>>>> isHelping
 				}
 			}
 		}
 
-		if (CommonState.getTime() == (n.getStarStreamProtocol().getTimeIn() + n
+		/*if (CommonState.getTime() == (n.getStarStreamProtocol().getTimeIn() + n
 				.getStarStreamProtocol().getTimeStay())) {
 			for (int i = 0; i < Math.abs(numHelping); i++) {
 				if (numHelping <= 0) {
@@ -99,7 +115,7 @@ public class StarStreamTimeTicker implements Control {
 					n.getStarStreamProtocol().RemoveStreams();
 				}
 			}
-		}
+		}*/
 
 		return stop;
 	}

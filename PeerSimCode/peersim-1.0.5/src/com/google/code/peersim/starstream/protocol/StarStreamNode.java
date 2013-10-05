@@ -83,7 +83,7 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
   PrintWriter writer;
   
   // [MOJO] priority
-  private double priority;
+  private boolean isHelping;
   /**
    * Default PeerSim-required constructor.
    *
@@ -443,6 +443,15 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
   boolean hasBeenDelivered(int seqId) {
     return deliveredChunks.contains(seqId);
   }
+  
+  // [MOJO]
+  public void changeHelping(boolean h){
+	  isHelping = h;
+  }
+  
+  public boolean isHelping(){
+	  return isHelping;
+  }
 
   /**
    * This method has to be invoked both at construction and cloning-time to let
@@ -462,7 +471,7 @@ public class StarStreamNode extends PastryNode implements StarStreamProtocolList
     this.chunkRequestsForSeqIdsWithoutPastryIdYet = new LinkedList<Integer>();
     
     // [MOJO] node init
-    this.priority = CommonState.r.nextDouble();
+    this.isHelping = false;
   }
 
   private void removeFromIssuedChunkRequests(int sequenceId) {
