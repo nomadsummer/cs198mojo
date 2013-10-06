@@ -1,0 +1,34 @@
+8
+
+dir
+86
+http://opensvn.csie.org/bitpeer/src
+http://opensvn.csie.org/bitpeer
+
+
+
+2008-02-28T12:17:46.516847Z
+85
+mix
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+a913edb7-5128-0410-90f9-fbea0d400ee8
+
+peersim
+dir
+
+example
+dir
+

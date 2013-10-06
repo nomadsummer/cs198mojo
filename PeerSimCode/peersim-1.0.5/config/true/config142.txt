@@ -171,7 +171,7 @@ control.starstreamSource.doLog false
 control.starstreamNodesObserver com.google.code.peersim.starstream.controls.StarStreamNodesObserver
 control.starstreamNodesObserver.step CYCLE
 control.starstreamNodesObserver.log starstream-stats-
-control.starstreamNodesObserver.doLog false
+control.starstreamNodesObserver.doLog true
 
 # this control tells every *-Stream node to check for expired messages at every time tick
 control.starstreamTimeTicker com.google.code.peersim.starstream.controls.StarStreamTimeTicker
