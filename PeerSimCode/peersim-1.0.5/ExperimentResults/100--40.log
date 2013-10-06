@@ -1,0 +1,48 @@
+Total chunks: 100
+Nodes x chunk: 15
+Total nodes: 100
+Active nodes: 100
+Started playbacks: 100
+Not started playbacks node-ids: []
+Playbacks time-window: 216
+Missing chunks distribution [missed-chunks/nodes]: {0=98, 2=2}
+Rejected chunks for ttl expiration [chunk-id/nodes]: 2 {2=2, 3=2}
+Rejected chunks for capacity limit [chunk-id/nodes]: 0 {}
+bandwidthUtilUp: 0.007467726797385649
+bandwidthUtilDown: 0.004410330196078525
+Avg # of unsent chunk for max-retries: 0.0
+Min # of unsent chunk for max-retries: 0.0
+Max # of unsent chunk for max-retries: 0.0
+Avg # of unsent chunk-reqs for max-retries: 0.0
+Min # of unsent chunk-reqs for max-retries: 0.0
+Max # of unsent chunk-reqs for max-retries: 0.0
+Avg % of chunks received by Pastry: 2.89
+Min % of chunks received by Pastry: 0.0
+Max % of chunks received by Pastry: 10.0
+StD of chunks received by Pastry: 2.5854878601044478
+Var of chunks received by Pastry: 6.684747474747476
+Avg % of chunks received by StarStream: 96.19
+Min % of chunks received by StarStream: 89.0
+Max % of chunks received by StarStream: 100.0
+StD of chunks received by StarStream: 2.680626340196982
+Var of chunks received by StarStream: 7.185757575757864
+[MOJO] Startup Delay: 128.7
+[MOJO] Latency: 6.273427074314575
+Min of perceived avg chunk delivery-time: 5.25
+Max of perceived avg chunk delivery-time: 7.878787878787879
+Variance of perceived avg chunk delivery-time: 0.22364648791166375
+StD of perceived avg chunk delivery-time: 0.47291276987586595
+Avg messages sent per node: 18399.31
+Min messages sent per node: 13489.0
+Max messages sent per node: 22256.0
+Variance of messages sent per node: 3614510.680707055
+StD of messages sent per node: 1901.1866506755866
+Nodes with incomplete playbacks: 59
+[MOJO] Packet Loss: 32.32
+Min % of not played chunks: 0.0
+Max % of not played chunks: 99.0
+Not played chunks [chunk-id/nodes]: {1=41, 2=35, 3=37, 4=34, 5=36, 6=30, 7=31, 8=35, 9=32, 10=31, 11=33, 12=29, 13=36, 14=31, 15=37, 17=38, 16=31, 19=33, 18=33, 21=31, 20=32, 23=35, 22=34, 25=33, 24=34, 27=34, 26=29, 29=33, 28=31, 31=32, 30=31, 34=33, 35=31, 32=29, 33=32, 38=32, 39=37, 36=35, 37=28, 42=34, 43=28, 40=37, 41=35, 46=35, 47=36, 44=27, 45=36, 51=34, 50=36, 49=30, 48=34, 55=30, 54=32, 53=26, 52=31, 59=33, 58=31, 57=31, 56=36, 63=29, 62=34, 61=33, 60=31, 68=33, 69=29, 70=38, 71=35, 64=30, 65=36, 66=28, 67=35, 76=31, 77=34, 78=34, 79=37, 72=31, 73=34, 74=31, 75=33, 85=33, 84=31, 87=31, 86=28, 81=30, 80=33, 83=37, 82=30, 93=30, 92=35, 95=36, 94=31, 89=34, 88=34, 91=32, 90=27, 98=32, 99=32, 96=28, 97=31}
+Avg distance between not played chunks: 3.1189973679525975
+Min distance between not played chunks: 1.0
+Max distance between not played chunks: 21.0
+
