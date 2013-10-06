@@ -66,21 +66,12 @@ network.node.doLog false
 ############################################################## PROTOCOLS SECTION
 
 # The collaboration Protocol.
-<<<<<<< HEAD
-protocol.mojocollab.downStreamPerPeer 600
-protocol.mojocollab.upStreamPerPeer 100
-protocol.mojocollab.aggressionFactor 0.8
-protocol.mojocollab.eqnReliance 1
-protocol.mojocollab.defaultResourceFactor 0.5
-protocol.mojocollab.helpingPeers 0
-=======
 protocol.mojocollab.downStreamPerPeer 100
 protocol.mojocollab.upStreamPerPeer 60
 protocol.mojocollab.aggressionFactor 1
 protocol.mojocollab.eqnReliance 1
 protocol.mojocollab.defaultResourceFactor 0.5
 protocol.mojocollab.helpingPeers 0
->>>>>>> Latency, Packet Loss, Chunk TTL Fix
 protocol.mojocollab.timeIn 0
 protocol.mojocollab.timeStay 300000000
 
