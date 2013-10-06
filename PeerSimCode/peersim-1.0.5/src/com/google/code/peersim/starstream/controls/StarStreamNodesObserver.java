@@ -229,7 +229,7 @@ public class StarStreamNodesObserver implements Control {
 				stats.add(node.getStarStreamProtocol().bandwidthUtilUp[(int)node.getID()].getAverage());
 			}
 		}
-		System.out.println(stats.getAverage());
+		log("bandwidthUtilUp: " + stats.getAverage());
 		stats.reset();
 		
 		for (int i = 0; i < dim; i++) {
@@ -238,7 +238,7 @@ public class StarStreamNodesObserver implements Control {
 				stats.add(node.getStarStreamProtocol().bandwidthUtilDown[(int)node.getID()].getAverage());
 			}
 		}
-		System.out.println(stats.getAverage());
+		log("bandwidthUtilDown: " + stats.getAverage());
 		stats.reset();
 		
 		// chunks not sent due to max-retries count

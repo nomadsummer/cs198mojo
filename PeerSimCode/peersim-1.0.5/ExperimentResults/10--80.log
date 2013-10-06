@@ -4,43 +4,43 @@ Total nodes: 10
 Active nodes: 10
 Started playbacks: 10
 Not started playbacks node-ids: []
-Playbacks time-window: 130
-Missing chunks distribution [missed-chunks/nodes]: {34=1, 35=1, 32=1, 48=1, 40=3, 41=1, 44=1, 31=1}
-Rejected chunks for ttl expiration [chunk-id/nodes]: 99 {1=1, 2=5, 3=2, 4=5, 5=4, 6=4, 7=3, 8=4, 9=5, 10=3, 11=5, 12=4, 13=3, 14=4, 15=6, 17=5, 16=6, 19=2, 18=2, 21=3, 20=2, 23=4, 22=1, 25=1, 24=8, 27=6, 26=3, 29=4, 28=5, 31=1, 30=2, 34=4, 35=7, 32=3, 33=3, 38=6, 39=3, 36=5, 37=5, 42=4, 43=2, 40=5, 41=4, 46=5, 47=4, 44=4, 45=5, 51=3, 50=3, 49=6, 48=3, 55=4, 54=5, 53=4, 52=4, 59=2, 58=4, 57=4, 56=3, 63=4, 62=2, 61=7, 60=3, 68=1, 69=2, 70=7, 71=5, 64=1, 65=4, 66=4, 67=1, 76=1, 77=4, 78=3, 79=3, 72=5, 73=2, 74=7, 75=3, 85=1, 84=1, 87=7, 86=4, 81=7, 80=5, 83=6, 82=7, 93=3, 92=4, 95=2, 94=3, 89=4, 88=4, 91=4, 90=4, 98=3, 99=6, 96=5, 97=1}
+Playbacks time-window: 950
+Missing chunks distribution [missed-chunks/nodes]: {84=1, 87=1, 81=1, 80=1, 82=1, 76=1, 77=1, 78=1, 72=1, 90=1}
+Rejected chunks for ttl expiration [chunk-id/nodes]: 99 {1=5, 2=8, 3=9, 4=8, 5=9, 6=5, 7=8, 8=6, 9=8, 10=8, 11=8, 12=9, 13=7, 14=8, 15=6, 17=7, 16=5, 19=8, 18=8, 21=6, 20=8, 23=6, 22=9, 25=6, 24=6, 27=8, 26=5, 29=8, 28=8, 31=4, 30=8, 34=1, 35=8, 32=8, 33=7, 38=8, 39=9, 36=8, 37=8, 42=8, 43=8, 40=9, 41=6, 46=6, 47=9, 44=9, 45=9, 51=8, 50=8, 49=9, 48=8, 55=8, 54=7, 53=8, 52=8, 59=7, 58=9, 57=8, 56=6, 63=8, 62=8, 61=8, 60=6, 68=8, 69=7, 70=8, 71=8, 64=8, 65=8, 66=4, 67=5, 76=9, 77=8, 78=9, 79=8, 72=8, 73=8, 74=7, 75=8, 85=7, 84=8, 87=8, 86=8, 81=8, 80=8, 83=9, 82=9, 93=9, 92=7, 95=8, 94=8, 89=6, 88=8, 91=5, 90=9, 98=8, 99=8, 96=8, 97=7}
 Rejected chunks for capacity limit [chunk-id/nodes]: 0 {}
 Avg # of unsent chunk for max-retries: 0.0
 Min # of unsent chunk for max-retries: 0.0
 Max # of unsent chunk for max-retries: 0.0
-Avg # of unsent chunk-reqs for max-retries: 0.4
+Avg # of unsent chunk-reqs for max-retries: 0.9
 Min # of unsent chunk-reqs for max-retries: 0.0
-Max # of unsent chunk-reqs for max-retries: 2.0
-Avg % of chunks received by Pastry: 12.5
-Min % of chunks received by Pastry: 6.0
-Max % of chunks received by Pastry: 26.0
-StD of chunks received by Pastry: 6.819090848492928
-Var of chunks received by Pastry: 46.49999999999999
-Avg % of chunks received by StarStream: 86.5
-Min % of chunks received by StarStream: 73.0
-Max % of chunks received by StarStream: 93.0
-StD of chunks received by StarStream: 6.819090848492958
-Var of chunks received by StarStream: 46.500000000000405
-[MOJO] Startup Delay: 65.3
-[MOJO] Latency: 6.197920333533209
-Min of perceived avg chunk delivery-time: 5.033898305084746
-Max of perceived avg chunk delivery-time: 7.484375
-Variance of perceived avg chunk delivery-time: 0.4998164483331399
-StD of perceived avg chunk delivery-time: 0.7069769786443827
-Avg messages sent per node: 1175.1
-Min messages sent per node: 1036.0
-Max messages sent per node: 1450.0
-Variance of messages sent per node: 16679.655555555753
-StD of messages sent per node: 129.14974082651406
+Max # of unsent chunk-reqs for max-retries: 7.0
+Avg % of chunks received by Pastry: 27.8
+Min % of chunks received by Pastry: 9.0
+Max % of chunks received by Pastry: 42.0
+StD of chunks received by Pastry: 12.016655108639839
+Var of chunks received by Pastry: 144.39999999999992
+Avg % of chunks received by StarStream: 71.2
+Min % of chunks received by StarStream: 57.0
+Max % of chunks received by StarStream: 90.0
+StD of chunks received by StarStream: 12.016655108639801
+Var of chunks received by StarStream: 144.39999999999904
+[MOJO] Startup Delay: 251.8
+[MOJO] Latency: 2.067193824482154
+Min of perceived avg chunk delivery-time: 0.6
+Max of perceived avg chunk delivery-time: 3.4166666666666665
+Variance of perceived avg chunk delivery-time: 0.9024569809944784
+StD of perceived avg chunk delivery-time: 0.9499773581483288
+Avg messages sent per node: 201.2
+Min messages sent per node: 100.0
+Max messages sent per node: 310.0
+Variance of messages sent per node: 4732.84444444445
+StD of messages sent per node: 68.7956716984757
 Nodes with incomplete playbacks: 10
-[MOJO] Packet Loss: 46.4
-Min % of not played chunks: 34.0
-Max % of not played chunks: 99.0
-Not played chunks [chunk-id/nodes]: {1=2, 2=6, 3=2, 4=6, 5=6, 6=4, 7=4, 8=4, 9=5, 10=4, 11=6, 12=5, 13=4, 14=4, 15=7, 17=6, 16=7, 19=3, 18=3, 21=5, 20=2, 23=5, 22=2, 25=2, 24=9, 27=7, 26=4, 29=5, 28=5, 31=2, 30=4, 34=6, 35=8, 32=4, 33=4, 38=7, 39=4, 36=5, 37=5, 42=6, 43=4, 40=6, 41=4, 46=5, 47=5, 44=5, 45=5, 51=4, 50=4, 49=7, 48=3, 55=5, 54=5, 53=5, 52=5, 59=3, 58=5, 57=5, 56=4, 63=5, 62=3, 61=8, 60=4, 68=2, 69=4, 70=8, 71=6, 64=2, 65=5, 66=4, 67=2, 76=2, 77=5, 78=4, 79=3, 72=5, 73=3, 74=8, 75=4, 85=4, 84=2, 87=7, 86=5, 81=8, 80=5, 83=7, 82=7, 93=4, 92=5, 95=3, 94=4, 89=5, 88=5, 91=5, 90=5, 98=3, 99=7, 96=6, 97=2}
-Avg distance between not played chunks: 2.272439406965923
-Min distance between not played chunks: 1.0
-Max distance between not played chunks: 2.7058823529411766
+[MOJO] Packet Loss: 82.3
+Min % of not played chunks: 71.0
+Max % of not played chunks: 98.0
+Not played chunks [chunk-id/nodes]: {1=6, 2=8, 3=9, 4=8, 5=9, 6=8, 7=8, 8=7, 9=9, 10=8, 11=8, 12=10, 13=9, 14=8, 15=8, 17=8, 16=8, 19=8, 18=8, 21=8, 20=8, 23=8, 22=9, 25=8, 24=8, 27=8, 26=8, 29=8, 28=9, 31=9, 30=8, 34=9, 35=9, 32=9, 33=8, 38=8, 39=9, 36=9, 37=8, 42=8, 43=8, 40=9, 41=8, 46=7, 47=9, 44=10, 45=9, 51=8, 50=8, 49=9, 48=8, 55=8, 54=8, 53=9, 52=8, 59=9, 58=9, 57=8, 56=8, 63=8, 62=8, 61=8, 60=8, 68=9, 69=8, 70=8, 71=8, 64=8, 65=8, 66=7, 67=7, 76=9, 77=9, 78=9, 79=8, 72=8, 73=10, 74=8, 75=8, 85=8, 84=8, 87=8, 86=9, 81=8, 80=9, 83=9, 82=9, 93=9, 92=8, 95=8, 94=9, 89=7, 88=9, 91=9, 90=9, 98=8, 99=8, 96=8, 97=8}
+Avg distance between not played chunks: 1.2006766284829697
+Min distance between not played chunks: 1.0103092783505154
+Max distance between not played chunks: 1.4
 

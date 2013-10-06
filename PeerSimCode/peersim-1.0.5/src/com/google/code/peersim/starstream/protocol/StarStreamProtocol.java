@@ -377,7 +377,7 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
       if (i < inMsgs.length) {
         // if the index is valid we try and process the message
         StarStreamMessage msg = inMsgs[i];
-        System.out.println(msg);
+        //System.out.println(msg);
         if (updateUsedDownStream(msg)) {
           removeFromDelayedInMessages(msg);
           // since there is enough bandwidth we process the message
