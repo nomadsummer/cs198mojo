@@ -222,7 +222,7 @@ public class StarStreamNodesObserver implements Control {
 				+ chunksTmpMap.size() + " " + chunksTmpMap);
 		chunksTmpMap.clear();
 
-		// bandwidthUtil - ELIJAH reprezent yea!
+		// bandwidthUtil
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
 			if (!node.isHelping()) {

@@ -60,6 +60,7 @@ public static final int PHASE_UNKNOWN = 0;
 // [MOJO]
 private static int expnum = 0;
 private static int networkSize = 0;
+private static int origNetworkSize = 0;
 private static int chunkTTL = 0;
 private static int helping = 0;
 private static int filehelping = 0;
@@ -187,6 +188,16 @@ public static void setNetworkSize(int s)
 public static int getNetworkSize()
 {
 	return networkSize;
+}
+
+public static void setOrigNetworkSize(int s)
+{
+	origNetworkSize = s;
+}
+
+public static int getOrigNetworkSize()
+{
+	return origNetworkSize;
 }
 
 public static void setChunkTTL(int c)

@@ -189,9 +189,9 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
    * @param prefix The configuration prefix
    */
   public StarStreamProtocol(String prefix) throws FileNotFoundException {
-	bandwidthUtilDown = new IncrementalStats[CommonState.getNetworkSize()];
-	bandwidthUtilUp = new IncrementalStats[CommonState.getNetworkSize()];
-	for(int i = 0; i < CommonState.getNetworkSize(); i++) {
+	bandwidthUtilDown = new IncrementalStats[CommonState.getOrigNetworkSize()];
+	bandwidthUtilUp = new IncrementalStats[CommonState.getOrigNetworkSize()];
+	for(int i = 0; i < CommonState.getOrigNetworkSize(); i++) {
 		bandwidthUtilDown[i] = new IncrementalStats();
 		bandwidthUtilUp[i] = new IncrementalStats();
 	}
@@ -639,12 +639,14 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
 	double remainingBandwidth; 
 	double bandWidthUtil;
 	executeCount++;
-	remainingBandwidth = getUpStream() - usedUpStream;
-	bandWidthUtil = 1 - (remainingBandwidth)/getUpStream();
-	bandwidthUtilUp[(int)this.owner.getID()].add(bandWidthUtil);
-	remainingBandwidth = getDownStream() - usedDownStream;
-	bandWidthUtil = 1 - (remainingBandwidth)/getDownStream();
-	bandwidthUtilDown[(int)this.owner.getID()].add(bandWidthUtil);
+	if((int)this.owner.getID() < CommonState.getOrigNetworkSize()) {
+		remainingBandwidth = getUpStream() - usedUpStream;
+		bandWidthUtil = 1 - (remainingBandwidth)/getUpStream();
+		bandwidthUtilUp[(int)this.owner.getID()].add(bandWidthUtil);
+		remainingBandwidth = getDownStream() - usedDownStream;
+		bandWidthUtil = 1 - (remainingBandwidth)/getDownStream();
+		bandwidthUtilDown[(int)this.owner.getID()].add(bandWidthUtil);
+	}
 	usedDownStream = 0;
     usedUpStream = 0;
   }

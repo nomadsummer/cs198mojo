@@ -164,7 +164,8 @@ public class Simulator {
 		double collabint = Configuration.getDouble(PAR_COLLABINT, 1);
 		int collabexps = Configuration.getInt(PAR_COLLABEXPS, 1);
 		int helping = Configuration.getInt(PAR_HELPING, 1);
-
+		
+		CommonState.setOrigNetworkSize(netsize);
 		CommonState.setNetworkSize(netsize);
 		CommonState.setChunkTTL(chunkttl);
 		CommonState.setHelping(helping);
