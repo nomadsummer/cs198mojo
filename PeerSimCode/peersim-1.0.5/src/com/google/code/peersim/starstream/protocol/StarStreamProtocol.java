@@ -160,8 +160,8 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
   private double aggressionFactor;
   private double eqnReliance;
   private double defaultResourceFactor;
-  private int timeIn;
-  private int timeStay;
+  //private int timeIn;
+  //private int timeStay;
   // [MOJO]
   private int usedDownStream = 0;
   private int usedUpStream = 0;
@@ -212,8 +212,8 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
     downStreamPerPeer = Configuration.getInt("protocol.mojocollab.downStreamPerPeer");
     upStreamPerPeer = Configuration.getInt("protocol.mojocollab.upStreamPerPeer");
     //helpingPeers = Configuration.getInt("protocol.mojocollab.helpingPeers");
-    timeIn = Configuration.getInt("protocol.mojocollab.timeIn");
-    timeStay = Configuration.getInt("protocol.mojocollab.timeStay");
+    //timeIn = Configuration.getInt("protocol.mojocollab.timeIn");
+    //timeStay = Configuration.getInt("protocol.mojocollab.timeStay");
     aggressionFactor = Configuration.getDouble("protocol.mojocollab.aggressionFactor");
     eqnReliance = Configuration.getDouble("protocol.mojocollab.eqnReliance");
     defaultResourceFactor = Configuration.getDouble("protocol.mojocollab.defaultResourceFactor");
@@ -221,7 +221,7 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
     System.err.println("DownPerPeer: "+ downStreamPerPeer + " | UpPerPeer: "+ upStreamPerPeer);
     System.err.println("AggressionFactor: "+ aggressionFactor + " | EquationReliance: "+ eqnReliance);
     System.err.println("DefaultResourceFactor: "+ defaultResourceFactor + " | HelpingPeers: "+ CommonState.getHelping());
-    System.err.println("TimeIn: "+ timeIn + " | TimeStay: "+ timeStay);
+    //System.err.println("TimeIn: "+ timeIn + " | TimeStay: "+ timeStay);
     //bandwidthUtilDown = new double[CommonState.getNetworkSize()];
     //bandwidthUtilUp = new double[CommonState.getNetworkSize()];
     // [MOJO]
@@ -285,14 +285,14 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
   }*/
   
   //[MOJO]
-  public int getTimeIn(){
+  /*public int getTimeIn(){
 	  return timeIn;
   }
   
   //[MOJO]
   public int getTimeStay(){
 	  return timeStay;
-  }
+  }*/
 
   /**
    * Returns the number of chunnks received by means of the Pastry API.
@@ -657,6 +657,7 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
    * @param starStreamSessionId The *-Stream session ID
    * @param chunkId The chunk ID
    */
+  // [MOJO CHECK]
   void searchForChunk(UUID starStreamSessionId, PastryId chunkId) {
 //    Set<StarStreamNode> nodes = this.owner.getPastryProtocol().getNeighbors(1);
     Set<StarStreamNode> nodes = this.owner.getPastryProtocol().getNeighbors(this.availableOutDeg(Type.CHUNK_REQ));

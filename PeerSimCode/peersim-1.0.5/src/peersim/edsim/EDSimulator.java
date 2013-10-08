@@ -264,10 +264,10 @@ private static boolean executeNext() {
 	}
 	
 	long time = ev.time;
+	//[MOJO] 
+	//System.err.println("Current time: " + time);
 	if (time >= nextlog)
 	{
-		//[MOJO] 
-		//System.err.println("Current time: " + time);
 		// seemingly complicated: to prevent overflow
 		while( time-nextlog >= logtime ) nextlog+=logtime;
 		if( endtime-nextlog >= logtime ) nextlog+=logtime;

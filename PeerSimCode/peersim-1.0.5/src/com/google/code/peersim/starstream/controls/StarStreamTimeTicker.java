@@ -59,8 +59,25 @@ public class StarStreamTimeTicker implements Control {
 		// [MOJO]
 		StarStreamNode n = (StarStreamNode) Network.get(0);
 		int numHelping = CommonState.getHelping();
+		int numJoining = CommonState.getJoining();
 
-		if (CommonState.getTime() == n.getStarStreamProtocol().getTimeIn()) {
+		// INVESTIGATE NODE INITIALIZATION
+		if(CommonState.getTime() == CommonState.getTimeJoin()){
+			for (int i = 0; i < numJoining; i++){
+				n = (StarStreamNode) (Network.get(i)).clone();
+				n.changeJoining(true);
+
+				Object[] inits = Configuration
+						.getInstanceArray(EDSimulator.PAR_INIT);
+				for (int o = 0; o < inits.length; o++)
+					((NodeInitializer) inits[o]).initialize(n);
+				
+				Network.add(n);
+				//System.out.println(n.getID());
+			}
+		}
+		
+		if (CommonState.getTime() == CommonState.getTimeIn()) {
 			for (int i = 0; i < Math.abs(numHelping); i++) {
 				if (numHelping < 0) {
 					StarStreamNode node = (StarStreamNode) Network.get(i);
@@ -68,13 +85,13 @@ public class StarStreamTimeTicker implements Control {
 				} else {
 					n = (StarStreamNode) (Network.get(i)).clone();
 					n.changeHelping(true);
-					Network.add(n);
 
 					Object[] inits = Configuration
 							.getInstanceArray(EDSimulator.PAR_INIT);
 					for (int o = 0; o < inits.length; o++)
 						((NodeInitializer) inits[o]).initialize(n);
 
+					Network.add(n);
 					//System.out.println(n.getID());
 				}
 			}
@@ -91,8 +108,7 @@ public class StarStreamTimeTicker implements Control {
 			}
 		}
 
-		/*if (CommonState.getTime() == (n.getStarStreamProtocol().getTimeIn() + n
-				.getStarStreamProtocol().getTimeStay())) {
+		/*if (CommonState.getTime() == (CommonState.getTimeIn() + CommonState.getTimeStay())) {
 			for (int i = 0; i < Math.abs(numHelping); i++) {
 				if (numHelping <= 0) {
 					StarStreamNode node = (StarStreamNode) Network.get(i);

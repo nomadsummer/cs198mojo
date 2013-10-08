@@ -105,13 +105,13 @@ public class StarStreamNodesObserver implements Control {
 
 		System.err.print("Dumping *-Stream stats to file " + logFile + "... ");
 
-		for (int i = 0; i < Network.size(); i++) {
+		/*for (int i = 0; i < Network.size(); i++) {
 			StarStreamNode n = (StarStreamNode) (Network.get(i));
-			// System.out.println("PID "+n.getPastryPID());
-			/*if (!n.isHelping()) {
+			 System.out.println("PID "+n.getPastryPID());
+			if (!n.isHelping()) {
 				System.out.println("ID " + n.getID());
-			}*/
-		}
+			}
+		}*/
 
 		int helping = CommonState.getHelping() <= 0 ? 0 : CommonState
 				.getHelping();
@@ -128,7 +128,7 @@ public class StarStreamNodesObserver implements Control {
 		int activeNodes = 0;
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
-			if (node.isUp() && !node.isHelping())
+			if (node.isUp() && !node.isHelping() && !node.isJoining())
 				activeNodes++;
 		}
 		log("Active nodes: " + activeNodes);
@@ -138,7 +138,7 @@ public class StarStreamNodesObserver implements Control {
 		List<PastryId> nodesThatDidNotStartedPlayback = new LinkedList<PastryId>();
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
-			if (!node.isHelping()) {
+			if (!node.isHelping() && !node.isJoining()) {
 				if (node.hasStartedPlayback())
 					nodesThatStartedPlayback++;
 				else
@@ -153,7 +153,7 @@ public class StarStreamNodesObserver implements Control {
 		long firstPlaybackStart = Long.MAX_VALUE;
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
-			if (!node.isHelping()) {
+			if (!node.isHelping() && !node.isJoining()) {
 				long time = node.getWhenPlaybackStarted();
 				if (time > lastPlaybackStart)
 					lastPlaybackStart = time;
@@ -168,7 +168,7 @@ public class StarStreamNodesObserver implements Control {
 		Map<Integer, Integer> chunksTmpMap = new HashMap<Integer, Integer>();
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
-			if (!node.isHelping()) {
+			if (!node.isHelping() && !node.isJoining()) {
 				int missingChunks = node.countMissingChunks();
 				Integer nodesCount = chunksTmpMap.get(missingChunks);
 				if (nodesCount == null) {
@@ -185,7 +185,7 @@ public class StarStreamNodesObserver implements Control {
 		// TTL-rejected chunks stats
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
-			if (!node.isHelping()) {
+			if (!node.isHelping() && !node.isJoining()) {
 				Set<Integer> missed = node.getStore()
 						.getRejectedChunksDueToExpiration();
 				for (int id : missed) {
@@ -205,7 +205,7 @@ public class StarStreamNodesObserver implements Control {
 		// capacity-rejected chunks stats
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
-			if (!node.isHelping()) {
+			if (!node.isHelping() && !node.isJoining()) {
 				Set<Integer> missed = node.getStore()
 						.getRejectedChunksDueToCapacityLimit();
 				for (int id : missed) {
@@ -225,7 +225,7 @@ public class StarStreamNodesObserver implements Control {
 		// bandwidthUtil
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
-			if (!node.isHelping()) {
+			if (!node.isHelping() && !node.isJoining()) {
 				stats.add(node.getStarStreamProtocol().bandwidthUtilUp[(int)node.getID()].getAverage());
 			}
 		}
@@ -234,7 +234,7 @@ public class StarStreamNodesObserver implements Control {
 		
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
-			if (!node.isHelping()) {
+			if (!node.isHelping() && !node.isJoining()) {
 				stats.add(node.getStarStreamProtocol().bandwidthUtilDown[(int)node.getID()].getAverage());
 			}
 		}
@@ -244,7 +244,7 @@ public class StarStreamNodesObserver implements Control {
 		// chunks not sent due to max-retries count
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
-			if (!node.isHelping()) {
+			if (!node.isHelping() && !node.isJoining()) {
 				stats.add(node.getUnsentChunkMsgsDueToTimeout());
 			}
 		}
@@ -256,7 +256,7 @@ public class StarStreamNodesObserver implements Control {
 		// chunk requests not sent due to max-retries count
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
-			if (!node.isHelping()) {
+			if (!node.isHelping() && !node.isJoining()) {
 				stats.add(node.getUnsentChunkReqDueToTimeout());
 			}
 		}
@@ -268,7 +268,7 @@ public class StarStreamNodesObserver implements Control {
 		// chunk received by means of Pastry
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
-			if (!node.isHelping()) {
+			if (!node.isHelping() && !node.isJoining()) {
 				int pChunks = node.getChunksReceivedFromPastry();
 				int sChunks = node.getChunksReceivedFromStarStream();
 				double res = 0;
@@ -287,7 +287,7 @@ public class StarStreamNodesObserver implements Control {
 		// chunk received by means of StarStream
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
-			if (!node.isHelping()) {
+			if (!node.isHelping() && !node.isJoining()) {
 				int pChunks = node.getChunksReceivedFromPastry();
 				int sChunks = node.getChunksReceivedFromStarStream();
 				double res = 0;
@@ -307,14 +307,21 @@ public class StarStreamNodesObserver implements Control {
 		double avgpb = 0;
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
-			// log("[MOJO] playback started:" +
-			// node.getWhenPlaybackStarted());
-			if (!node.isHelping()) {
+			if (node.isJoining()) {
 				avgpb += node.getWhenPlaybackStarted();
+				//System.out.println(node.getID());
+			}
+		}
+		if(CommonState.getJoining() > 0){
+			log("[MOJO] Startup Delay: " + avgpb / CommonState.getJoining());
+		}
+		
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (!node.isHelping() && !node.isJoining()) {
 				stats.add(node.getPerceivedAvgChunkDeliveryTime());
 			}
 		}
-		log("[MOJO] Startup Delay: " + avgpb / (dim - helping));
 		log("[MOJO] Latency: " + stats.getAverage());
 		// log("Perceived avg chunk delivery-time: " + stats.getAverage());
 		log("Min of perceived avg chunk delivery-time: " + stats.getMin());
@@ -326,7 +333,7 @@ public class StarStreamNodesObserver implements Control {
 		stats.reset();
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
-			if (!node.isHelping()) {
+			if (!node.isHelping() && !node.isJoining()) {
 				stats.add(node.getSentMessages());
 			}
 		}
@@ -349,10 +356,11 @@ public class StarStreamNodesObserver implements Control {
 		 * CommonState.getHelping(); }
 		 */
 		System.err.println("\nHELPING:" + CommonState.getHelping());
+		System.err.println("JOINING:" + CommonState.getJoining());
 		System.err.println("DIM:" + dim);
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
-			if (!node.isHelping()) {
+			if (!node.isHelping() && !node.isJoining()) {
 				List<Integer> missed = node.getUnplayedChunks();
 				if (missed.size() > 0)
 					nodesWithUncompletePlaybacks++;
@@ -381,7 +389,7 @@ public class StarStreamNodesObserver implements Control {
 		IncrementalStats _stats = new IncrementalStats();
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
-			if (!node.isHelping()) {
+			if (!node.isHelping() && !node.isJoining()) {
 				List<Integer> missed = node.getUnplayedChunks();
 				for (int j = missed.size() - 1; j > 0; j--) {
 					_stats.add(missed.get(j) - missed.get(j - 1));

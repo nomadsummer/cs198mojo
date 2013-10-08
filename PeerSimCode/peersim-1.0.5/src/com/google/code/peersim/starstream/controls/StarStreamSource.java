@@ -276,8 +276,7 @@ public class StarStreamSource implements Control, OverlayBuilderListenerIfc {
 		if (!enabled) {
 			// [MOJO]
 			start = CommonState.getTime() * 2;
-			//start = CommonState.getTime() * 5;
-			int dim = Network.size();
+			int dim = CommonState.getNetworkSize();
 			for (int i = 0; i < dim; i++) {
 				((StarStreamNode) Network.get(i)).streamingStartsAt(start);
 			}
@@ -346,7 +345,7 @@ public class StarStreamSource implements Control, OverlayBuilderListenerIfc {
 	private double computeDynamicAdvance() {
 		double dynAdvance;
 		if (adaptiveAdvance) {
-			int dim = Network.size();
+			int dim = CommonState.getNetworkSize();
 			int nodeIndex = CommonState.r.nextInt(dim);
 			dynAdvance = ((StarStreamNode) Network.get(nodeIndex))
 					.getPerceivedMaxChunkDeliveryTime();
@@ -404,8 +403,7 @@ public class StarStreamSource implements Control, OverlayBuilderListenerIfc {
 	 * @return A node
 	 */
 	private StarStreamNode randomNode() {
-		return (StarStreamNode) Network.get(CommonState.r.nextInt(Network
-				.size()));
+		return (StarStreamNode) Network.get(CommonState.r.nextInt(CommonState.getNetworkSize()));
 	}
 
 	/**
@@ -425,7 +423,7 @@ public class StarStreamSource implements Control, OverlayBuilderListenerIfc {
 				node = randomNode();
 				// TODO: make the next % configurable?
 			} while (!node.isJoined()
-					&& tries < (elegibleNodeRetriesPercentage * Network.size() / 100));
+					&& tries < (elegibleNodeRetriesPercentage * CommonState.getNetworkSize() / 100));
 			nodes.add(node);
 		}
 		return nodes;

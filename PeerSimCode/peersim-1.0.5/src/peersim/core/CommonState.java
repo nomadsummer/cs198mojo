@@ -64,6 +64,11 @@ private static int origNetworkSize = 0;
 private static int chunkTTL = 0;
 private static int helping = 0;
 private static int filehelping = 0;
+private static int timeIn = 0;
+private static int timeJoin = 0;
+private static int timeStay = 0;
+private static int joining = 0;
+
 /**
  * Current time. Note that this value is simulator independent, all simulation
  * models have a notion related to time. For example, in the cycle based model,
@@ -208,6 +213,46 @@ public static void setChunkTTL(int c)
 public static int getChunkTTL()
 {
 	return chunkTTL;
+}
+
+public static void setTimeIn(int t)
+{
+	timeIn = t;
+}
+
+public static int getTimeIn()
+{
+	return timeIn;
+}
+
+public static void setTimeJoin(int t)
+{
+	timeJoin = t;
+}
+
+public static int getTimeJoin()
+{
+	return timeJoin;
+}
+
+public static void setTimeStay(int t)
+{
+	timeStay = t;
+}
+
+public static int getTimeStay()
+{
+	return timeStay;
+}
+
+public static void setJoining(double j)
+{
+	joining = (int) j;
+}
+
+public static int getJoining()
+{
+	return joining;
 }
 
 /**

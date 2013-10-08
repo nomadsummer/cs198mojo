@@ -84,6 +84,10 @@ public class Simulator {
 	public static final String PAR_COLLABINT = "network.collabint";
 	public static final String PAR_COLLABEXPS = "simulation.collabexps";
 	public static final String PAR_HELPING = "protocol.mojocollab.helpingPeers";
+	public static final String PAR_JOINING = "protocol.mojocollab.joiningPeers";
+	public static final String PAR_TIMEIN = "protocol.mojocollab.timeIn";
+	public static final String PAR_TIMESTAY = "protocol.mojocollab.timeStay";
+	public static final String PAR_TIMEJOIN = "protocol.mojocollab.timeJoin";
 
 	// ==================== static fields ===================================
 	// ======================================================================
@@ -164,12 +168,20 @@ public class Simulator {
 		double collabint = Configuration.getDouble(PAR_COLLABINT, 1);
 		int collabexps = Configuration.getInt(PAR_COLLABEXPS, 1);
 		int helping = Configuration.getInt(PAR_HELPING, 1);
+		double joining = Configuration.getDouble(PAR_JOINING, 1);
+		int timeIn = Configuration.getInt(PAR_TIMEIN, 1);
+		int timeStay = Configuration.getInt(PAR_TIMESTAY, 1);
+		int timeJoin = Configuration.getInt(PAR_TIMEJOIN, 1);
 		
 		CommonState.setOrigNetworkSize(netsize);
 		CommonState.setNetworkSize(netsize);
 		CommonState.setChunkTTL(chunkttl);
 		CommonState.setHelping(helping);
 		CommonState.setFileHelping(helping);
+		CommonState.setJoining(joining*netsize);
+		CommonState.setTimeIn(timeIn);
+		CommonState.setTimeStay(timeStay);
+		CommonState.setTimeJoin(timeJoin);
 
 		final int SIMID = getSimID();
 		if (SIMID == UNKNOWN) {

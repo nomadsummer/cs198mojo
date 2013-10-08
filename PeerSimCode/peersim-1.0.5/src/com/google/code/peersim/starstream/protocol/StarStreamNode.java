@@ -84,11 +84,12 @@ public class StarStreamNode extends PastryNode implements
 	private StarStreamPlayer player;
 	private int totalChunks;
 	private Long streamingStartTime;
-	private boolean writerStart = false;
-	PrintWriter writer;
+	//private boolean writerStart = false;
+	//PrintWriter writer;
 
-	// [MOJO] priority
+	// [MOJO] status
 	private boolean isHelping;
+	private boolean isJoining;
 
 	/**
 	 * Default PeerSim-required constructor.
@@ -102,7 +103,7 @@ public class StarStreamNode extends PastryNode implements
 		super(prefix);
 		STAR_STREAM_PID = Configuration
 				.getPid(prefix + SEPARATOR + STAR_STREAM);
-		// at this point the protocl stack for the current node must have been
+		// at this point the protocol stack for the current node must have been
 		// already
 		// initialized by the PeerSim runtime, so this is the right time for
 		// takeing
@@ -124,12 +125,12 @@ public class StarStreamNode extends PastryNode implements
 		chunkPlaybackLength = Configuration.getInt(prefix + SEPARATOR
 				+ "chunkPlaybackLength");
 		totalChunks = Configuration.getInt(prefix + SEPARATOR + "totalChunks");
-		try {
+		/*try {
 			writer = new PrintWriter("resultsElijah.txt", "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
-		}
-		;
+		}*/
+		
 		init();
 	}
 
@@ -519,6 +520,14 @@ public class StarStreamNode extends PastryNode implements
 	public boolean isHelping() {
 		return isHelping;
 	}
+	
+	public void changeJoining(boolean j) {
+		isJoining = j;
+	}
+
+	public boolean isJoining() {
+		return isJoining;
+	}
 
 	/**
 	 * This method has to be invoked both at construction and cloning-time to
@@ -541,6 +550,9 @@ public class StarStreamNode extends PastryNode implements
 
 		// [MOJO] node init
 		this.isHelping = false;
+		this.isJoining = false;
+		
+		//System.out.println(this.getID());
 	}
 
 	private void removeFromIssuedChunkRequests(int sequenceId) {
