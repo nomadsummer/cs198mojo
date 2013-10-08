@@ -609,7 +609,7 @@ public class StarStreamNodesObserver implements Control {
 			}
 		}
 		if (CommonState.getHelping() > 0) {
-			log("[MOJO][HELPING] Startup Delay: " + avgpb / CommonState.getHelping());
+			log("[HELPING] Startup Delay: " + avgpb / CommonState.getHelping());
 		}
 
 		for (int i = 0; i < dim; i++) {
@@ -618,7 +618,7 @@ public class StarStreamNodesObserver implements Control {
 				stats.add(node.getPerceivedAvgChunkDeliveryTime());
 			}
 		}
-		log("[MOJO][HELPING] Latency: " + stats.getAverage());
+		log("[HELPING] Latency: " + stats.getAverage());
 		// log("Perceived avg chunk delivery-time: " + stats.getAverage());
 		log("[HELPING] Min of perceived avg chunk delivery-time: " + stats.getMin());
 		log("[HELPING] Max of perceived avg chunk delivery-time: " + stats.getMax());
@@ -662,7 +662,7 @@ public class StarStreamNodesObserver implements Control {
 		}
 
 		log("[HELPING] Nodes with incomplete playbacks: " + nodesWithUncompletePlaybacks);
-		log("[MOJO][HELPING] Packet Loss: " + stats.getAverage());
+		log("[HELPING] Packet Loss: " + stats.getAverage());
 		// log("Avg % of not played chunks: " + stats.getAverage());
 		log("[HELPING] Min % of not played chunks: " + stats.getMin());
 		log("[HELPING] Max % of not played chunks: " + stats.getMax());
