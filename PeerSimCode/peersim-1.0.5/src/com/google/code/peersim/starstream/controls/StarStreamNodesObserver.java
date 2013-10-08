@@ -105,13 +105,12 @@ public class StarStreamNodesObserver implements Control {
 
 		System.err.print("Dumping *-Stream stats to file " + logFile + "... ");
 
-		/*for (int i = 0; i < Network.size(); i++) {
-			StarStreamNode n = (StarStreamNode) (Network.get(i));
-			 System.out.println("PID "+n.getPastryPID());
-			if (!n.isHelping()) {
-				System.out.println("ID " + n.getID());
-			}
-		}*/
+		/*
+		 * for (int i = 0; i < Network.size(); i++) { StarStreamNode n =
+		 * (StarStreamNode) (Network.get(i));
+		 * System.out.println("PID "+n.getPastryPID()); if (!n.isHelping()) {
+		 * System.out.println("ID " + n.getID()); } }
+		 */
 
 		int helping = CommonState.getHelping() <= 0 ? 0 : CommonState
 				.getHelping();
@@ -226,21 +225,23 @@ public class StarStreamNodesObserver implements Control {
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
 			if (!node.isHelping() && !node.isJoining()) {
-				stats.add(node.getStarStreamProtocol().bandwidthUtilUp[(int)node.getID()].getAverage());
+				stats.add(node.getStarStreamProtocol().bandwidthUtilUp[(int) node
+						.getID()].getAverage());
 			}
 		}
 		log("bandwidthUtilUp: " + stats.getAverage());
 		stats.reset();
-		
+
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
 			if (!node.isHelping() && !node.isJoining()) {
-				stats.add(node.getStarStreamProtocol().bandwidthUtilDown[(int)node.getID()].getAverage());
+				stats.add(node.getStarStreamProtocol().bandwidthUtilDown[(int) node
+						.getID()].getAverage());
 			}
 		}
 		log("bandwidthUtilDown: " + stats.getAverage());
 		stats.reset();
-		
+
 		// chunks not sent due to max-retries count
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
@@ -309,13 +310,13 @@ public class StarStreamNodesObserver implements Control {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
 			if (node.isJoining()) {
 				avgpb += node.getWhenPlaybackStarted();
-				//System.out.println(node.getID());
+				// System.out.println(node.getID());
 			}
 		}
-		if(CommonState.getJoining() > 0){
+		if (CommonState.getJoining() > 0) {
 			log("[MOJO] Startup Delay: " + avgpb / CommonState.getJoining());
 		}
-		
+
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
 			if (!node.isHelping() && !node.isJoining()) {
@@ -407,6 +408,8 @@ public class StarStreamNodesObserver implements Control {
 		log("Min distance between not played chunks: " + stats.getMin());
 		log("Max distance between not played chunks: " + stats.getMax());
 		log("");
+		log("HELPING PEERS LOG");
+		log("");
 		stats.reset();
 
 		// players detail
@@ -414,6 +417,283 @@ public class StarStreamNodesObserver implements Control {
 		 * for (int i = 0; i < dim; i++) { StarStreamNode node =
 		 * (StarStreamNode) Network.get(i); log(node.getPlayer().toString()); }
 		 */
+
+		// HELPING PEERS LOG
+		activeNodes = 0;
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (node.isUp() && node.isHelping() && !node.isJoining())
+				activeNodes++;
+		}
+		log("[HELPING] Active nodes: " + activeNodes);
+
+		// playback started
+		nodesThatStartedPlayback = 0;
+		nodesThatDidNotStartedPlayback = new LinkedList<PastryId>();
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (node.isHelping() && !node.isJoining()) {
+				if (node.hasStartedPlayback())
+					nodesThatStartedPlayback++;
+				else
+					nodesThatDidNotStartedPlayback.add(node.getPastryId());
+			}
+		}
+		log("[HELPING] Started playbacks: " + nodesThatStartedPlayback);
+		log("[HELPING] Not started playbacks node-ids: " + nodesThatDidNotStartedPlayback);
+
+		// start-streaming time window
+		lastPlaybackStart = 0;
+		firstPlaybackStart = Long.MAX_VALUE;
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (node.isHelping() && !node.isJoining()) {
+				long time = node.getWhenPlaybackStarted();
+				if (time > lastPlaybackStart)
+					lastPlaybackStart = time;
+				if (time < firstPlaybackStart)
+					firstPlaybackStart = time;
+			}
+		}
+		log("[HELPING] Playbacks time-window: "
+				+ (lastPlaybackStart - firstPlaybackStart));
+
+		// missing chunks distribution
+		chunksTmpMap = new HashMap<Integer, Integer>();
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (node.isHelping() && !node.isJoining()) {
+				int missingChunks = node.countMissingChunks();
+				Integer nodesCount = chunksTmpMap.get(missingChunks);
+				if (nodesCount == null) {
+					chunksTmpMap.put(missingChunks, 1);
+				} else {
+					chunksTmpMap.put(missingChunks, ++nodesCount);
+				}
+			}
+		}
+		log("[HELPING] Missing chunks distribution [missed-chunks/nodes]: "
+				+ chunksTmpMap);
+		chunksTmpMap.clear();
+
+		// TTL-rejected chunks stats
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (node.isHelping() && !node.isJoining()) {
+				Set<Integer> missed = node.getStore()
+						.getRejectedChunksDueToExpiration();
+				for (int id : missed) {
+					Integer nodesCount = chunksTmpMap.get(id);
+					if (nodesCount == null) {
+						chunksTmpMap.put(id, 1);
+					} else {
+						chunksTmpMap.put(id, ++nodesCount);
+					}
+				}
+			}
+		}
+		log("[HELPING] Rejected chunks for ttl expiration [chunk-id/nodes]: "
+				+ chunksTmpMap.size() + " " + chunksTmpMap);
+		chunksTmpMap.clear();
+
+		// capacity-rejected chunks stats
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (node.isHelping() && !node.isJoining()) {
+				Set<Integer> missed = node.getStore()
+						.getRejectedChunksDueToCapacityLimit();
+				for (int id : missed) {
+					Integer nodesCount = chunksTmpMap.get(id);
+					if (nodesCount == null) {
+						chunksTmpMap.put(id, 1);
+					} else {
+						chunksTmpMap.put(id, ++nodesCount);
+					}
+				}
+			}
+		}
+		log("[HELPING] Rejected chunks for capacity limit [chunk-id/nodes]: "
+				+ chunksTmpMap.size() + " " + chunksTmpMap);
+		chunksTmpMap.clear();
+
+		// bandwidthUtil
+		/*for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (node.isHelping() && !node.isJoining()) {
+				stats.add(node.getStarStreamProtocol().bandwidthUtilUp[(int) node
+						.getID()].getAverage());
+			}
+		}
+		log("[HELPING] bandwidthUtilUp: " + stats.getAverage());
+		stats.reset();
+
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (node.isHelping() && !node.isJoining()) {
+				stats.add(node.getStarStreamProtocol().bandwidthUtilDown[(int) node
+						.getID()].getAverage());
+			}
+		}
+		log("[HELPING] bandwidthUtilDown: " + stats.getAverage());
+		stats.reset();
+		*/
+		// chunks not sent due to max-retries count
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (node.isHelping() && !node.isJoining()) {
+				stats.add(node.getUnsentChunkMsgsDueToTimeout());
+			}
+		}
+		log("[HELPING] Avg # of unsent chunk for max-retries: " + stats.getAverage());
+		log("[HELPING] Min # of unsent chunk for max-retries: " + stats.getMin());
+		log("[HELPING] Max # of unsent chunk for max-retries: " + stats.getMax());
+		stats.reset();
+
+		// chunk requests not sent due to max-retries count
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (node.isHelping() && !node.isJoining()) {
+				stats.add(node.getUnsentChunkReqDueToTimeout());
+			}
+		}
+		log("[HELPING] Avg # of unsent chunk-reqs for max-retries: " + stats.getAverage());
+		log("[HELPING] Min # of unsent chunk-reqs for max-retries: " + stats.getMin());
+		log("[HELPING] Max # of unsent chunk-reqs for max-retries: " + stats.getMax());
+		stats.reset();
+
+		// chunk received by means of Pastry
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (node.isHelping() && !node.isJoining()) {
+				int pChunks = node.getChunksReceivedFromPastry();
+				int sChunks = node.getChunksReceivedFromStarStream();
+				double res = 0;
+				if (pChunks + sChunks > 0)
+					res = pChunks * 100 / (pChunks + sChunks);
+				stats.add(res);
+			}
+		}
+		log("[HELPING] Avg % of chunks received by Pastry: " + stats.getAverage());
+		log("[HELPING] Min % of chunks received by Pastry: " + stats.getMin());
+		log("[HELPING] Max % of chunks received by Pastry: " + stats.getMax());
+		log("[HELPING] StD of chunks received by Pastry: " + stats.getStD());
+		log("[HELPING] Var of chunks received by Pastry: " + stats.getVar());
+		stats.reset();
+
+		// chunk received by means of StarStream
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (node.isHelping() && !node.isJoining()) {
+				int pChunks = node.getChunksReceivedFromPastry();
+				int sChunks = node.getChunksReceivedFromStarStream();
+				double res = 0;
+				if (pChunks + sChunks > 0)
+					res = sChunks * 100 / (pChunks + sChunks);
+				stats.add(res);
+			}
+		}
+		log("[HELPING] Avg % of chunks received by StarStream: " + stats.getAverage());
+		log("[HELPING] Min % of chunks received by StarStream: " + stats.getMin());
+		log("[HELPING] Max % of chunks received by StarStream: " + stats.getMax());
+		log("[HELPING] StD of chunks received by StarStream: " + stats.getStD());
+		log("[HELPING] Var of chunks received by StarStream: " + stats.getVar());
+		stats.reset();
+
+		// stats of perceived chunk delivery times
+		avgpb = 0;
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (node.isHelping()) {
+				avgpb += node.getWhenPlaybackStarted();
+				// System.out.println(node.getID());
+			}
+		}
+		if (CommonState.getHelping() > 0) {
+			log("[MOJO][HELPING] Startup Delay: " + avgpb / CommonState.getHelping());
+		}
+
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (node.isHelping() && !node.isJoining()) {
+				stats.add(node.getPerceivedAvgChunkDeliveryTime());
+			}
+		}
+		log("[MOJO][HELPING] Latency: " + stats.getAverage());
+		// log("Perceived avg chunk delivery-time: " + stats.getAverage());
+		log("[HELPING] Min of perceived avg chunk delivery-time: " + stats.getMin());
+		log("[HELPING] Max of perceived avg chunk delivery-time: " + stats.getMax());
+		log("[HELPING] Variance of perceived avg chunk delivery-time: " + stats.getVar());
+		log("[HELPING] StD of perceived avg chunk delivery-time: " + stats.getStD());
+
+		// avg sent messages per node
+		stats.reset();
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (node.isHelping() && !node.isJoining()) {
+				stats.add(node.getSentMessages());
+			}
+		}
+		log("[HELPING] Avg messages sent per node: " + stats.getAverage());
+		log("[HELPING] Min messages sent per node: " + stats.getMin());
+		log("[HELPING] Max messages sent per node: " + stats.getMax());
+		log("[HELPING] Variance of messages sent per node: " + stats.getVar());
+		log("[HELPING] StD of messages sent per node: " + stats.getStD());
+		stats.reset();
+
+		// players statistics
+		nodesWithUncompletePlaybacks = 0;
+
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (node.isHelping() && !node.isJoining()) {
+				List<Integer> missed = node.getUnplayedChunks();
+				if (missed.size() > 0)
+					nodesWithUncompletePlaybacks++;
+				stats.add(node.getPercentageOfUnplayedChunks());
+				for (int id : missed) {
+					Integer nodesCount = chunksTmpMap.get(id);
+					if (nodesCount == null) {
+						chunksTmpMap.put(id, 1);
+					} else {
+						chunksTmpMap.put(id, ++nodesCount);
+					}
+				}
+			}
+		}
+
+		log("[HELPING] Nodes with incomplete playbacks: " + nodesWithUncompletePlaybacks);
+		log("[MOJO][HELPING] Packet Loss: " + stats.getAverage());
+		// log("Avg % of not played chunks: " + stats.getAverage());
+		log("[HELPING] Min % of not played chunks: " + stats.getMin());
+		log("[HELPING] Max % of not played chunks: " + stats.getMax());
+		log("[HELPING] Not played chunks [chunk-id/nodes]: " + chunksTmpMap);
+		chunksTmpMap.clear();
+		stats.reset();
+
+		// distances between not played chunks
+		_stats = new IncrementalStats();
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (node.isHelping() && !node.isJoining()) {
+				List<Integer> missed = node.getUnplayedChunks();
+				for (int j = missed.size() - 1; j > 0; j--) {
+					_stats.add(missed.get(j) - missed.get(j - 1));
+				}
+				double avg = 0;
+				if (_stats.getN() > 0) {
+					avg = _stats.getAverage();
+					if (avg != 0)
+						stats.add(avg);
+				}
+				_stats.reset();
+			}
+		}
+		log("[HELPING] Avg distance between not played chunks: " + stats.getAverage());
+		log("[HELPING] Min distance between not played chunks: " + stats.getMin());
+		log("[HELPING] Max distance between not played chunks: " + stats.getMax());
+		log("");
+		stats.reset();
+
 		System.err.print("done!\n\n");
 	}
 
