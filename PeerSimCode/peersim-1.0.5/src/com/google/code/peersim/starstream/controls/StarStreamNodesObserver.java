@@ -517,10 +517,10 @@ public class StarStreamNodesObserver implements Control {
 		chunksTmpMap.clear();
 
 		// bandwidthUtil
-		/*for (int i = 0; i < dim; i++) {
+		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
 			if (node.isHelping() && !node.isJoining()) {
-				stats.add(node.getStarStreamProtocol().bandwidthUtilUp[(int) node
+				stats.add(CommonState.bandwidthUtilUp[(int) node
 						.getID()].getAverage());
 			}
 		}
@@ -530,13 +530,13 @@ public class StarStreamNodesObserver implements Control {
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
 			if (node.isHelping() && !node.isJoining()) {
-				stats.add(node.getStarStreamProtocol().bandwidthUtilDown[(int) node
+				stats.add(CommonState.bandwidthUtilDown[(int) node
 						.getID()].getAverage());
 			}
 		}
 		log("[HELPING] bandwidthUtilDown: " + stats.getAverage());
 		stats.reset();
-		*/
+		
 		// chunks not sent due to max-retries count
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
