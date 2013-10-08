@@ -68,6 +68,8 @@ private static int timeIn = 0;
 private static int timeJoin = 0;
 private static int timeStay = 0;
 private static int joining = 0;
+public static IncrementalStats[] bandwidthUtilDown;
+public static IncrementalStats[] bandwidthUtilUp;
 
 /**
  * Current time. Note that this value is simulator independent, all simulation

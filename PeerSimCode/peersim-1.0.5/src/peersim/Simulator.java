@@ -24,6 +24,7 @@ import peersim.cdsim.*;
 import peersim.config.*;
 import peersim.core.*;
 import peersim.edsim.*;
+import peersim.util.IncrementalStats;
 
 /**
  * This is the main entry point to peersim. This class loads configuration and
@@ -182,6 +183,12 @@ public class Simulator {
 		CommonState.setTimeIn(timeIn);
 		CommonState.setTimeStay(timeStay);
 		CommonState.setTimeJoin(timeJoin);
+		CommonState.bandwidthUtilDown = new IncrementalStats[netsize + helping];
+		CommonState.bandwidthUtilUp = new IncrementalStats[netsize + helping];
+		for(int i = 0; i < netsize + helping; i++) {
+			CommonState.bandwidthUtilDown[i] = new IncrementalStats();
+			CommonState.bandwidthUtilUp[i] = new IncrementalStats();
+		}
 
 		final int SIMID = getSimID();
 		if (SIMID == UNKNOWN) {

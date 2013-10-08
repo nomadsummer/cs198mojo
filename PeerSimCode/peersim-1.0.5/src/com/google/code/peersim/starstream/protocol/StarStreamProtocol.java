@@ -170,8 +170,6 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
   private boolean aggressive;
   private long sentMessages = 0;
   private int unsentChunkMsgsDueToTimeout;
-  public IncrementalStats[] bandwidthUtilDown;
-  public IncrementalStats[] bandwidthUtilUp;
   private int executeCount = 0;
   /**
    * Counter of chunks received by means of the Pastry API.
@@ -189,12 +187,6 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
    * @param prefix The configuration prefix
    */
   public StarStreamProtocol(String prefix) throws FileNotFoundException {
-	bandwidthUtilDown = new IncrementalStats[CommonState.getOrigNetworkSize()];
-	bandwidthUtilUp = new IncrementalStats[CommonState.getOrigNetworkSize()];
-	for(int i = 0; i < CommonState.getOrigNetworkSize(); i++) {
-		bandwidthUtilDown[i] = new IncrementalStats();
-		bandwidthUtilUp[i] = new IncrementalStats();
-	}
     msgTimeout = Configuration.getInt(prefix + SEPARATOR + MSG_TIMEOUT);
     starStoreSize = Configuration.getInt(prefix + SEPARATOR + STAR_STORE_SIZE);
     reliableTransportPid = Configuration.getPid(prefix + SEPARATOR + REL_TRANSPORT);
@@ -639,13 +631,13 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
 	double remainingBandwidth; 
 	double bandWidthUtil;
 	executeCount++;
-	if((int)this.owner.getID() < CommonState.getOrigNetworkSize()) {
+	if((int)this.owner.getID() < CommonState.getNetworkSize()) {
 		remainingBandwidth = getUpStream() - usedUpStream;
 		bandWidthUtil = 1 - (remainingBandwidth)/getUpStream();
-		bandwidthUtilUp[(int)this.owner.getID()].add(bandWidthUtil);
+		CommonState.bandwidthUtilUp[(int)this.owner.getID()].add(bandWidthUtil);
 		remainingBandwidth = getDownStream() - usedDownStream;
 		bandWidthUtil = 1 - (remainingBandwidth)/getDownStream();
-		bandwidthUtilDown[(int)this.owner.getID()].add(bandWidthUtil);
+		CommonState.bandwidthUtilDown[(int)this.owner.getID()].add(bandWidthUtil);
 	}
 	usedDownStream = 0;
     usedUpStream = 0;
