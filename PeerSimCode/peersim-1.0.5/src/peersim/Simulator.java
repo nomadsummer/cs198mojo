@@ -173,6 +173,7 @@ public class Simulator {
 		int timeIn = Configuration.getInt(PAR_TIMEIN, 1);
 		int timeStay = Configuration.getInt(PAR_TIMESTAY, 1);
 		int timeJoin = Configuration.getInt(PAR_TIMEJOIN, 1);
+		int numHelping = Math.abs(helping/100) * CommonState.getOrigNetworkSize();
 		
 		CommonState.setOrigNetworkSize(netsize);
 		CommonState.setNetworkSize(netsize);
@@ -183,14 +184,14 @@ public class Simulator {
 		CommonState.setTimeIn(timeIn);
 		CommonState.setTimeStay(timeStay);
 		CommonState.setTimeJoin(timeJoin);
-		CommonState.bandwidthUtilDown = new IncrementalStats[netsize + helping];
-		CommonState.bandwidthUtilUp = new IncrementalStats[netsize + helping];
-		for(int i = 0; i < netsize + helping; i++) {
+		CommonState.bandwidthUtilDown = new IncrementalStats[netsize + numHelping + 5];
+		CommonState.bandwidthUtilUp = new IncrementalStats[netsize + numHelping + 5];
+		for(int i = 0; i < netsize + numHelping + 5; i++) {
 			CommonState.bandwidthUtilDown[i] = new IncrementalStats();
 			CommonState.bandwidthUtilUp[i] = new IncrementalStats();
 		}
-		CommonState.downStreams = new int[netsize + helping + 5];
-		CommonState.upStreams = new int[netsize + helping + 5];
+		CommonState.downStreams = new int[netsize + numHelping + 5];
+		CommonState.upStreams = new int[netsize + numHelping + 5];
 
 		final int SIMID = getSimID();
 		if (SIMID == UNKNOWN) {
