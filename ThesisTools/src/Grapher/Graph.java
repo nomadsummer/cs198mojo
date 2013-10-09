@@ -1,7 +1,4 @@
-package grapher;
-
-import grapher.colorscheme.ColorScheme;
-import grapher.colorscheme.HeatScheme;
+package Grapher;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -11,6 +8,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 import javax.imageio.ImageIO;
+
+import Grapher.colorscheme.ColorScheme;
+import Grapher.colorscheme.HeatScheme;
 
 public class Graph {
 

@@ -1,9 +1,5 @@
 package DataCompiler;
 
-import grapher.Graph;
-import grapher.Tag;
-import grapher.colorscheme.GrayScheme;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -11,6 +7,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 
+import Grapher.Graph;
+import Grapher.Tag;
 import data.DataBit;
 import data.DataSet;
 
@@ -22,7 +20,7 @@ public class PeerSimCompiler {
 	public PeerSimCompiler() {
 
 		// Note: Always add last '/'
-		String folderName = "results/Final-True_JD1/";
+		String folderName = "results/TrueResults2/";
 		// String folderName = "results/Final-True_JD2/";
 		// String folderName = "results/Final-True_JC1/";
 		// String folderName = "results/Final-Fake-JC1/";

@@ -66,6 +66,11 @@ network.node.doLog false
 ############################################################## PROTOCOLS SECTION
 
 # The collaboration Protocol.
+protocol.mojocollab.maxDownStreamPerPeer 10000
+protocol.mojocollab.minDownStreamPerPeer 2500
+protocol.mojocollab.maxUpStreamPerPeer 6000
+protocol.mojocollab.minUpStreamPerPeer 1000
+
 protocol.mojocollab.downStreamPerPeer 100
 protocol.mojocollab.upStreamPerPeer 60
 protocol.mojocollab.aggressionFactor 1
@@ -77,7 +82,7 @@ protocol.mojocollab.timeStay 300000000
 
 #Start-up Delay
 protocol.mojocollab.joiningPeers .2
-protocol.mojocollab.timeJoin 10000
+protocol.mojocollab.timeJoin 2000
 
 # the 2D-coord protocol is used to assign each node a random bidimensional location
 # used to compute distances between node-pairs

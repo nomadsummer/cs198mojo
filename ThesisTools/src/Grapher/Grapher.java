@@ -1,4 +1,4 @@
-package grapher;
+package Grapher;
 
 public class Grapher {
 

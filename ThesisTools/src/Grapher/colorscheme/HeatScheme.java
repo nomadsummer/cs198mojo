@@ -1,4 +1,4 @@
-package grapher.colorscheme;
+package Grapher.colorscheme;
 
 import java.awt.Color;
 
