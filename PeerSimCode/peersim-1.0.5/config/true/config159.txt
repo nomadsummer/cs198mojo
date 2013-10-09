@@ -76,7 +76,7 @@ protocol.mojocollab.upStreamPerPeer 60
 protocol.mojocollab.aggressionFactor 1
 protocol.mojocollab.eqnReliance 1
 protocol.mojocollab.defaultResourceFactor 0.5
-protocol.mojocollab.helpingPeers 0
+protocol.mojocollab.helpingPeers 10
 protocol.mojocollab.timeIn 0
 protocol.mojocollab.timeStay 300000000
 
