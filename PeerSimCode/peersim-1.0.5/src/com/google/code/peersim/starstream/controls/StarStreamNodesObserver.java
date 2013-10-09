@@ -309,8 +309,8 @@ public class StarStreamNodesObserver implements Control {
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
 			if (node.isJoining()) {
-				avgpb += node.getWhenPlaybackStarted();
-				// System.out.println(node.getID());
+				avgpb += (node.getWhenPlaybackStarted() - CommonState.getTimeJoin());
+				System.out.println(node.getWhenPlaybackStarted());
 			}
 		}
 		if (CommonState.getJoining() > 0) {
