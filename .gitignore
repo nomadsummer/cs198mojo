@@ -5,5 +5,7 @@ PeerSimCode/peersim-1.0.5/bin/
 PeerSimCode/peersim-1.0.5/*.log
 TriblerCode/vlc
 TriblerCode/Unused
+ThesisTools/Results/*.*
+ThesisTools/bin
 Results/
 *.classpath
