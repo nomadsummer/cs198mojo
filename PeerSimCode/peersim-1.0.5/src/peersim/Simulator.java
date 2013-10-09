@@ -189,8 +189,8 @@ public class Simulator {
 			CommonState.bandwidthUtilDown[i] = new IncrementalStats();
 			CommonState.bandwidthUtilUp[i] = new IncrementalStats();
 		}
-		CommonState.downStreams = new int[netsize + helping];
-		CommonState.upStreams = new int[netsize + helping];
+		CommonState.downStreams = new int[netsize + helping + 5];
+		CommonState.upStreams = new int[netsize + helping + 5];
 
 		final int SIMID = getSimID();
 		if (SIMID == UNKNOWN) {
