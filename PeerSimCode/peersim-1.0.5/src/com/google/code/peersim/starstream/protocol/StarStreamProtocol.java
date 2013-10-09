@@ -16,9 +16,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
 
-import org.nfunk.jep.function.Random;
+//import org.nfunk.jep.function.Random;
+import java.util.Random;
 
-import peersim.cdsim.CDProtocol;
 import peersim.config.Configuration;
 import peersim.core.CommonState;
 import peersim.core.Node;
@@ -163,6 +163,12 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
   //private int timeIn;
   //private int timeStay;
   // [MOJO]
+  public static int[] downStreams;
+  public static int[] upStreams;
+  private int minDownStream = 0;
+  private int minUpStream = 0;
+  private int maxDownStream = 0;
+  private int maxUpStream = 0;
   private int usedDownStream = 0;
   private int usedUpStream = 0;
   private SortedSet<StarStreamMessage> delayedInMessages = new TreeSet<StarStreamMessage>();
@@ -198,8 +204,23 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
     if (corruptedMessages) {
       corruptedMessagesProbability = (float) Configuration.getDouble(prefix + SEPARATOR + CORRUPTED_MESSAGES_PROB);
     }
-    downStream = Configuration.getInt(prefix + SEPARATOR + "downStream") * CommonState.getNetworkSize();
-    upStream = Configuration.getInt(prefix + SEPARATOR + "upStream") * CommonState.getNetworkSize();
+    // Why do we multiply this by the size? This is already the per peer
+    //downStream = Configuration.getInt(prefix + SEPARATOR + "downStream") * CommonState.getNetworkSize();
+    //upStream = Configuration.getInt(prefix + SEPARATOR + "upStream") * CommonState.getNetworkSize();
+    minDownStream = Configuration.getInt("protocol.mojocollab.minDownStreamPerPeer");
+    maxDownStream = Configuration.getInt("protocol.mojocollab.maxDownStreamPerPeer");
+    minUpStream = Configuration.getInt("protocol.mojocollab.minUpStreamPerPeer");
+    maxUpStream = Configuration.getInt("protocol.mojocollab.maxUpStreamPerPeer");
+    Random rand = new Random();
+
+    for(int i=0;i<CommonState.downStreams.length;i++) {
+    	CommonState.downStreams[i] = rand.nextInt((maxDownStream - minDownStream) + 1) + minDownStream;
+    	CommonState.upStreams[i] = rand.nextInt((maxUpStream - minUpStream) + 1) + minUpStream;
+    }
+    
+    //System.out.println(this.getDownStream());
+    //System.out.println(this.getUpStream());
+    
     // [MOJO]
     downStreamPerPeer = Configuration.getInt("protocol.mojocollab.downStreamPerPeer");
     upStreamPerPeer = Configuration.getInt("protocol.mojocollab.upStreamPerPeer");
@@ -250,13 +271,14 @@ public class StarStreamProtocol implements EDProtocol, PastryProtocolListenerIfc
   //[MOJO]
   public int getUpStream(){
 	  // return upStream + upStreamAdd;
-	  return upStream;
+	  return CommonState.upStreams[(int)owner.getID()];
   }
  
   //[MOJO]
   public int getDownStream(){
 	  //return downStream + downStreamAdd;
-	  return downStream;
+	  // System.out.println((int)owner.getID() + " " + CommonState.downStreams[(int)owner.getID()]);
+	  return CommonState.downStreams[(int)owner.getID()];
   }
   
   //[MOJO]
