@@ -173,20 +173,21 @@ public class Simulator {
 		int timeIn = Configuration.getInt(PAR_TIMEIN, 1);
 		int timeStay = Configuration.getInt(PAR_TIMESTAY, 1);
 		int timeJoin = Configuration.getInt(PAR_TIMEJOIN, 1);
-		int numHelping = Math.abs(helping/100) * CommonState.getOrigNetworkSize();
-		
+
 		CommonState.setOrigNetworkSize(netsize);
 		CommonState.setNetworkSize(netsize);
 		CommonState.setChunkTTL(chunkttl);
 		CommonState.setHelping(helping);
 		CommonState.setFileHelping(helping);
-		CommonState.setJoining(joining*netsize);
+		CommonState.setJoining(joining * netsize);
 		CommonState.setTimeIn(timeIn);
 		CommonState.setTimeStay(timeStay);
 		CommonState.setTimeJoin(timeJoin);
+
+		int numHelping = Math.abs((int) (helping / 100.0)) * CommonState.getOrigNetworkSize();
 		CommonState.bandwidthUtilDown = new IncrementalStats[netsize + numHelping + 10];
 		CommonState.bandwidthUtilUp = new IncrementalStats[netsize + numHelping + 10];
-		for(int i = 0; i < netsize + numHelping + 10; i++) {
+		for (int i = 0; i < netsize + numHelping + 10; i++) {
 			CommonState.bandwidthUtilDown[i] = new IncrementalStats();
 			CommonState.bandwidthUtilUp[i] = new IncrementalStats();
 		}
@@ -217,9 +218,9 @@ public class Simulator {
 				// XXX could be done through reflection, but
 				// this is easier to read.
 				// [MOJO]
-				for (int j = 0; j < collabexps+1; j++) {
+				for (int j = 0; j < collabexps + 1; j++) {
 					CommonState.setHelping((((float) helping / 100) * CommonState.getNetworkSize()) + (j * (collabint * CommonState.getNetworkSize())));
-					if(CommonState.getHelping() > 0){
+					if (CommonState.getHelping() > 0) {
 						CommonState.setChunkTTL(CommonState.getChunkTTL() + CommonState.getHelping());
 					}
 					switch (SIMID) {
