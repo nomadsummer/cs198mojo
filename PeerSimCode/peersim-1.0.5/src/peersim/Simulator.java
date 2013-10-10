@@ -188,8 +188,9 @@ public class Simulator {
 		CommonState.setTwoWay(twoWay);
 		
 		CommonState.startUp = new int[CommonState.getJoining()];
-
-		int numHelping = Math.abs((int) (helping / 100.0)) * CommonState.getOrigNetworkSize();
+		
+		int numHelping = Math.abs((int)((helping / 100.0) * CommonState.getOrigNetworkSize()));
+		//System.out.println(Math.abs((int) (helping / 100.0)));
 		CommonState.bandwidthUtilDown = new IncrementalStats[netsize + numHelping + 10];
 		CommonState.bandwidthUtilUp = new IncrementalStats[netsize + numHelping + 10];
 		for (int i = 0; i < netsize + numHelping + 10; i++) {
