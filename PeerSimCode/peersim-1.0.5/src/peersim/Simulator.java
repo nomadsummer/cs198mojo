@@ -190,22 +190,16 @@ public class Simulator {
 		CommonState.startUp = new int[CommonState.getJoining()];
 
 		int numHelping = Math.abs((int) (helping / 100.0)) * CommonState.getOrigNetworkSize();
-		CommonState.bandwidthUtilDown = new IncrementalStats[netsize + numHelping + 100];
-		CommonState.bandwidthUtilUp = new IncrementalStats[netsize + numHelping + 100];
-		for (int i = 0; i < netsize + numHelping + 100; i++) {
+		CommonState.bandwidthUtilDown = new IncrementalStats[netsize + numHelping + 10];
+		CommonState.bandwidthUtilUp = new IncrementalStats[netsize + numHelping + 10];
+		for (int i = 0; i < netsize + numHelping + 10; i++) {
 			CommonState.bandwidthUtilDown[i] = new IncrementalStats();
 			CommonState.bandwidthUtilUp[i] = new IncrementalStats();
 		}
-<<<<<<< HEAD
+
 		CommonState.downStreams = new int[netsize + numHelping + 10];
 		CommonState.upStreams = new int[netsize + numHelping + 10];
-		
-=======
-		//System.out.println(netsize + numHelping + 10);
-		CommonState.downStreams = new int[netsize + numHelping + 100];
-		CommonState.upStreams = new int[netsize + numHelping + 100];
 
->>>>>>> ..
 		final int SIMID = getSimID();
 		if (SIMID == UNKNOWN) {
 			System.err.println("Simulator: unable to determine simulation engine type");
