@@ -89,6 +89,7 @@ public class Simulator {
 	public static final String PAR_TIMEIN = "protocol.mojocollab.timeIn";
 	public static final String PAR_TIMESTAY = "protocol.mojocollab.timeStay";
 	public static final String PAR_TIMEJOIN = "protocol.mojocollab.timeJoin";
+	public static final String PAR_TWOWAY = "protocol.mojocollab.twoWay";
 
 	// ==================== static fields ===================================
 	// ======================================================================
@@ -169,20 +170,24 @@ public class Simulator {
 		double collabint = Configuration.getDouble(PAR_COLLABINT, 1);
 		int collabexps = Configuration.getInt(PAR_COLLABEXPS, 1);
 		int helping = Configuration.getInt(PAR_HELPING, 1);
-		double joining = Configuration.getDouble(PAR_JOINING, 1);
+		int joining = Configuration.getInt(PAR_JOINING, 1);
 		int timeIn = Configuration.getInt(PAR_TIMEIN, 1);
 		int timeStay = Configuration.getInt(PAR_TIMESTAY, 1);
 		int timeJoin = Configuration.getInt(PAR_TIMEJOIN, 1);
+		boolean twoWay = Configuration.getBoolean(PAR_TWOWAY);
 
 		CommonState.setOrigNetworkSize(netsize);
 		CommonState.setNetworkSize(netsize);
 		CommonState.setChunkTTL(chunkttl);
 		CommonState.setHelping(helping);
 		CommonState.setFileHelping(helping);
-		CommonState.setJoining(joining * netsize);
+		CommonState.setJoining(joining);
 		CommonState.setTimeIn(timeIn);
 		CommonState.setTimeStay(timeStay);
 		CommonState.setTimeJoin(timeJoin);
+		CommonState.setTwoWay(twoWay);
+		
+		CommonState.startUp = new int[CommonState.getJoining()];
 
 		int numHelping = Math.abs((int) (helping / 100.0)) * CommonState.getOrigNetworkSize();
 		CommonState.bandwidthUtilDown = new IncrementalStats[netsize + numHelping + 10];
@@ -193,7 +198,7 @@ public class Simulator {
 		}
 		CommonState.downStreams = new int[netsize + numHelping + 10];
 		CommonState.upStreams = new int[netsize + numHelping + 10];
-
+		
 		final int SIMID = getSimID();
 		if (SIMID == UNKNOWN) {
 			System.err.println("Simulator: unable to determine simulation engine type");

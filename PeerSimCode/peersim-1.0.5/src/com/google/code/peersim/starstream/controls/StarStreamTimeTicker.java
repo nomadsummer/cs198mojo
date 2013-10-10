@@ -49,7 +49,7 @@ public class StarStreamTimeTicker implements Control {
 	@Override
 	public boolean execute() {
 		boolean stop = false;
-		int size = Network.size();
+		int size = CommonState.getNetworkSize();
 
 		for (int i = 0; i < size; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
@@ -61,7 +61,7 @@ public class StarStreamTimeTicker implements Control {
 		int numHelping = CommonState.getHelping();
 		int numJoining = CommonState.getJoining();
 
-		// INVESTIGATE NODE INITIALIZATION
+		// JOINING PEERS
 		if(CommonState.getTime() == CommonState.getTimeJoin()){
 			for (int i = 0; i < numJoining; i++){
 				n = (StarStreamNode) (Network.get(i)).clone();
@@ -73,10 +73,10 @@ public class StarStreamTimeTicker implements Control {
 					((NodeInitializer) inits[o]).initialize(n);
 				
 				Network.add(n);
-				//System.out.println(n.getID());
 			}
 		}
 		
+		// HELPING PEERS
 		if (CommonState.getTime() == CommonState.getTimeIn()) {
 			for (int i = 0; i < Math.abs(numHelping); i++) {
 				if (numHelping < 0) {
@@ -92,10 +92,8 @@ public class StarStreamTimeTicker implements Control {
 						((NodeInitializer) inits[o]).initialize(n);
 
 					Network.add(n);
-					//System.out.println(n.getID());
 				}
 			}
-			CommonState.setNetworkSize(Network.size());
 			//CommonState.setChunkTTL(CommonState.getNetworkSize());
 			
 			if (numHelping > 0) {
@@ -119,7 +117,20 @@ public class StarStreamTimeTicker implements Control {
 				}
 			}
 		}*/
-
+		
+		// LEAVING PEERS
+		if(CommonState.counter == 10){
+			// REMOVE FROM NETWORK
+			for(int i = size-1; i >= 0; i--){
+				StarStreamNode node = (StarStreamNode) Network.get(i);
+				if(node.isJoining()){
+					Network.remove(i);
+				}
+			}	
+		}
+		
+		CommonState.setNetworkSize(Network.size());
+		
 		return stop;
 	}
 }

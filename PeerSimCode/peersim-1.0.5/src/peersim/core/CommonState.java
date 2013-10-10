@@ -68,8 +68,11 @@ private static int timeIn = 0;
 private static int timeJoin = 0;
 private static int timeStay = 0;
 private static int joining = 0;
+private static boolean twoWay; 
 public static IncrementalStats[] bandwidthUtilDown;
 public static IncrementalStats[] bandwidthUtilUp;
+public static int[] startUp;
+public static int counter = 0;
 public static int[] downStreams;
 public static int[] upStreams;
 
@@ -249,14 +252,24 @@ public static int getTimeStay()
 	return timeStay;
 }
 
-public static void setJoining(double j)
+public static void setJoining(int j)
 {
-	joining = (int) j;
+	joining = j;
 }
 
 public static int getJoining()
 {
 	return joining;
+}
+
+public static void setTwoWay(boolean t)
+{
+	twoWay = t;
+}
+
+public static boolean isTwoWay()
+{
+	return twoWay;
 }
 
 /**

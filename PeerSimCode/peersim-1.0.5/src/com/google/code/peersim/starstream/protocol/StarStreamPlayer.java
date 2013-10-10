@@ -61,13 +61,15 @@ public class StarStreamPlayer {
   }
 
   void start() {
+	// [MOJO]
     playbackStarted = true;
     whenPlaybackStarted = CommonState.getTime();
     lastPlayedChunkSeqId = 0;
     playedChunks.add(lastPlayedChunkSeqId);
-    //if(node.isHelping()){
-    	//System.out.println("[MOJO] "+whenPlaybackStarted+" "+node.getID()+" : Playback Started");
-    //}
+    if(node.isJoining()){
+    	CommonState.startUp[CommonState.counter] = (int) whenPlaybackStarted;
+    	CommonState.counter++;
+    }
   }
 
   void tick() {

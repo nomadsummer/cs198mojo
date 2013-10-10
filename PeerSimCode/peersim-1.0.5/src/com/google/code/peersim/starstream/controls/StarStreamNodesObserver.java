@@ -306,16 +306,10 @@ public class StarStreamNodesObserver implements Control {
 
 		// stats of perceived chunk delivery times
 		double avgpb = 0;
-		for (int i = 0; i < dim; i++) {
-			StarStreamNode node = (StarStreamNode) Network.get(i);
-			if (node.isJoining()) {
-				avgpb += (node.getWhenPlaybackStarted() - CommonState.getTimeJoin());
-				System.out.println(node.getWhenPlaybackStarted());
-			}
+		for(int i = 0; i < CommonState.getJoining(); i++){
+			stats.add(CommonState.startUp[i] - CommonState.getTimeJoin());
 		}
-		if (CommonState.getJoining() > 0) {
-			log("[MOJO] Startup Delay: " + avgpb / CommonState.getJoining());
-		}
+		log("[MOJO] Startup Delay: " + stats.getAverage());
 
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
@@ -605,7 +599,6 @@ public class StarStreamNodesObserver implements Control {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
 			if (node.isHelping()) {
 				avgpb += node.getWhenPlaybackStarted();
-				// System.out.println(node.getID());
 			}
 		}
 		if (CommonState.getHelping() > 0) {
