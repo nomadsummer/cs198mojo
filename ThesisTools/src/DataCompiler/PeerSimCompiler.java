@@ -20,7 +20,9 @@ public class PeerSimCompiler {
 	public PeerSimCompiler() {
 
 		// Note: Always add last '/'
-		String folderName = "results/TrueResults3/";
+		String folderName = "Results/1/";
+		//String folderName = "Results/2/"; True
+		//String folderName = "Results/3/"; False
 		// String folderName = "results/Final-True_JD2/";
 		// String folderName = "results/Final-True_JC1/";
 		// String folderName = "results/Final-Fake-JC1/";
@@ -54,6 +56,8 @@ public class PeerSimCompiler {
 				new Tag("[MOJO] Latency: ", 2, Double.class), //
 				new Tag("[MOJO] Packet Loss: ", 3, Double.class), //
 				new Tag("[MOJO] Startup Delay: ", 3, Double.class), //
+				new Tag("[NONMOJO] Startup Delay: ", 3, Double.class), //
+				new Tag("Avg messages sent per node: ", 5, Double.class), //
 				new Tag("bandwidthUtilUp: ", 1, Double.class), //
 				new Tag("bandwidthUtilDown: ", 1, Double.class), //
 				new Tag("Avg distance between not played chunks: ", 6, Double.class), //
@@ -180,7 +184,7 @@ public class PeerSimCompiler {
 				}
 
 				// Graph It
-				Graph g = new Graph(helpingSizes.length, swarmSizes.length, 32);
+				Graph g = new Graph(helpingSizes.length, swarmSizes.length, 64);
 				g.setData(data);
 				g.setLimits(0.0, 0.0);
 				g.setAxes(helpingSizes, swarmSizes);

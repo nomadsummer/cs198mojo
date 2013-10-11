@@ -318,7 +318,7 @@ public class StarStreamProtocol implements EDProtocol,
 	// [MOJO]
 	public int getUpStream() {
 		// return upStream + upStreamAdd;
-		return CommonState.upStreams[(int) owner.getID()];
+		return CommonState.upStreams[(int) owner.getID()] + upStreamAdd;
 	}
 
 	// [MOJO]
@@ -326,7 +326,7 @@ public class StarStreamProtocol implements EDProtocol,
 		// return downStream + downStreamAdd;
 		// System.out.println((int)owner.getID() + " " +
 		// CommonState.downStreams[(int)owner.getID()]);
-		return CommonState.downStreams[(int) owner.getID()];
+		return CommonState.downStreams[(int) owner.getID()] + downStreamAdd;
 	}
 
 	// [MOJO]

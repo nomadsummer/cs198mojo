@@ -307,6 +307,15 @@ public class StarStreamNodesObserver implements Control {
 
 		// stats of perceived chunk delivery times
 		double avgpb = 0;
+		for (int i = 0; i < dim; i++) {
+			StarStreamNode node = (StarStreamNode) Network.get(i);
+			if (!node.isHelping() && !node.isJoining()) {
+				avgpb += node.getWhenPlaybackStarted();
+			}
+		}
+		log("[NONMOJO] Startup Delay: " + avgpb / CommonState.getOrigNetworkSize());
+		
+		avgpb = 0;
 		for(int i = 0; i < CommonState.getJoining(); i++){
 			stats.add(CommonState.startUp[i] - CommonState.getTimeJoin());
 		}

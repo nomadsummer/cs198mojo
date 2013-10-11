@@ -200,7 +200,7 @@ public class Simulator {
 
 		CommonState.downStreams = new int[netsize + numHelping + 10];
 		CommonState.upStreams = new int[netsize + numHelping + 10];
-
+		
 		final int SIMID = getSimID();
 		if (SIMID == UNKNOWN) {
 			System.err.println("Simulator: unable to determine simulation engine type");
