@@ -102,6 +102,7 @@ public class StarStreamNodesObserver implements Control {
 	 */
 	private void dump() {
 		IncrementalStats stats = new IncrementalStats();
+		IncrementalStats stats2 = new IncrementalStats();
 
 		System.err.print("Dumping *-Stream stats to file " + logFile + "... ");
 
@@ -360,6 +361,7 @@ public class StarStreamNodesObserver implements Control {
 				if (missed.size() > 0)
 					nodesWithUncompletePlaybacks++;
 				stats.add(node.getPercentageOfUnplayedChunks());
+				stats2.add(node.getPercentageOfPlayedChunks());
 				for (int id : missed) {
 					Integer nodesCount = chunksTmpMap.get(id);
 					if (nodesCount == null) {
@@ -372,6 +374,7 @@ public class StarStreamNodesObserver implements Control {
 		}
 
 		log("Nodes with incomplete playbacks: " + nodesWithUncompletePlaybacks);
+		log("[MOJO] Continuity Index: " + stats2.getAverage());
 		log("[MOJO] Packet Loss: " + stats.getAverage());
 		// log("Avg % of not played chunks: " + stats.getAverage());
 		log("Min % of not played chunks: " + stats.getMin());

@@ -14,6 +14,7 @@ import peersim.core.Network;
 import peersim.core.Node;
 import peersim.dynamics.NodeInitializer;
 import peersim.edsim.EDSimulator;
+import peersim.util.IncrementalStats;
 
 import com.google.code.peersim.starstream.protocol.StarStreamNode;
 import com.google.code.peersim.starstream.protocol.StarStreamProtocol;
@@ -60,6 +61,18 @@ public class StarStreamTimeTicker implements Control {
 		StarStreamNode n = (StarStreamNode) Network.get(0);
 		int numHelping = CommonState.getHelping();
 		int numJoining = CommonState.getJoining();
+		
+		// ABSOLUTE CONTRIBUTION
+		/*if (CommonState.getAbsConDown() == 0 && CommonState.getAbsConUp() == 0){
+			IncrementalStats absConDown = new IncrementalStats();
+			IncrementalStats absConUp = new IncrementalStats();
+			for (int i = 0; i < size; i++){
+				n = (StarStreamNode) Network.get(i);
+				absConDown.add(n.getStarStreamProtocol().getDownStream());
+				absConUp.add(n.getStarStreamProtocol().getUpStream());
+			}
+			
+		}*/
 
 		// JOINING PEERS
 		if (CommonState.getTime() == CommonState.getTimeJoin()) {
@@ -96,7 +109,6 @@ public class StarStreamTimeTicker implements Control {
 					Network.add(n);
 				}
 			}
-			// CommonState.setChunkTTL(CommonState.getNetworkSize());
 
 			if (numHelping > 0 || CommonState.isTwoWay()) {
 				for (int i = 0; i < Network.size(); i++) {
@@ -130,6 +142,7 @@ public class StarStreamTimeTicker implements Control {
 		}
 
 		CommonState.setNetworkSize(Network.size());
+		//CommonState.setChunkTTL(CommonState.getNetworkSize());
 
 		return stop;
 	}

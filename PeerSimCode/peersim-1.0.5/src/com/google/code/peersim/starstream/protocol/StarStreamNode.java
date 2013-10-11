@@ -188,6 +188,11 @@ public class StarStreamNode extends PastryNode implements
 	public double getPercentageOfUnplayedChunks() {
 		return 100 * getUnplayedChunks().size() / totalChunks;
 	}
+	
+	// [MOJO]
+	public double getPercentageOfPlayedChunks() {
+		return 100 * getPlayedChunks().size() / totalChunks;
+	}
 
 	public List<Integer> getPlayedChunks() {
 		return player.getPlayedChunks();

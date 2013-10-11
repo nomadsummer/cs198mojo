@@ -68,7 +68,9 @@ private static int timeIn = 0;
 private static int timeJoin = 0;
 private static int timeStay = 0;
 private static int joining = 0;
-private static boolean twoWay; 
+private static boolean twoWay;
+private static int absConDown = 0;
+private static int absConUp = 0;
 public static IncrementalStats[] bandwidthUtilDown;
 public static IncrementalStats[] bandwidthUtilUp;
 public static int[] startUp;
@@ -270,6 +272,26 @@ public static void setTwoWay(boolean t)
 public static boolean isTwoWay()
 {
 	return twoWay;
+}
+
+public static void setAbsConDown(int a)
+{
+	absConDown = a;
+}
+
+public static int getAbsConDown()
+{
+	return absConDown;
+}
+
+public static void setAbsConUp(int a)
+{
+	absConUp = a;
+}
+
+public static int getAbsConUp()
+{
+	return absConUp;
 }
 
 /**
