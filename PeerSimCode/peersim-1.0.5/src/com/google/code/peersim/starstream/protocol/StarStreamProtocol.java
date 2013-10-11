@@ -16,16 +16,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
 
-//import org.nfunk.jep.function.Random;
-import java.util.Random;
-
 import peersim.config.Configuration;
 import peersim.core.CommonState;
 import peersim.core.Node;
 import peersim.edsim.EDProtocol;
 import peersim.transport.Transport;
 import peersim.util.FileNameGenerator;
-import peersim.util.IncrementalStats;
 
 import com.google.code.peersim.pastry.protocol.PastryId;
 import com.google.code.peersim.pastry.protocol.PastryProtocol;
@@ -232,7 +228,7 @@ public class StarStreamProtocol implements EDProtocol,
 				.getInt("protocol.mojocollab.minUpStreamPerPeer");
 		maxUpStream = Configuration
 				.getInt("protocol.mojocollab.maxUpStreamPerPeer");
-		Random rand = new Random();
+		//Random rand = new Random();
 		int sumDown = 0;
 		int sumUp = 0;
 		downStreamPerPeer = Configuration
@@ -241,17 +237,18 @@ public class StarStreamProtocol implements EDProtocol,
 				.getInt("protocol.mojocollab.upStreamPerPeer");
 
 		for (int i = 0; i < CommonState.downStreams.length; i++) {
-			CommonState.downStreams[i] = rand
+			CommonState.downStreams[i] = CommonState.r
 					.nextInt((maxDownStream - minDownStream) + 1)
 					+ minDownStream;
 			sumDown = sumDown + CommonState.downStreams[i];
-			CommonState.upStreams[i] = rand
+			CommonState.upStreams[i] = CommonState.r
 					.nextInt((maxUpStream - minUpStream) + 1) + minUpStream;
 			sumUp = sumUp + CommonState.upStreams[i];
 		}
 		
 		for (int i = 0; i < CommonState.downStreams.length; i++) {
 			CommonState.downStreams[i] = (int)(((double)CommonState.downStreams[i]/sumDown)*(CommonState.downStreams.length*downStreamPerPeer));
+			// System.out.println(CommonState.downStreams[i]);
 			CommonState.upStreams[i] = (int)(((double)CommonState.upStreams[i]/sumUp)*(CommonState.downStreams.length*upStreamPerPeer));
 		}
 		

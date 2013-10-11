@@ -85,7 +85,7 @@ protocol.mojocollab.joiningPeers 10
 protocol.mojocollab.timeJoin 2000
 
 # Two-way Helping
-protocol.mojocollab.twoWay false
+protocol.mojocollab.twoWay true
 
 # the 2D-coord protocol is used to assign each node a random bidimensional location
 # used to compute distances between node-pairs

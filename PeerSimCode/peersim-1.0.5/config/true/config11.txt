@@ -76,7 +76,7 @@ protocol.mojocollab.upStreamPerPeer 12000
 protocol.mojocollab.aggressionFactor 1
 protocol.mojocollab.eqnReliance 1
 protocol.mojocollab.defaultResourceFactor 0.5
-protocol.mojocollab.helpingPeers 0
+protocol.mojocollab.helpingPeers 100
 protocol.mojocollab.timeIn 0
 protocol.mojocollab.timeStay 300000000
 
@@ -85,7 +85,7 @@ protocol.mojocollab.joiningPeers 10
 protocol.mojocollab.timeJoin 2000
 
 # Two-way Helping
-protocol.mojocollab.twoWay false
+protocol.mojocollab.twoWay true
 
 # the 2D-coord protocol is used to assign each node a random bidimensional location
 # used to compute distances between node-pairs
