@@ -84,8 +84,8 @@ public class StarStreamNode extends PastryNode implements
 	private StarStreamPlayer player;
 	private int totalChunks;
 	private Long streamingStartTime;
-	//private boolean writerStart = false;
-	//PrintWriter writer;
+	// private boolean writerStart = false;
+	// PrintWriter writer;
 
 	// [MOJO] status
 	private boolean isHelping;
@@ -125,12 +125,11 @@ public class StarStreamNode extends PastryNode implements
 		chunkPlaybackLength = Configuration.getInt(prefix + SEPARATOR
 				+ "chunkPlaybackLength");
 		totalChunks = Configuration.getInt(prefix + SEPARATOR + "totalChunks");
-		/*try {
-			writer = new PrintWriter("resultsElijah.txt", "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}*/
-		
+		/*
+		 * try { writer = new PrintWriter("resultsElijah.txt", "UTF-8"); } catch
+		 * (UnsupportedEncodingException e) { e.printStackTrace(); }
+		 */
+
 		init();
 	}
 
@@ -188,7 +187,7 @@ public class StarStreamNode extends PastryNode implements
 	public double getPercentageOfUnplayedChunks() {
 		return 100 * getUnplayedChunks().size() / totalChunks;
 	}
-	
+
 	// [MOJO]
 	public double getPercentageOfPlayedChunks() {
 		return 100 * getPlayedChunks().size() / totalChunks;
@@ -525,7 +524,7 @@ public class StarStreamNode extends PastryNode implements
 	public boolean isHelping() {
 		return isHelping;
 	}
-	
+
 	public void changeJoining(boolean j) {
 		isJoining = j;
 	}
@@ -556,8 +555,8 @@ public class StarStreamNode extends PastryNode implements
 		// [MOJO] node init
 		this.isHelping = false;
 		this.isJoining = false;
-		
-		//System.out.println(this.getID());
+
+		// System.out.println(this.getID());
 	}
 
 	private void removeFromIssuedChunkRequests(int sequenceId) {

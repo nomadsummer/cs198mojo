@@ -160,8 +160,8 @@ public class StarStreamProtocol implements EDProtocol,
 	private int downStream;
 	private int upStream;
 	// [MOJO]
-	private static int downStreamAdd = 0;
-	private static int upStreamAdd = 0;
+	private int downStreamAdd = 0;
+	private int upStreamAdd = 0;
 	private int downStreamPerPeer;
 	private int upStreamPerPeer;
 	// private int helpingPeers;
