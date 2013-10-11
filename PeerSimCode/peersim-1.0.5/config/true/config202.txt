@@ -67,9 +67,9 @@ network.node.doLog false
 
 # The collaboration Protocol.
 protocol.mojocollab.maxDownStreamPerPeer 10000
-protocol.mojocollab.minDownStreamPerPeer 2500
+protocol.mojocollab.minDownStreamPerPeer 8000
 protocol.mojocollab.maxUpStreamPerPeer 6000
-protocol.mojocollab.minUpStreamPerPeer 1000
+protocol.mojocollab.minUpStreamPerPeer 4000
 
 protocol.mojocollab.downStreamPerPeer 100
 protocol.mojocollab.upStreamPerPeer 60
