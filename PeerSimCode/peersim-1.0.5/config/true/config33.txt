@@ -1,8 +1,8 @@
 # Some quick-access constants to make the actual configurations more readable
-SIZE 30
+SIZE 20
 RESOURCES 100
 CHUNK_PLAYBACK_LENGTH 50
-CHUNK_TTL 30
+CHUNK_TTL 20
 
 # how many cycles and their length
 # one cycle for each node, one for each resource, one for collecting the state
@@ -22,7 +22,7 @@ DROP 0.2
 ##################################################### GENERAL SIMULATION SECTION
 
 # seed to initialize the centralized PRNG
-random.seed 58008
+random.seed 690503
 
 # how many nodes should be simulated
 network.size SIZE
@@ -76,7 +76,7 @@ protocol.mojocollab.upStreamPerPeer 12000
 protocol.mojocollab.aggressionFactor 1
 protocol.mojocollab.eqnReliance 1
 protocol.mojocollab.defaultResourceFactor 0.5
-protocol.mojocollab.helpingPeers 100
+protocol.mojocollab.helpingPeers 10
 protocol.mojocollab.timeIn 0
 protocol.mojocollab.timeStay 300000000
 
@@ -85,7 +85,7 @@ protocol.mojocollab.joiningPeers 10
 protocol.mojocollab.timeJoin 2000
 
 # Two-way Helping
-protocol.mojocollab.twoWay true
+protocol.mojocollab.twoWay false
 
 # the 2D-coord protocol is used to assign each node a random bidimensional location
 # used to compute distances between node-pairs
