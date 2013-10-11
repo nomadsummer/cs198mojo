@@ -20,19 +20,10 @@ public class PeerSimCompiler {
 	public PeerSimCompiler() {
 
 		// Note: Always add last '/'
-<<<<<<< HEAD
-<<<<<<< HEAD
-		String folderName = "Results/1/";
-		//String folderName = "Results/2/"; True
-		//String folderName = "Results/3/"; False
-=======
-		String folderName = "results/TrueResults4/";
->>>>>>> ...
-=======
+		//String folderName = "results/TrueResults4/";
 		//String folderName = "Results/1/"; //Normal
 		String folderName = "Results/2/"; //True
 		//String folderName = "Results/3/"; //False
->>>>>>> Revert to No Two-Way + New Jar
 		// String folderName = "results/Final-True_JD2/";
 		// String folderName = "results/Final-True_JC1/";
 		// String folderName = "results/Final-Fake-JC1/";
@@ -49,11 +40,8 @@ public class PeerSimCompiler {
 		// int[] swarmSizes = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
 		// int[] swarmSizes = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140 };
 		int[] swarmSizes = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
-<<<<<<< HEAD
 		// int[] helpingSizes = { -100, -90, -80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
-=======
 		//int[] helpingSizes = { 0, 20, 40, 60, 80, 100 };
->>>>>>> Revert to No Two-Way + New Jar
 		int[] helpingSizes = { -100, -80, -60, -40, -20, 0, 20, 40, 60, 80, 100 };
 		// int[] helpingSizes = { -100, -75, -50, -25, 0, 25, 50, 75, 100 };
 
