@@ -251,8 +251,8 @@ public class StarStreamProtocol implements EDProtocol,
 		}
 		
 		for (int i = 0; i < CommonState.downStreams.length; i++) {
-			CommonState.downStreams[i] = (CommonState.downStreams[i]/sumDown)*(CommonState.downStreams.length*downStreamPerPeer);
-			CommonState.upStreams[i] = (CommonState.upStreams[i]/sumUp)*(CommonState.downStreams.length*upStreamPerPeer);
+			CommonState.downStreams[i] = (int)(((double)CommonState.downStreams[i]/sumDown)*(CommonState.downStreams.length*downStreamPerPeer));
+			CommonState.upStreams[i] = (int)(((double)CommonState.upStreams[i]/sumUp)*(CommonState.downStreams.length*upStreamPerPeer));
 		}
 		
 		// System.out.println(this.getDownStream());
@@ -318,7 +318,7 @@ public class StarStreamProtocol implements EDProtocol,
 	// [MOJO]
 	public int getUpStream() {
 		// return upStream + upStreamAdd;
-		return CommonState.upStreams[(int) owner.getID()] + upStreamAdd;
+		return CommonState.upStreams[(int) owner.getID()];
 	}
 
 	// [MOJO]
@@ -326,7 +326,7 @@ public class StarStreamProtocol implements EDProtocol,
 		// return downStream + downStreamAdd;
 		// System.out.println((int)owner.getID() + " " +
 		// CommonState.downStreams[(int)owner.getID()]);
-		return CommonState.downStreams[(int) owner.getID()] + downStreamAdd;
+		return CommonState.downStreams[(int) owner.getID()];
 	}
 
 	// [MOJO]

@@ -38,6 +38,7 @@ Max messages sent per node: 0.0
 Variance of messages sent per node: 0.0
 StD of messages sent per node: 0.0
 Nodes with incomplete playbacks: 0
+[MOJO] Continuity Index: 0.0
 [MOJO] Packet Loss: 0.0
 Min % of not played chunks: 0.0
 Max % of not played chunks: 0.0
