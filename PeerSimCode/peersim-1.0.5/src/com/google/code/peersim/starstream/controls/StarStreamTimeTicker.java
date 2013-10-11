@@ -50,7 +50,7 @@ public class StarStreamTimeTicker implements Control {
 	@Override
 	public boolean execute() {
 		boolean stop = false;
-		int size = CommonState.getNetworkSize();
+		int size = Network.size();
 
 		for (int i = 0; i < size; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
@@ -71,7 +71,6 @@ public class StarStreamTimeTicker implements Control {
 				absConDown.add(n.getStarStreamProtocol().getDownStream());
 				absConUp.add(n.getStarStreamProtocol().getUpStream());
 			}
-			
 		}*/
 
 		// JOINING PEERS
@@ -92,7 +91,23 @@ public class StarStreamTimeTicker implements Control {
 		// HELPING PEERS
 		if (CommonState.getTime() == CommonState.getTimeIn()) {
 			for (int i = 0; i < Math.abs(numHelping); i++) {
-				if (numHelping < 0 || CommonState.isTwoWay()) {
+				if (numHelping < 0) {
+					StarStreamNode node = (StarStreamNode) Network.get(i);
+					node.getStarStreamProtocol().RemoveStreams();
+				}
+				else {
+					n = (StarStreamNode) (Network.get(i)).clone();
+					n.changeHelping(true);
+
+					Object[] inits = Configuration
+							.getInstanceArray(EDSimulator.PAR_INIT);
+					for (int o = 0; o < inits.length; o++)
+						((NodeInitializer) inits[o]).initialize(n);
+
+					Network.add(n);
+				}
+				
+				/*if (numHelping < 0 || CommonState.isTwoWay()) {
 					StarStreamNode node = (StarStreamNode) Network.get(i);
 					node.getStarStreamProtocol().RemoveStreams();
 				} 
@@ -107,17 +122,18 @@ public class StarStreamTimeTicker implements Control {
 						((NodeInitializer) inits[o]).initialize(n);
 
 					Network.add(n);
-				}
+				}*/
 			}
 
-			if (numHelping > 0 || CommonState.isTwoWay()) {
+			//if (numHelping > 0 || CommonState.isTwoWay()) {
+			/*if (numHelping > 0) {
 				for (int i = 0; i < Network.size(); i++) {
 					n = (StarStreamNode) (Network.get(i));
 					if (!n.isHelping()) {
 						n.getStarStreamProtocol().AddStreams();
 					}
 				}
-			}
+			}*/
 		}
 
 		/*
