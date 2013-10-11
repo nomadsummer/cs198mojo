@@ -55,15 +55,15 @@ public class StarStreamTimeTicker implements Control {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
 			node.tick();
 		}
-		
+
 		// [MOJO]
 		StarStreamNode n = (StarStreamNode) Network.get(0);
 		int numHelping = CommonState.getHelping();
 		int numJoining = CommonState.getJoining();
 
 		// JOINING PEERS
-		if(CommonState.getTime() == CommonState.getTimeJoin()){
-			for (int i = 0; i < numJoining; i++){
+		if (CommonState.getTime() == CommonState.getTimeJoin()) {
+			for (int i = 0; i < numJoining; i++) {
 				n = (StarStreamNode) (Network.get(i)).clone();
 				n.changeJoining(true);
 
@@ -71,18 +71,20 @@ public class StarStreamTimeTicker implements Control {
 						.getInstanceArray(EDSimulator.PAR_INIT);
 				for (int o = 0; o < inits.length; o++)
 					((NodeInitializer) inits[o]).initialize(n);
-				
+
 				Network.add(n);
 			}
 		}
-		
+
 		// HELPING PEERS
 		if (CommonState.getTime() == CommonState.getTimeIn()) {
 			for (int i = 0; i < Math.abs(numHelping); i++) {
-				if (numHelping < 0) {
+				if (numHelping < 0 || CommonState.isTwoWay()) {
 					StarStreamNode node = (StarStreamNode) Network.get(i);
 					node.getStarStreamProtocol().RemoveStreams();
-				} else {
+				} 
+				
+				if (numHelping > 0 || CommonState.isTwoWay()) {
 					n = (StarStreamNode) (Network.get(i)).clone();
 					n.changeHelping(true);
 
@@ -94,43 +96,41 @@ public class StarStreamTimeTicker implements Control {
 					Network.add(n);
 				}
 			}
-			//CommonState.setChunkTTL(CommonState.getNetworkSize());
-			
-			if (numHelping > 0) {
+			// CommonState.setChunkTTL(CommonState.getNetworkSize());
+
+			if (numHelping > 0 || CommonState.isTwoWay()) {
 				for (int i = 0; i < Network.size(); i++) {
 					n = (StarStreamNode) (Network.get(i));
-					if(!n.isHelping()){
+					if (!n.isHelping()) {
 						n.getStarStreamProtocol().AddStreams();
 					}
 				}
 			}
 		}
 
-		/*if (CommonState.getTime() == (CommonState.getTimeIn() + CommonState.getTimeStay())) {
-			for (int i = 0; i < Math.abs(numHelping); i++) {
-				if (numHelping <= 0) {
-					StarStreamNode node = (StarStreamNode) Network.get(i);
-					node.getStarStreamProtocol().AddStreams();
-				} else {
-					n = (StarStreamNode) Network.remove();
-					n.getStarStreamProtocol().RemoveStreams();
-				}
-			}
-		}*/
-		
+		/*
+		 * if (CommonState.getTime() == (CommonState.getTimeIn() +
+		 * CommonState.getTimeStay())) { for (int i = 0; i <
+		 * Math.abs(numHelping); i++) { if (numHelping <= 0) { StarStreamNode
+		 * node = (StarStreamNode) Network.get(i);
+		 * node.getStarStreamProtocol().AddStreams(); } else { n =
+		 * (StarStreamNode) Network.remove();
+		 * n.getStarStreamProtocol().RemoveStreams(); } } }
+		 */
+
 		// LEAVING PEERS
-		if(CommonState.counter == 10){
+		if (CommonState.counter == 10) {
 			// REMOVE FROM NETWORK
-			for(int i = size-1; i >= 0; i--){
+			for (int i = size - 1; i >= 0; i--) {
 				StarStreamNode node = (StarStreamNode) Network.get(i);
-				if(node.isJoining()){
+				if (node.isJoining()) {
 					Network.remove(i);
 				}
-			}	
+			}
 		}
-		
+
 		CommonState.setNetworkSize(Network.size());
-		
+
 		return stop;
 	}
 }
