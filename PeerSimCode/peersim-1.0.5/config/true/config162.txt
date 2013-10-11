@@ -66,13 +66,13 @@ network.node.doLog false
 ############################################################## PROTOCOLS SECTION
 
 # The collaboration Protocol.
-protocol.mojocollab.maxDownStreamPerPeer 10000
-protocol.mojocollab.minDownStreamPerPeer 8000
-protocol.mojocollab.maxUpStreamPerPeer 6000
-protocol.mojocollab.minUpStreamPerPeer 4000
+protocol.mojocollab.maxDownStreamPerPeer 20000
+protocol.mojocollab.minDownStreamPerPeer 18000
+protocol.mojocollab.maxUpStreamPerPeer 12000
+protocol.mojocollab.minUpStreamPerPeer 10000
 
-protocol.mojocollab.downStreamPerPeer 100
-protocol.mojocollab.upStreamPerPeer 60
+protocol.mojocollab.downStreamPerPeer 20000
+protocol.mojocollab.upStreamPerPeer 12000
 protocol.mojocollab.aggressionFactor 1
 protocol.mojocollab.eqnReliance 1
 protocol.mojocollab.defaultResourceFactor 0.5
