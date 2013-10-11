@@ -308,7 +308,7 @@ public class StarStreamProtocol implements EDProtocol,
 	// [MOJO]
 	public int getUpStream() {
 		// return upStream + upStreamAdd;
-		return CommonState.upStreams[(int) owner.getID()];
+		return CommonState.upStreams[(int) owner.getID()] + upStreamAdd;
 	}
 
 	// [MOJO]
@@ -316,25 +316,39 @@ public class StarStreamProtocol implements EDProtocol,
 		// return downStream + downStreamAdd;
 		// System.out.println((int)owner.getID() + " " +
 		// CommonState.downStreams[(int)owner.getID()]);
-		return CommonState.downStreams[(int) owner.getID()];
+		return CommonState.downStreams[(int) owner.getID()] + downStreamAdd;
 	}
 
 	// [MOJO]
 	public void getStreams() {
-		System.out.println("UP:" + (getUpStream() + upStreamAdd));
-		System.out.println("DOWN:"+ (getDownStream() + downStreamAdd));
+		System.out.println("UP:" + getUpStream());
+		System.out.println("DOWN:" + getDownStream());
 	}
 
 	// [MOJO]
 	public void AddStreams() {
-		upStreamAdd += (upStreamPerPeer * (aggressionFactor * eqnReliance * defaultResourceFactor));
-		downStreamAdd += (downStreamPerPeer * (aggressionFactor * eqnReliance * defaultResourceFactor));
+		/*
+		 * upStreamAdd += (upStreamPerPeer * (aggressionFactor * eqnReliance *
+		 * defaultResourceFactor)); downStreamAdd += (downStreamPerPeer *
+		 * (aggressionFactor * eqnReliance * defaultResourceFactor));
+		 */
+		upStreamAdd += (CommonState.upStreams[(int) owner.getID()] * (aggressionFactor
+				* eqnReliance * defaultResourceFactor));
+		downStreamAdd += (CommonState.downStreams[(int) owner.getID()] * (aggressionFactor
+				* eqnReliance * defaultResourceFactor));
 	}
 
 	// [MOJO]
 	public void RemoveStreams() {
-		upStreamAdd -= (upStreamPerPeer * (aggressionFactor * eqnReliance * defaultResourceFactor));
-		downStreamAdd -= (downStreamPerPeer * (aggressionFactor * eqnReliance * defaultResourceFactor));
+		/*
+		 * upStreamAdd -= (upStreamPerPeer * (aggressionFactor * eqnReliance *
+		 * defaultResourceFactor)); downStreamAdd -= (downStreamPerPeer *
+		 * (aggressionFactor * eqnReliance * defaultResourceFactor));
+		 */
+		upStreamAdd -= (CommonState.upStreams[(int) owner.getID()] * (aggressionFactor
+				* eqnReliance * defaultResourceFactor));
+		downStreamAdd -= (CommonState.downStreams[(int) owner.getID()] * (aggressionFactor
+				* eqnReliance * defaultResourceFactor));
 	}
 
 	// [MOJO]
