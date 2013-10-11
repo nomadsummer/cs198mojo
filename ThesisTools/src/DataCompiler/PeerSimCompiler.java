@@ -20,7 +20,7 @@ public class PeerSimCompiler {
 	public PeerSimCompiler() {
 
 		// Note: Always add last '/'
-		String folderName = "results/TrueResults2/";
+		String folderName = "results/TrueResults3/";
 		// String folderName = "results/Final-True_JD2/";
 		// String folderName = "results/Final-True_JC1/";
 		// String folderName = "results/Final-Fake-JC1/";
@@ -36,7 +36,7 @@ public class PeerSimCompiler {
 		// int[] swarmSizes = { 10, 20, 30, 40, 50, 60, 70, 80, 90 };
 		// int[] swarmSizes = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
 		// int[] swarmSizes = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140 };
-		int[] swarmSizes = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150 };
+		int[] swarmSizes = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
 		int[] helpingSizes = { -100, -90, -80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
 		// int[] helpingSizes = { -100, -75, -50, -25, 0, 25, 50, 75, 100 };
 

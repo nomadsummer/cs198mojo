@@ -22,7 +22,7 @@ DROP 0.2
 ##################################################### GENERAL SIMULATION SECTION
 
 # seed to initialize the centralized PRNG
-random.seed 37597
+random.seed 58008
 
 # how many nodes should be simulated
 network.size SIZE
@@ -85,7 +85,7 @@ protocol.mojocollab.joiningPeers 10
 protocol.mojocollab.timeJoin 2000
 
 # Two-way Helping
-protocol.mojocollab.twoWay true
+protocol.mojocollab.twoWay false
 
 # the 2D-coord protocol is used to assign each node a random bidimensional location
 # used to compute distances between node-pairs

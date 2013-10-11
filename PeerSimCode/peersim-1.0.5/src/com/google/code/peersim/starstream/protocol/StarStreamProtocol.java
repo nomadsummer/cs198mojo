@@ -233,23 +233,33 @@ public class StarStreamProtocol implements EDProtocol,
 		maxUpStream = Configuration
 				.getInt("protocol.mojocollab.maxUpStreamPerPeer");
 		Random rand = new Random();
+		int sumDown = 0;
+		int sumUp = 0;
+		downStreamPerPeer = Configuration
+				.getInt("protocol.mojocollab.downStreamPerPeer");
+		upStreamPerPeer = Configuration
+				.getInt("protocol.mojocollab.upStreamPerPeer");
 
 		for (int i = 0; i < CommonState.downStreams.length; i++) {
 			CommonState.downStreams[i] = rand
 					.nextInt((maxDownStream - minDownStream) + 1)
 					+ minDownStream;
+			sumDown = sumDown + CommonState.downStreams[i];
 			CommonState.upStreams[i] = rand
 					.nextInt((maxUpStream - minUpStream) + 1) + minUpStream;
+			sumUp = sumUp + CommonState.upStreams[i];
 		}
-
+		
+		for (int i = 0; i < CommonState.downStreams.length; i++) {
+			CommonState.downStreams[i] = (CommonState.downStreams[i]/sumDown)*(CommonState.downStreams.length*downStreamPerPeer);
+			CommonState.upStreams[i] = (CommonState.upStreams[i]/sumUp)*(CommonState.downStreams.length*upStreamPerPeer);
+		}
+		
 		// System.out.println(this.getDownStream());
 		// System.out.println(this.getUpStream());
 
 		// [MOJO]
-		downStreamPerPeer = Configuration
-				.getInt("protocol.mojocollab.downStreamPerPeer");
-		upStreamPerPeer = Configuration
-				.getInt("protocol.mojocollab.upStreamPerPeer");
+		
 		// helpingPeers =
 		// Configuration.getInt("protocol.mojocollab.helpingPeers");
 		// timeIn = Configuration.getInt("protocol.mojocollab.timeIn");

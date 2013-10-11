@@ -22,7 +22,7 @@ DROP 0.2
 ##################################################### GENERAL SIMULATION SECTION
 
 # seed to initialize the centralized PRNG
-random.seed 37597
+random.seed 58008
 
 # how many nodes should be simulated
 network.size SIZE
@@ -66,13 +66,13 @@ network.node.doLog false
 ############################################################## PROTOCOLS SECTION
 
 # The collaboration Protocol.
-protocol.mojocollab.maxDownStreamPerPeer 10000
-protocol.mojocollab.minDownStreamPerPeer 8000
-protocol.mojocollab.maxUpStreamPerPeer 6000
-protocol.mojocollab.minUpStreamPerPeer 4000
+protocol.mojocollab.maxDownStreamPerPeer 20000
+protocol.mojocollab.minDownStreamPerPeer 18000
+protocol.mojocollab.maxUpStreamPerPeer 12000
+protocol.mojocollab.minUpStreamPerPeer 10000
 
-protocol.mojocollab.downStreamPerPeer 100
-protocol.mojocollab.upStreamPerPeer 60
+protocol.mojocollab.downStreamPerPeer 20000
+protocol.mojocollab.upStreamPerPeer 12000
 protocol.mojocollab.aggressionFactor 1
 protocol.mojocollab.eqnReliance 1
 protocol.mojocollab.defaultResourceFactor 0.5
@@ -85,7 +85,7 @@ protocol.mojocollab.joiningPeers 10
 protocol.mojocollab.timeJoin 2000
 
 # Two-way Helping
-protocol.mojocollab.twoWay true
+protocol.mojocollab.twoWay false
 
 # the 2D-coord protocol is used to assign each node a random bidimensional location
 # used to compute distances between node-pairs
