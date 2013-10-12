@@ -1,0 +1,199 @@
+# Some quick-access constants to make the actual configurations more readable
+SIZE 16
+RESOURCES 100
+CHUNK_PLAYBACK_LENGTH 50
+CHUNK_TTL 16
+
+# how many cycles and their length
+# one cycle for each node, one for each resource, one for collecting the state
+# information
+CYCLES 5 * (RESOURCES * CHUNK_PLAYBACK_LENGTH + CHUNK_TTL)
+CYCLE 1
+
+# parameters of message transfer
+# delay values here are relative to cycle length, in percentage,
+# eg 50 means half the cycle length, 200 twice the cycle length, etc.
+MINDELAY 1
+MAXDELAY 5
+
+# drop is a probability, 0<=DROP<=1
+DROP 0.2
+
+##################################################### GENERAL SIMULATION SECTION
+
+# seed to initialize the centralized PRNG
+random.seed 690503
+
+# how many nodes should be simulated
+network.size SIZE
+
+# network chunk ttl
+network.chunkttl CHUNK_TTL
+
+# network interval
+network.sizeint 10
+network.collabint .2
+
+# simulation begins at time 0 and ends either when the event-queue is empty or when the time has
+# reached the following value. Consider that time is advanced by message-delays
+simulation.endtime CYCLE*CYCLES
+# with which frequency PeerSim should log output indications about the progress of time
+simulation.logtime CYCLE
+simulation.experiments 1
+simulation.collabexps 0
+
+# *-Stream node configuration
+# Pastry specific params
+network.node com.google.code.peersim.starstream.protocol.StarStreamNode
+network.node.pastry pastry
+network.node.delayedLookupTime 2*MAXDELAY
+#network.node.delayedLookupTime 1
+network.node.maxLookupRetries CHUNK_TTL / network.node.delayedLookupTime
+
+# *-Stream specific params
+network.node.starstream starstream
+network.node.startStreamingTimeout 100
+network.node.minContiguousChunksInBuffer 2
+network.node.waitBetweenForces MAXDELAY
+#network.node.waitBetweenForces 2*MAXDELAY
+network.node.aggressive true
+network.node.advance SIZE
+network.node.chunkPlaybackLength CHUNK_PLAYBACK_LENGTH
+network.node.totalChunks RESOURCES
+network.node.log starstream-nodes-
+network.node.doLog false
+
+############################################################## PROTOCOLS SECTION
+
+# The collaboration Protocol.
+protocol.mojocollab.maxDownStreamPerPeer 10
+protocol.mojocollab.minDownStreamPerPeer 5
+protocol.mojocollab.maxUpStreamPerPeer 10
+protocol.mojocollab.minUpStreamPerPeer 5
+
+protocol.mojocollab.downStreamPerPeer 20000
+protocol.mojocollab.upStreamPerPeer 12000
+protocol.mojocollab.aggressionFactor 1
+protocol.mojocollab.eqnReliance 1
+protocol.mojocollab.defaultResourceFactor 0.5
+protocol.mojocollab.helpingPeers 40
+protocol.mojocollab.timeIn 0
+protocol.mojocollab.timeStay 300000000
+
+#Start-up Delay
+protocol.mojocollab.joiningPeers 10
+protocol.mojocollab.timeJoin 2000
+
+# Two-way Helping
+protocol.mojocollab.twoWay false
+
+# the 2D-coord protocol is used to assign each node a random bidimensional location
+# used to compute distances between node-pairs
+protocol.coordinates com.google.code.peersim.protocols.TwoDimCoordinatesProtocol
+
+# the transport protocol used for modeling network delays
+protocol.uniform UniformRandomTransport
+protocol.uniform.mindelay MINDELAY
+protocol.uniform.maxdelay MAXDELAY
+
+# the transport protocol used for modeling network failures
+protocol.unreliable peersim.transport.UnreliableTransport
+protocol.unreliable.drop DROP
+protocol.unreliable.transport uniform
+
+# the Pastry protocol used to build the Pastry overlay-network
+protocol.pastry com.google.code.peersim.pastry.protocol.PastryProtocol
+protocol.pastry.b 4
+protocol.pastry.L 16
+protocol.pastry.M 32
+protocol.pastry.timeOut MAXDELAY*3
+protocol.pastry.maxHopsForLookups SIZE/2
+protocol.pastry.transport unreliable
+protocol.pastry.proximity coordinates
+protocol.pastry.metric com.google.code.peersim.metrics.EuclideanMetric
+protocol.pastry.log pastry-activity-
+protocol.pastry.doLog false
+
+# the *-Stream protocol used to stream the content
+protocol.starstream com.google.code.peersim.starstream.protocol.StarStreamProtocol
+protocol.starstream.aggressive true
+protocol.starstream.starStoreSize 15
+protocol.starstream.timeOut 7
+protocol.starstream.maxChunkRetries 20
+protocol.starstream.corruptedMessages false
+protocol.starstream.corruptedMessagesProbability 0
+protocol.starstream.downStream protocol.mojocollab.downStreamPerPeer
+protocol.starstream.upStream protocol.mojocollab.upStreamPerPeer
+#protocol.starstream.downStream 20000
+#protocol.starstream.upStream 12000
+protocol.starstream.transport unreliable
+protocol.starstream.reliableTransport uniform
+protocol.starstream.pastryTransport pastry
+protocol.starstream.log starstream-activity-
+protocol.starstream.doLog false
+
+
+########################################################### INITIALIZERS SECTION
+
+# this initializer assigns each node a 2D coordinate
+init.2DCoordAssigner com.google.code.peersim.protocols.initializers.TwoDimCoordinatesInitializer
+
+# this initializer assigns each node a PastryID
+init.pastryIdAssigner com.google.code.peersim.pastry.initializers.PastryIdInitializer
+
+# the ordered sequence of initializers that must be run
+include.init 2DCoordAssigner pastryIdAssigner
+
+######################################################## PASTRY CONTROLS SECTION
+
+# this control tells every Pastry node to check for expired messages at every time tick
+control.pastryTimeoutTrigger com.google.code.peersim.pastry.controls.PastryTimeoutTrigger
+control.pastryTimeoutTrigger.step CYCLE
+
+# triggers the building of the Pastry overlay network
+control.pastryOverlayBuilder com.google.code.peersim.pastry.controls.PastryOverlayBuilder
+control.pastryOverlayBuilder.step CYCLE
+control.pastryOverlayBuilder.log pastry-joins-hops-
+control.pastryOverlayBuilder.doLog false
+
+
+# used to dump each node state down to a file
+control.stateTablesObserver com.google.code.peersim.pastry.controls.PastryStateTablesObserver
+control.stateTablesObserver.step CYCLE
+control.stateTablesObserver.log pastry-state-tables-
+
+###################################################### *-STREAM CONTROLS SECTION
+
+# this control class plays the role of the source node(s) in the *-stream network
+control.starstreamSource com.google.code.peersim.starstream.controls.StarStreamSource
+control.starstreamSource.step CYCLE
+control.starstreamSource.adaptiveAdvance false
+control.starstreamSource.advance SIZE
+control.starstreamSource.chunkPlaybackLength CHUNK_PLAYBACK_LENGTH
+control.starstreamSource.chunksPerTimeUnit 1
+control.starstreamSource.nodesPerChunk SIZE*15/100
+control.starstreamSource.elegibleNodeRetriesPercentage 10
+control.starstreamSource.chunks RESOURCES
+control.starstreamSource.ttl CHUNK_TTL
+control.starstreamSource.ackTimeout MAXDELAY*5
+control.starstreamSource.log starstream-source-
+control.starstreamSource.doLog false
+
+# this control logs to the configured file the content of each *-Stream node's *-Stream store
+control.starstreamNodesObserver com.google.code.peersim.starstream.controls.StarStreamNodesObserver
+control.starstreamNodesObserver.step CYCLE
+control.starstreamNodesObserver.log starstream-stats-
+control.starstreamNodesObserver.doLog true
+
+# this control tells every *-Stream node to check for expired messages at every time tick
+control.starstreamTimeTicker com.google.code.peersim.starstream.controls.StarStreamTimeTicker
+control.starstreamTimeTicker.step CYCLE
+
+# this control tells every *-Stream node reset to zero their used bandwidth at every time tick
+control.starstreamBandwidthReset com.google.code.peersim.starstream.controls.StarStreamProtocolBandwidthReset
+control.starstreamBandwidthReset.step CYCLE
+
+control.nodesCrasher com.google.code.peersim.starstream.controls.NodeCrasher
+control.nodesCrasher.step CYCLE
+control.nodesCrasher.crashWithChunk 50
+control.nodesCrasher.percentageOfCrashedNodes 0
