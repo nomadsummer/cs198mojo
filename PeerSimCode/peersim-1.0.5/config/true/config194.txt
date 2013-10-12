@@ -22,7 +22,7 @@ DROP 0.2
 ##################################################### GENERAL SIMULATION SECTION
 
 # seed to initialize the centralized PRNG
-random.seed 690503
+random.seed 690002
 
 # how many nodes should be simulated
 network.size SIZE

@@ -112,7 +112,7 @@ public class StarStreamNode extends PastryNode implements
 		// latter to receive notifications from the former
 		// MIN_CONTIGUOUS_CHUNKS_IN_BUFFER = Configuration.getInt(prefix +
 		// SEPARATOR + "minContiguousChunksInBuffer");
-		MIN_CONTIGUOUS_CHUNKS_IN_BUFFER = 0;
+		MIN_CONTIGUOUS_CHUNKS_IN_BUFFER = 1;
 		// START_STREAMING_TIME = Configuration.getLong(prefix + SEPARATOR +
 		// "startStreaming");
 		START_STREAMING_TIMEOUT = (int) Math.ceil(Configuration

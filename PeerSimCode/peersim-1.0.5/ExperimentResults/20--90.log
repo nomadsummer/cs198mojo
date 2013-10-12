@@ -1,0 +1,96 @@
+Total chunks: 100
+Nodes x chunk: 3
+Total nodes: 20
+Active nodes: 20
+Started playbacks: 20
+Not started playbacks node-ids: []
+Playbacks time-window: 212
+Missing chunks distribution [missed-chunks/nodes]: {0=1, 1=2, 2=4, 3=2, 4=4, 5=2, 6=1, 7=3, 9=1}
+Rejected chunks for ttl expiration [chunk-id/nodes]: 31 {68=1, 1=6, 69=1, 70=2, 2=2, 3=2, 65=5, 67=3, 77=2, 78=2, 73=1, 17=2, 87=1, 19=2, 81=2, 80=1, 82=2, 93=3, 92=4, 95=2, 94=1, 89=1, 91=2, 90=1, 99=4, 97=5, 53=1, 56=1, 63=3, 61=1, 60=2}
+Rejected chunks for capacity limit [chunk-id/nodes]: 0 {}
+bandwidthUtilUp: 0.00936842132120622
+bandwidthUtilDown: 0.0055665986700758705
+Avg # of unsent chunk for max-retries: 0.0
+Min # of unsent chunk for max-retries: 0.0
+Max # of unsent chunk for max-retries: 0.0
+Avg # of unsent chunk-reqs for max-retries: 0.0
+Min # of unsent chunk-reqs for max-retries: 0.0
+Max # of unsent chunk-reqs for max-retries: 0.0
+Avg % of chunks received by Pastry: 11.0
+Min % of chunks received by Pastry: 1.0
+Max % of chunks received by Pastry: 27.0
+StD of chunks received by Pastry: 7.940568718860594
+Var of chunks received by Pastry: 63.05263157894737
+Avg % of chunks received by StarStream: 88.1
+Min % of chunks received by StarStream: 72.0
+Max % of chunks received by StarStream: 98.0
+StD of chunks received by StarStream: 8.045266669879586
+Var of chunks received by StarStream: 64.72631578947536
+[NONMOJO] Startup Delay: 74.85
+[MOJO] Startup Delay: 167.1
+[MOJO] Latency: 8.915049426744712
+Min of perceived avg chunk delivery-time: 7.111111111111111
+Max of perceived avg chunk delivery-time: 11.2
+Variance of perceived avg chunk delivery-time: 1.0628006143698157
+StD of perceived avg chunk delivery-time: 1.0309222154798177
+Avg messages sent per node: 2409.6
+Min messages sent per node: 1471.0
+Max messages sent per node: 5084.0
+Variance of messages sent per node: 627921.936842106
+StD of messages sent per node: 792.4152553062731
+Nodes with incomplete playbacks: 19
+[MOJO] Continuity Index: 75.1
+[MOJO] Packet Loss: 24.9
+Min % of not played chunks: 0.0
+Max % of not played chunks: 99.0
+Not played chunks [chunk-id/nodes]: {1=12, 2=7, 3=8, 4=3, 5=4, 6=5, 7=5, 8=4, 9=4, 10=6, 11=5, 12=4, 13=4, 14=3, 15=5, 17=4, 16=4, 19=6, 18=2, 21=3, 20=4, 23=5, 22=4, 25=5, 24=7, 27=3, 26=4, 29=5, 28=4, 31=3, 30=4, 34=3, 35=5, 32=5, 33=3, 38=8, 39=4, 36=2, 37=4, 42=4, 43=5, 40=7, 41=5, 46=5, 47=4, 44=4, 45=5, 51=4, 50=5, 49=5, 48=3, 55=5, 54=4, 53=5, 52=3, 59=5, 58=3, 57=6, 56=7, 63=7, 62=8, 61=5, 60=8, 68=3, 69=7, 70=6, 71=4, 64=6, 65=6, 66=5, 67=7, 76=5, 77=7, 78=6, 79=4, 72=5, 73=7, 74=4, 75=2, 85=4, 84=4, 87=6, 86=3, 81=7, 80=4, 83=4, 82=6, 93=7, 92=7, 95=6, 94=4, 89=6, 88=4, 91=7, 90=7, 98=5, 99=8, 96=4, 97=9}
+Avg distance between not played chunks: 13.374578037349364
+Min distance between not played chunks: 1.0
+Max distance between not played chunks: 45.5
+
+HELPING PEERS LOG
+
+[HELPING] Active nodes: 0
+[HELPING] Started playbacks: 0
+[HELPING] Not started playbacks node-ids: []
+[HELPING] Playbacks time-window: -9223372036854775807
+[HELPING] Missing chunks distribution [missed-chunks/nodes]: {}
+[HELPING] Rejected chunks for ttl expiration [chunk-id/nodes]: 0 {}
+[HELPING] Rejected chunks for capacity limit [chunk-id/nodes]: 0 {}
+[HELPING] bandwidthUtilUp: NaN
+[HELPING] bandwidthUtilDown: NaN
+[HELPING] Avg # of unsent chunk for max-retries: NaN
+[HELPING] Min # of unsent chunk for max-retries: Infinity
+[HELPING] Max # of unsent chunk for max-retries: -Infinity
+[HELPING] Avg # of unsent chunk-reqs for max-retries: NaN
+[HELPING] Min # of unsent chunk-reqs for max-retries: Infinity
+[HELPING] Max # of unsent chunk-reqs for max-retries: -Infinity
+[HELPING] Avg % of chunks received by Pastry: NaN
+[HELPING] Min % of chunks received by Pastry: Infinity
+[HELPING] Max % of chunks received by Pastry: -Infinity
+[HELPING] StD of chunks received by Pastry: 0.0
+[HELPING] Var of chunks received by Pastry: 0.0
+[HELPING] Avg % of chunks received by StarStream: NaN
+[HELPING] Min % of chunks received by StarStream: Infinity
+[HELPING] Max % of chunks received by StarStream: -Infinity
+[HELPING] StD of chunks received by StarStream: 0.0
+[HELPING] Var of chunks received by StarStream: 0.0
+[HELPING] Latency: NaN
+[HELPING] Min of perceived avg chunk delivery-time: Infinity
+[HELPING] Max of perceived avg chunk delivery-time: -Infinity
+[HELPING] Variance of perceived avg chunk delivery-time: 0.0
+[HELPING] StD of perceived avg chunk delivery-time: 0.0
+[HELPING] Avg messages sent per node: NaN
+[HELPING] Min messages sent per node: Infinity
+[HELPING] Max messages sent per node: -Infinity
+[HELPING] Variance of messages sent per node: 0.0
+[HELPING] StD of messages sent per node: 0.0
+[HELPING] Nodes with incomplete playbacks: 0
+[HELPING] Packet Loss: NaN
+[HELPING] Min % of not played chunks: Infinity
+[HELPING] Max % of not played chunks: -Infinity
+[HELPING] Not played chunks [chunk-id/nodes]: {}
+[HELPING] Avg distance between not played chunks: NaN
+[HELPING] Min distance between not played chunks: Infinity
+[HELPING] Max distance between not played chunks: -Infinity
+

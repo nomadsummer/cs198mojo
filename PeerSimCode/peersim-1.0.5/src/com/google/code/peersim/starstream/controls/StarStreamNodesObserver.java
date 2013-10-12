@@ -320,6 +320,7 @@ public class StarStreamNodesObserver implements Control {
 			stats.add(CommonState.startUp[i] - CommonState.getTimeJoin());
 		}
 		log("[MOJO] Startup Delay: " + stats.getAverage());
+		stats.reset();
 
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
@@ -616,6 +617,7 @@ public class StarStreamNodesObserver implements Control {
 		if (CommonState.getHelping() > 0) {
 			log("[HELPING] Startup Delay: " + avgpb / CommonState.getHelping());
 		}
+		stats.reset();
 
 		for (int i = 0; i < dim; i++) {
 			StarStreamNode node = (StarStreamNode) Network.get(i);
