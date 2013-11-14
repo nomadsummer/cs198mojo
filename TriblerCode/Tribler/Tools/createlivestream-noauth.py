@@ -37,8 +37,9 @@ argsdef = [('name', '', 'name of the stream'),
 x = MJLogger()
 x.log("TIME", time.time())
 x.log("STARTTIME", float(x.data["TIME"][0]))
+x.log("BANDCOUNT", 1)
+x.log("BANDUTIL", 0.0)
 twin = 15.0
-numhelp = 5
 
 def state_callback(ds):
     global sendTstream
@@ -56,7 +57,7 @@ def state_callback(ds):
     print >>sys.stderr, "[MJ-ServerStats]\t%s\t%s\t%s\t%.1f\t%s\tup\t%.1f\tdown\t%.1f" % (mjtime,`d.get_def().get_name()`,dlstatus_strings[ds.get_status()],ds.get_progress(),ds.get_error(),ds.get_current_speed(UPLOAD),ds.get_current_speed(DOWNLOAD))
 
     mjpeers = ds.get_peerlist()
-    if mjpeers is not None :
+    if len(mjpeers) > 0:
         # ip, uprate, downrate, utotal, dtotal, speed
         for mjpeer in mjpeers:
             print >>sys.stderr,"[MJ-PL-spd]\t%s\t%s\t%s " % (mjtime, mjpeer['ip'], mjpeer['speed']/1024.0)
@@ -65,18 +66,20 @@ def state_callback(ds):
     
     #START        
     mjlog_data(ds)
-    if mjpeers is not None :
+    if len(mjpeers) > 0:
         mjcompute_criterion(ds)
 
     return (1.0,False)
 
 def mjlog_data(ds):
     mjpeers = ds.get_peerlist()
-    if mjpeers is not None :
+    if len(mjpeers) > 0:
         if(x.is_existing("PEERS")):
             x.delete("PEERS")
 
         averageUp = 0.0
+        totalUpload = ds.get_current_speed(UPLOAD)
+        totalDownload = ds.get_current_speed(DOWNLOAD)
 
         for mjpeer in mjpeers:
             if(x.is_existing("PEERS")):
@@ -84,6 +87,9 @@ def mjlog_data(ds):
                     x.log("PEERS", mjpeer['id'])
             else:
                 x.log("PEERS", mjpeer['id'])
+
+            totalUpload = totalUpload + mjpeer['uprate']/1024.0
+            totalDownload = totalDownload + mjpeer['downrate']/1024.0
 
             averageUp = averageUp + mjpeer['uprate']/1024.0
 
@@ -98,6 +104,8 @@ def mjlog_data(ds):
             print >>sys.stderr, "[MJ-AC-%s]\t%s" % (mjpeer['id'], x.data["AC-"+str(mjpeer['id'])])    
 
         x.update("AvgUp", averageUp/len(x.data["PEERS"]))
+        x.update("BANDUTIL", (totalUpload - totalDownload)/x.data["BANDCOUNT"][0])
+        x.update("BANDCOUNT", x.data["BANDCOUNT"][0] + 1)
 
         if(x.is_existing("PEERS")):
             print >>sys.stderr, "[MJ-Log-Peers]\t%s" % (x.data["PEERS"])
@@ -126,7 +134,7 @@ def mjcompute_criterion(ds):
         #AC
         #add boundary for observing window (wrt time) for each peer
         #average all AC
-        if(time.time() - float(x.data["TIME"][0]) >= twin || float(x.data["TIME"][0]) == float(x.data["STARTTIME"][0])):
+        if(time.time() - float(x.data["TIME"][0]) >= twin or float(x.data["TIME"][0]) == float(x.data["STARTTIME"][0])):
             checktime = True
         else:
             checktime = False
@@ -178,12 +186,7 @@ def mjcompute_criterion(ds):
 
         if(x.data["CIRI"][0] < 1):
             helpingpeers = []
-            if(numhelp >= peercount):
-                helpingpeers = x.data["FIN-RANKED"]
-            else:
-                finranked = x.data["FIN-RANKED"]
-                for i in range(0, numhelp):
-                    helpingpeers.append(finranked[i])
+            helpingpeers = x.data["FIN-RANKED"]
 
             print >>sys.stderr,"SWARM NEEDS HELP"
             print >>sys.stderr,"HIGHEST AAC:\t%s" % (helpingpeers)

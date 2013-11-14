@@ -32,6 +32,8 @@ FAKEPLAYBACK = False
 DEBUG = True
 DEBUGPP = False
 
+x = MJLogger()
+
 class PieceStats:
     """ Keeps track of statistics for each piece as it flows through the system. """
 
@@ -454,6 +456,7 @@ class MovieOnDemandTransporter(MovieTransport):
         """ Update prebuffering process. 'received_piece' is a hint that we just received this piece;
             keep at 'None' for an update in general. """
 
+
         vs = self.videostatus
 
         if not vs.prebuffering:
@@ -476,11 +479,21 @@ class MovieOnDemandTransporter(MovieTransport):
         self.prebufprogress = float(self.max_prebuf_packets-len(missing_pieces))/float(self.max_prebuf_packets)
         
         # MENMA EX
-        mjtime = datetime.datetime.now().time() 
-        print >>sys.stderr,"[MJ-sudelay]\t%s\tvod: trans: Max:\t%.1f\tMPCount:\t%.1f\tPercentage:\t%.1f\t" % (mjtime, self.max_prebuf_packets, len(missing_pieces), self.prebufprogress)
-        
+        # START UP DELAY
         if not gotall:
-            print >>sys.stderr,"[MJ-sudelay]\t%s\tvod: trans: Still need pieces\t%s\tfor prebuffering/FFMPEG analysis" %(mjtime, missing_pieces)
+            if not x.is_existing("TIME"):
+                x.log("TIME", time.time())
+        else:
+            if not x.is_existing("SUDELAY"):
+                x.log("SUDELAY", time.time() - x.data["TIME"][0])
+                print >>sys.stderr,"[MJ-sudelay]\t%s\t" % (x.data["SUDELAY"][0])
+
+
+        #mjtime = datetime.datetime.now().time() 
+        #print >>sys.stderr,"[MJ-sudelay]\t%s\tvod: trans: Max:\t%.1f\tMPCount:\t%.1f\tPercentage:\t%.1f\t" % (mjtime, self.max_prebuf_packets, len(missing_pieces), self.prebufprogress)
+        
+        #if not gotall:
+        #    print >>sys.stderr,"[MJ-sudelay]\t%s\tvod: trans: Still need pieces\t%s\tfor prebuffering/FFMPEG analysis" %(mjtime, missing_pieces)
 
         if vs.dropping:
             if not self.doing_ffmpeg_analysis and not gotall and not (0 in missing_pieces) and self.nreceived > self.max_prebuf_packets:
@@ -493,6 +506,7 @@ class MovieOnDemandTransporter(MovieTransport):
                         print >>sys.stderr,"vod: trans: Forcing stop of prebuffering, less than",perc,"missing, or got 2N packets already"
 
         if gotall and self.doing_ffmpeg_analysis:
+
             [bitrate,width,height] = self.parse_video()
             self.doing_ffmpeg_analysis = False
             if DEBUG:

@@ -802,6 +802,7 @@ class PlayerApp(wx.App):
         boolArray = ds.get_pieces_complete()
         mjtime = datetime.datetime.now().time()
         if len(boolArray) != 0:
+            # PACKET LOSS TEST
             print >>sys.stderr,"[MJ-pieces]\t%s\tTrueCount:\t%d\tTotalCount:\t%d\tPercentage:\t%.5f" % (mjtime,boolArray.count(True),len(boolArray),(boolArray.count(True) + 0.0)/len(boolArray))
 
         # Toggle save button
