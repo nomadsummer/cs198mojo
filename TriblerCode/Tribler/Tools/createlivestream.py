@@ -94,10 +94,10 @@ def sendMojoTstream(ipAddr):
     
 def createTorrentDef():
     global tdef
-    config['name'] = 'ejbc2.mpegts'
+    config['name'] = 'aegis2.mpegts'
     config['piecesize'] = 32768
     config['destdir'] = '.'
-    config['source'] = 'http://192.168.0.12:8081/'
+    config['source'] = 'http://10.40.87.110:8081/'
     config['nuploads'] = 7
     config['duration'] = '1:00:00'
     config['bitrate'] = 65536
@@ -118,7 +118,7 @@ def createTorrentDef():
     # hint: to derive bitrate and duration from a file, use
     #    ffmpeg -i file.mpeg /dev/null
     tdef.create_live(config['name'],config['bitrate'],config['duration'],authcfg)
-    tdef.set_tracker('http://192.168.0.92:7764/announce/')
+    tdef.set_tracker('http://10.40.87.110/announce/')
     tdef.set_piece_length(config['piecesize']) #TODO: auto based on bitrate?
     if len(config['thumb']) > 0:
         tdef.set_thumbnail(config['thumb'])
