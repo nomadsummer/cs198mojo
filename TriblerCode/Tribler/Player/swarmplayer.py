@@ -352,11 +352,11 @@ class PlayerApp(wx.App):
         infohash = tdef.get_infohash()
 
         # Start video window if not open
-        if self.videoFrame is None:
-            self.start_video_frame()
-        else:
+        #if self.videoFrame is None:
+            #self.start_video_frame()
+        #else:
             # Stop playing
-            self.videoplay.stop_playback()
+            #self.videoplay.stop_playback()
         self.decodeprogress = 0
             
         self.videoFrame.videopanel.updateProgressSlider([False])
@@ -374,7 +374,7 @@ class PlayerApp(wx.App):
                 # Alternative is to set VOD callback, etc. at Runtime:
                 print >>sys.stderr,"main: Reusing old duplicate Download",`infohash`
                 newd = d
-            d.stop()
+            #d.stop()
 
         self.s.lm.h4xor_reset_init_conn_counter()
 
