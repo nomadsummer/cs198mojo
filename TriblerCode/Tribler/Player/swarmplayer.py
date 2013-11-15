@@ -336,8 +336,8 @@ class PlayerApp(wx.App):
         dcfg.set_video_events([VODEVENT_START,VODEVENT_PAUSE,VODEVENT_RESUME])
         dcfg.set_dest_dir(destdir)
         # MENMA EX
-        dcfg.set_max_speed(UPLOAD, 100)
-        dcfg.set_max_speed(DOWNLOAD, 300)
+        dcfg.set_max_speed(UPLOAD, 100000)
+        dcfg.set_max_speed(DOWNLOAD, 300000)
         
         if tdef.is_multifile_torrent():
             dcfg.set_selected_files([dlfile])
