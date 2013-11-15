@@ -79,5 +79,3 @@ class MojoCommunicationClient:
         s.send(sizedata)
         s.send(msg)
         s.close()
-        
-        

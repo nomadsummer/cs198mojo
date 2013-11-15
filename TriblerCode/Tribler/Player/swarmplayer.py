@@ -441,28 +441,26 @@ class PlayerApp(wx.App):
     def mjcallback(self,msg):
         """ Called by MojoCommunication thread """
         # do what you want to do to the recieved message in the main thread. hekhek
-        print >>sys.stderr,"[MJ-Notif] Callback function in main received: ", msg
-        print >>sys.stderr,"MOJO"
-        print >>sys.stderr,"MOJO"
-        print >>sys.stderr,"MOJO"
-        print >>sys.stderr,"MOJO"
-        print >>sys.stderr,"MOJO"
-        print >>sys.stderr,"MOJO"
-        print >>sys.stderr,"MOJO"
-        print >>sys.stderr,"MOJO"
-        print >>sys.stderr,"MOJO"
-        print >>sys.stderr,"MOJO"
-        print >>sys.stderr,"MOJO"
+        print >>sys.stderr,"[MJ-Notif-Peer] Callback function in main received: ", msg
         if(msg == "[MOJO] disconnect"):
             #print >>sys.stderr,"ELIJAH hekhek: ", ipAddr
             self.clear_session_state()
             self.videoplay.stop_playback()
             self.OnExit()
+
         if msg.startswith('[download-tstream] '):
             tstream = msg[19:]
             tdef = pickle.loads(tstream)
             self.start_download("mojoTstream", tdef)
             #print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
+        elif msg.startswith('[latencytest]'):
+            strs = msg.split("][")
+            mojoReply(strs[1], strs[2])
+
+    def mojoReply(peerid, ipAddr):
+        # do what you want to do to the recieved message in the main thread. hekhek
+        print >>sys.stderr,"Testing Latency... ", ipAddr
+        MojoCommunicationClient(MJ_LISTENPORT,'[latencyrep]['+peerid,ipAddr)
 
     def remote_start_download(self,torrentfilename):
         """ Called by GUI thread """
@@ -648,6 +646,7 @@ class PlayerApp(wx.App):
             mjtime = datetime.datetime.now().time()
             print >>sys.stderr,"[MJ-ClientStats]\t%s\tmain: Stats: DL:\t%s\t%.1f%%\t%s\tdl\t%.1f\tul\t%.1f\tn\t%d\n" % (mjtime,dlstatus_strings[ds.get_status()],100.0*ds.get_progress(),ds.get_error(),ds.get_current_speed(DOWNLOAD),ds.get_current_speed(UPLOAD),ds.get_num_peers())
             mjpeers = ds.get_peerlist()
+            """
             if mjpeers is not None :
                 # ip, uprate, downrate, utotal, dtotal, speed
                 for mjpeer in mjpeers:
@@ -661,7 +660,7 @@ class PlayerApp(wx.App):
                 print >>sys.stderr,"[MJ-VS-plydrp]\t%s\t%s\t%s" % (mjtime, mjvstats['played'], mjvstats['dropped'])
                 print >>sys.stderr,"[MJ-VS-ltst]\t%s\t%s\t%s" % (mjtime, mjvstats['late'], mjvstats['stall'])
             # TODO print >>sys.stderr, "[MJ-Report]\tStats:\t%s" % (self.reporter.report_stat(ds).stats)
-        
+            """
         # If we're done playing we can now restart any previous downloads to 
         # seed them.
         if playermode != DLSTATUS_SEEDING and ds.get_status() == DLSTATUS_SEEDING:

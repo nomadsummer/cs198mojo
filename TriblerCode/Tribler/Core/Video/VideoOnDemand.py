@@ -26,6 +26,8 @@ from Tribler.Core.Video.PiecePickerStreaming import PiecePickerStreaming
 from Tribler.Core.simpledefs import *
 from Tribler.Core.Video.LiveSourceAuth import ECDSAAuthenticator,AuthStreamWrapper
 
+from Tribler.mjlogger import *
+
 # pull all video data as if a video player was attached
 FAKEPLAYBACK = False
 
@@ -486,7 +488,7 @@ class MovieOnDemandTransporter(MovieTransport):
         else:
             if not x.is_existing("SUDELAY"):
                 x.log("SUDELAY", time.time() - x.data["TIME"][0])
-                print >>sys.stderr,"[MJ-sudelay]\t%s\t" % (x.data["SUDELAY"][0])
+                print >>sys.stderr,"[MJ-Base-Sudelay]\t%s" % (x.data["SUDELAY"][0])
 
 
         #mjtime = datetime.datetime.now().time() 
