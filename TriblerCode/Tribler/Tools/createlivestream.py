@@ -9,6 +9,7 @@ import time
 import tempfile
 import random
 import urllib2
+import wx
 from traceback import print_exc
 from threading import Condition
 
@@ -32,19 +33,18 @@ argsdef = [('name', '', 'name of the stream'),
            ('port', 7764, 'the TCP+UDP listen port'),
            ('thumb', '', 'filename of image in JPEG format, preferably 171x96')]
 
-
 def state_callback(ds):
     global sendTstream
     d = ds.get_download()
    
     #print >>sys.stderr, "MOJO Peerlist: ", ds.get_peerlist()
     MOJOpeerlist = ds.get_peerlist()
-    if len(MOJOpeerlist) > 0:
-        sendTstream = sendTstream + 1
-    print >>sys.stderr, "tstream: ", sendTstream 
-    if sendTstream == 30:
-        for peer in MOJOpeerlist:
-            sendMojoTstream(peer['ip'])
+    #if len(MOJOpeerlist) > 0:
+    #    sendTstream = sendTstream + 1
+    #print >>sys.stderr, "tstream: ", sendTstream 
+    #if sendTstream == 30:
+    #    for peer in MOJOpeerlist:
+    #        sendMojoTstream(peer['ip'])
     
     print >>sys.stderr,`d.get_def().get_name()`,dlstatus_strings[ds.get_status()],ds.get_progress(),"%",ds.get_error(),"up",ds.get_current_speed(UPLOAD),"down",ds.get_current_speed(DOWNLOAD)
 
@@ -61,7 +61,7 @@ def get_usage(defs):
 
 def mjcallback(msg):
     """ Called by MojoCommunication thread """
-    # do what you want to do to the recieved message in the main thread. hekhek
+    # do what you want to do to the received message in the main thread. hekhek
     print >>sys.stderr,"[MJ-Notif] Callback function in main received: ", msg
     print >>sys.stderr,"MOJO"
     print >>sys.stderr,"MOJO"
@@ -77,7 +77,6 @@ def mjcallback(msg):
 
 def sendMojoTstream(ipAddr):
     """ Called by MojoCommunication thread """
-    # do what you want to do to the recieved message in the main thread. hekhek
     print >>sys.stderr,"Sending tstream... ", ipAddr
     createTorrentDef()
     MojoCommunicationClient(MJ_LISTENPORT,'[download-tstream] ' + pickle.dumps(tdef),ipAddr)
@@ -177,7 +176,7 @@ if __name__ == "__main__":
         authcfg.save(authfilename)
 
     print >>sys.stderr,"main: Source auth pubkey",`str(authcfg.get_pubkey())`
-
+    print >>sys.stderr, "IP address PIPE: ", s.get_external_ip()
 
     tdef = TorrentDef()
     # hint: to derive bitrate and duration from a file, use
@@ -232,6 +231,19 @@ if __name__ == "__main__":
     d = s.start_download(tdef,dscfg)
     d.set_state_callback(state_callback,getpeerlist=True)
    
+    # prompt the user where to connect
+    ex = wx.App()
+    ex.MainLoop()
+    cont = True
+    while cont:
+        dialog = wx.TextEntryDialog(None, "Input IP Address of peer you want to connect to the other swarm","MojoCommunication", "127.0.0.1", style=wx.OK|wx.CANCEL)
+        if dialog.ShowModal() == wx.ID_OK:
+            print >>sys.stderr, "You entered: %s" % dialog.GetValue()
+            sendMojoTstream(dialog.GetValue())
+        else :
+            cont = False
+
+    #dialog.Destroy()
     # condition variable would be prettier, but that don't listen to 
     # KeyboardInterrupt
     time.sleep(sys.maxint/2048)
