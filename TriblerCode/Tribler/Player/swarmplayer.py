@@ -64,6 +64,13 @@ MJ_LISTENPORT = 6969
 PLAYER_LISTENPORT = 8620
 VIDEOHTTP_LISTENPORT = 6879
 
+# MOJO peer behavior variable decalarations
+CIRI = 0
+absCon = []
+bwAlloc = 0
+MCIRI = 0
+netUpCon = 0
+
 class PlayerFrame(VideoFrame):
 
     def __init__(self,parent):
@@ -361,7 +368,7 @@ class PlayerApp(wx.App):
             
         self.videoFrame.videopanel.updateProgressSlider([False])
         
-        # Stop all
+        # Stop all - not anymore hekhek
         newd = None
         for d in dlist:
             if d.get_def().get_infohash() == infohash:
