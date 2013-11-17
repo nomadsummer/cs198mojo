@@ -59,27 +59,48 @@ def vod_ready_callback(d,mimetype,stream,filename):
 def get_usage(defs):
     return parseargs.formatDefinitions(defs,80)
 
-def mjcallback(msg):
-    """ Called by MojoCommunication thread """
-    # do what you want to do to the received message in the main thread. hekhek
-    print >>sys.stderr,"[MJ-Notif] Callback function in main received: ", msg
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
+def mjcallback(addr, msg):
+    '''
+    MOJO Server TODO, X => DONE
+    [X] 1. If a HELP request is received, get the peerlist and torrent definition associated with it 
+    [ ] 2. Call the createTorrentDef() to update the torrent definition to be user by sendMojoTstream()
+    [ ] 2. Using the peerlist, get the peers that have the lowest absolute contribution.
+           How to know how high is high and how low is low?
+    [ ] 3. Instruct your peers with the highest absolute contribution to connect to the swarm that needs help
+           by calling the function sendMojoTstream(ipAddr)
+    [X] 4. Acknowledge and reply to the swarm that needs help with your peerlist
+    '''
+    
+    if msg.startswith('[HELP] '):
+        peerList = msg[19:]
+        helpedPeerList = pickle.loads(peerList)
+        # Get the peers with lowest absCon
+        
+        # For each helping peers, call the function sendMojoTstream with their IP address as arguments
+        # sendMojoTstream(ipAddr)
+        
+        # Reply to the helped swarm with your peer list
+        MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP] ' + pickle.dumps(ds.get_peerlist()), addr)
 
+def getHelp(ipAddr):    
+    '''
+    MOJO Server TODO, X => DONE
+    [ ] 1. Mechanism for finding the helping swarm. For now, helping swarm is hard-coded
+    [X] 2. Send a help request/message along with peerlist and torrent definition
+    [ ] 3. Helping swarm will reply with its peerlist. Helped swarm should act accordingly.
+    '''
+    
+    print >>sys.stderr,"Finding other swarms that can help..."
+    helpingSwarmIP = "192.100.41.20" 
+    # After some time
+    print >>sys.stderr,"Helping swarm found. Initiating connection." 
+    MojoCommunicationClient(MJ_LISTENPORT,'[HELP] ' + pickle.dumps(ds.get_peerlist()), helpingSwarmIP)
+    
 def sendMojoTstream(ipAddr):
     """ Called by MojoCommunication thread """
     print >>sys.stderr,"Sending tstream... ", ipAddr
     createTorrentDef()
-    MojoCommunicationClient(MJ_LISTENPORT,'[download-tstream] ' + pickle.dumps(tdef),ipAddr)
+    MojoCommunicationClient(MJ_LISTENPORT,'[download-tstream] ' + pickle.dumps(tdef), ipAddr)
     print >>sys.stderr,"MOJO"
     print >>sys.stderr,"MOJO"
     print >>sys.stderr,"MOJO"
@@ -237,6 +258,13 @@ if __name__ == "__main__":
     d = s.start_download(tdef,dscfg)
     d.set_state_callback(state_callback,getpeerlist=True)
    
+    '''
+    MOJO Server TODO, X => DONE
+    [ ] 1. Compute for the CIRI periodically
+    [ ] 2. Record the absolute contribute for each peer
+    [ ] 3. When the CIRI of the swarm becomes less than 1, call the function getHelp()
+    '''
+    
     # prompt the user where to connect
     ex = wx.App()
     ex.MainLoop()
