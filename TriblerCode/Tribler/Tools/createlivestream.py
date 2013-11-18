@@ -6,6 +6,7 @@ import sys
 import os
 import shutil
 import time
+import datetime
 import tempfile
 import random
 import urllib2
@@ -40,8 +41,13 @@ x.log("STARTTIME", float(x.data["TIME"][0]))
 x.log("BANDCOUNT", 1)
 x.log("BANDUTIL", 0.0)
 x.log("AVGLATENCY", 0.0)
+<<<<<<< HEAD
 x.log("LATCOUNT", 0)
 x.log("LATCHECK", 0)
+=======
+x.log("HELPED", False)
+x.log("HELPING", True)
+>>>>>>> head to head
 twin = 15.0
 
 def state_callback(ds):
@@ -156,10 +162,15 @@ def mjcompute_criterion(ds):
             for mjpeer in x.data["PEERS"]:
                 totalUpload = totalUpload + float(x.data[mjpeer][0])
 
+<<<<<<< HEAD
             toParse = ds.get_videoinfo()
             bitRate = toParse['bitrate']
             x.update("CIRI", totalUpload/(peercount*bitRate))
             #print >>sys.stderr,"[MJ-CIRI]\t%f" % (x.data["CIRI"][0])
+=======
+            x.update("CIRI", totalUpload/(peercount*512))
+            print >>sys.stderr,"[MJ-CIRI-bit512]\t%f" % (x.data["CIRI"][0])
+>>>>>>> head to head
 
         #AC
         #add boundary for observing window (wrt time) for each peer
@@ -217,6 +228,7 @@ def mjcompute_criterion(ds):
             #print >>sys.stderr, "[MJ-LOW-RANKED]\t%s" % (x.data["LOW-RANKED"]) 
 
         if(x.data["CIRI"][0] < 1):
+<<<<<<< HEAD
             if(x.is_existing("highpeers")):
                 x.delete("highpeers")   
             if(x.is_existing("lowpeers")):
@@ -235,10 +247,24 @@ def mjcompute_criterion(ds):
                     lowtemp['id'] = str(x.data["LOW-RANKED"][index])
                     lowtemp['ip'] = x.data["IP-"+str(x.data["LOW-RANKED"][index])][0]
                     x.log("lowpeers", lowtemp)
+=======
+
+            if(x.is_existing("HIGH-RANKED") and len(x.data["HIGH-RANKED"]) > 0):
+                x.update("highpeers", x.data["HIGH-RANKED"])
+
+            if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
+                x.update("lowpeers", x.data["LOW-RANKED"])
+>>>>>>> head to head
 
             print >>sys.stderr,"SWARM NEEDS HELP"
             print >>sys.stderr,"HIGHEST AAC:\t%s" % (x.data["highpeers"])
             print >>sys.stderr,"LOWEST AAC:\t%s" % (x.data["lowpeers"])
+<<<<<<< HEAD
+=======
+            
+            print >>sys.stderr,"Calling the getHelp() function..."
+            getHelp(x.data["highpeers"], x.data["lowpeers"])
+>>>>>>> head to head
 
             mjbandwidth_allocation(ds)
 
@@ -293,16 +319,20 @@ def mjcallback(addr, msg):
     '''
     print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg    
 
-    if msg.startswith('[HELP] '):
-        peerList = msg[19:]
-        helpedPeerList = pickle.loads(peerList)
+    if msg.startswith('[HELP]+'):
+        temp = msg.split("+")
+        helpedTorrentDef = pickle.loads(temp[1])
+        helpedhighpeers = pickle.loads(temp[2])
+        helpedlowpeers = pickle.loads(temp[3])
         # Get the peers with lowest absCon
         
         # For each helping peers, call the function sendMojoTstream with their IP address as arguments
         # sendMojoTstream(ipAddr)
+        for mjpeer in  x.data["highpeers"]:
+            sendMojoTstream(mjpeer['ipAddr'])
         
         # Reply to the helped swarm with your peer list
-        MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP] ' + pickle.dumps(ds.get_peerlist()), addr)
+        MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]+' + pickle.dumps(x.data["highpeers"]) + '+' + pickle.dumps(x.data["lowpeers"]), addr)
     elif msg.startswith('[latencyrep]'):
         strs = msg.split("][")
         peerid = strs[1]
@@ -312,19 +342,31 @@ def mjcallback(addr, msg):
         print >>sys.stderr,"[THIS]\t%s\t%s\t%s" % (x.data["LATENCY-"+peerid][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
 
 
-def getHelp(ipAddr):    
+def getHelp(highpeers, lowpeers):    
     '''
     MOJO Server TODO, X => DONE
-    [ ] 1. Mechanism for finding the helping swarm. For now, helping swarm is hard-coded
+    [ ] 1. Mechanism for finding the helping swarm. For now, helping swarm is prompted
     [X] 2. Send a help request/message along with peerlist and torrent definition
     [ ] 3. Helping swarm will reply with its peerlist. Helped swarm should act accordingly.
     '''
     
     print >>sys.stderr,"Finding other swarms that can help..."
-    helpingSwarmIP = "192.100.41.20" 
+    
+    '''
+    # prompt the user where to connect
+    ex = wx.App()
+    ex.MainLoop()
+    dialog = wx.TextEntryDialog(None, "Input IP Address of helping swarm","MojoCommunication", "127.0.0.1", style=wx.OK)
+    if dialog.ShowModal() == wx.ID_OK:
+        print >>sys.stderr, "You entered: %s" % dialog.GetValue()
+        helpingSwarmIP = dialog.GetValue()
+    '''
+    
+    helpingSwarmIP = "10.40.81.150"
     # After some time
     print >>sys.stderr,"Helping swarm found. Initiating connection." 
-    MojoCommunicationClient(MJ_LISTENPORT,'[HELP] ' + pickle.dumps(ds.get_peerlist()), helpingSwarmIP)
+    #print >>sys.stderr,"orig tdef " + pickle.dumps(origTdef)
+    MojoCommunicationClient(MJ_LISTENPORT,'[HELP]+' + pickle.dumps(origTdef) + '+ '+ pickle.dumps(highpeers) + '+' + pickle.dumps(lowpeers), helpingSwarmIP)
     
 def sendMojoTstream(ipAddr):
     """ Called by MojoCommunication thread """
@@ -385,7 +427,7 @@ def createTorrentDef():
     tdef.save(torrentfilename)
 
 if __name__ == "__main__":
-    # global tdef
+    global origTdef
     # mjl = MJLogger()
     # mjl.log("Main", (1000, 12345))
     # mjl.log("Main", (2000, 4421, "Who?"))
@@ -447,6 +489,7 @@ if __name__ == "__main__":
     torrentbasename = config['name']+'.tstream'
     torrentfilename = os.path.join(config['destdir'],torrentbasename)
     tdef.save(torrentfilename)
+    origTdef = tdef
     #print >>sys.stderr,"Mojo Torrent Definition", tdef
     #tdef2 = TorrentDef.load(torrentfilename)
     #print >>sys.stderr,"main: Source auth pubkey2",`tdef2.metainfo['info']['live']`
@@ -495,11 +538,12 @@ if __name__ == "__main__":
    
     '''
     MOJO Server TODO, X => DONE
-    [ ] 1. Compute for the CIRI periodically
-    [ ] 2. Record the absolute contribute for each peer
-    [ ] 3. When the CIRI of the swarm becomes less than 1, call the function getHelp()
+    [X] 1. Compute for the CIRI periodically
+    [X] 2. Record the absolute contribution for each peer
+    [X] 3. When the CIRI of the swarm becomes less than 1, call the function getHelp()
     '''
     
+    '''
     # prompt the user where to connect
     ex = wx.App()
     ex.MainLoop()
@@ -511,6 +555,7 @@ if __name__ == "__main__":
             sendMojoTstream(dialog.GetValue())
         else :
             cont = False
+    '''
 
     #dialog.Destroy()
     # condition variable would be prettier, but that don't listen to 
