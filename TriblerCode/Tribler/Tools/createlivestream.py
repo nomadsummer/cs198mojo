@@ -92,11 +92,13 @@ def state_callback(ds):
             print >>sys.stderr, "[Latency]\t%s\t%s" % (mjpeer['id'], mjpeer['ip'])
             mojoLatencyTest(mjpeer['id'], mjpeer['ip'])
 
+    #CHECK THIS
     if(x.data["LATCHECK"][0] == x.data["LATCOUNT"][0] and x.data["LATCOUNT"][0] > 0):
         x.update("AVGLATENCY", x.data["AVGLATENCY"][0]/x.data["LATCOUNT"][0])
         print >>sys.stderr, "[MJ-Base-Latency]\t%s" % (x.data["AVGLATENCY"][0])
         x.update("LATCOUNT", 0)
         x.update("LATCHECK", 0)
+    #!
 
     return (1.0,False)
 
@@ -244,7 +246,7 @@ def mjcompute_criterion(ds):
             print >>sys.stderr,"LOWEST AAC:\t%s" % (x.data["lowpeers"])
             
             print >>sys.stderr,"Calling the getHelp() function..."
-            getHelp(x.data["highpeers"], x.data["lowpeers"])
+            #getHelp(x.data["highpeers"], x.data["lowpeers"])
 
             mjbandwidth_allocation(ds)
 
@@ -298,6 +300,17 @@ def mjcallback(addr, msg):
     [X] 4. Acknowledge and reply to the swarm that needs help with your peerlist
     '''
     print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg    
+    print >>sys.stderr,"[MJ-Notif-Host]"
+    print >>sys.stderr,"[MJ-Notif-Host]"
+    print >>sys.stderr,"[MJ-Notif-Host]"
+    print >>sys.stderr,"[MJ-Notif-Host]"
+    print >>sys.stderr,"[MJ-Notif-Host]"
+    print >>sys.stderr,"[MJ-Notif-Host]"
+    print >>sys.stderr,"[MJ-Notif-Host]"
+    print >>sys.stderr,"[MJ-Notif-Host]"
+    print >>sys.stderr,"[MJ-Notif-Host]"
+    print >>sys.stderr,"[MJ-Notif-Host]"
+    print >>sys.stderr,"[MJ-Notif-Host]"
 
     if msg.startswith('[HELP]+'):
         temp = msg.split("+")
@@ -316,8 +329,8 @@ def mjcallback(addr, msg):
     elif msg.startswith('[latencyrep]'):
         strs = msg.split("][")
         peerid = strs[1]
-        x.update("LATENCY-" + peerid, time.time() - x.data["LATENCY-" + peerid])
-        x.update("AVGLATENCY", x.data["AVGLATENCY"][0] + x.data["LATENCY-" + peerid])
+        x.update("LATENCY-" + peerid, time.time() - float(x.data["LATENCY-" + peerid][0]))
+        x.update("AVGLATENCY", x.data["AVGLATENCY"][0] + float(x.data["LATENCY-" + peerid][0]))
         x.update("LATCHECK", x.data["LATCHECK"][0] + 1)
         print >>sys.stderr,"[THIS]\t%s\t%s\t%s" % (x.data["LATENCY-"+peerid][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
 
@@ -368,6 +381,8 @@ def sendMojoTstream(ipAddr, torrentdef):
 def mojoLatencyTest(peerid, ipAddr):
     # do what you want to do to the recieved message in the main thread. hekhek
     print >>sys.stderr,"Testing Latency... ", ipAddr
+    toPrint = '[latencytest]['+peerid+']['+s.get_external_ip()
+    print >>sys.stderr,"PRINT: ", toPrint
     MojoCommunicationClient(MJ_LISTENPORT,'[latencytest]['+peerid+']['+s.get_external_ip(), ipAddr)
     
 def createTorrentDef():
