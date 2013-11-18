@@ -41,13 +41,10 @@ x.log("STARTTIME", float(x.data["TIME"][0]))
 x.log("BANDCOUNT", 1)
 x.log("BANDUTIL", 0.0)
 x.log("AVGLATENCY", 0.0)
-<<<<<<< HEAD
 x.log("LATCOUNT", 0)
 x.log("LATCHECK", 0)
-=======
 x.log("HELPED", False)
 x.log("HELPING", True)
->>>>>>> head to head
 twin = 15.0
 
 def state_callback(ds):
@@ -162,15 +159,10 @@ def mjcompute_criterion(ds):
             for mjpeer in x.data["PEERS"]:
                 totalUpload = totalUpload + float(x.data[mjpeer][0])
 
-<<<<<<< HEAD
             toParse = ds.get_videoinfo()
             bitRate = toParse['bitrate']
             x.update("CIRI", totalUpload/(peercount*bitRate))
             #print >>sys.stderr,"[MJ-CIRI]\t%f" % (x.data["CIRI"][0])
-=======
-            x.update("CIRI", totalUpload/(peercount*512))
-            print >>sys.stderr,"[MJ-CIRI-bit512]\t%f" % (x.data["CIRI"][0])
->>>>>>> head to head
 
         #AC
         #add boundary for observing window (wrt time) for each peer
@@ -228,7 +220,6 @@ def mjcompute_criterion(ds):
             #print >>sys.stderr, "[MJ-LOW-RANKED]\t%s" % (x.data["LOW-RANKED"]) 
 
         if(x.data["CIRI"][0] < 1):
-<<<<<<< HEAD
             if(x.is_existing("highpeers")):
                 x.delete("highpeers")   
             if(x.is_existing("lowpeers")):
@@ -247,24 +238,13 @@ def mjcompute_criterion(ds):
                     lowtemp['id'] = str(x.data["LOW-RANKED"][index])
                     lowtemp['ip'] = x.data["IP-"+str(x.data["LOW-RANKED"][index])][0]
                     x.log("lowpeers", lowtemp)
-=======
-
-            if(x.is_existing("HIGH-RANKED") and len(x.data["HIGH-RANKED"]) > 0):
-                x.update("highpeers", x.data["HIGH-RANKED"])
-
-            if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
-                x.update("lowpeers", x.data["LOW-RANKED"])
->>>>>>> head to head
 
             print >>sys.stderr,"SWARM NEEDS HELP"
             print >>sys.stderr,"HIGHEST AAC:\t%s" % (x.data["highpeers"])
             print >>sys.stderr,"LOWEST AAC:\t%s" % (x.data["lowpeers"])
-<<<<<<< HEAD
-=======
             
             print >>sys.stderr,"Calling the getHelp() function..."
             getHelp(x.data["highpeers"], x.data["lowpeers"])
->>>>>>> head to head
 
             mjbandwidth_allocation(ds)
 
