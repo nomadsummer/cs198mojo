@@ -281,8 +281,7 @@ def mjcallback(addr, msg):
         
         # Reply to the helped swarm with your peer list
         MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP] ' + pickle.dumps(ds.get_peerlist()), addr)
-    elif msg.startswith('[latencyrep]'):        
-        print >>sys.stderr,"BITCH"
+    elif msg.startswith('[latencyrep]'):
         strs = msg.split("][")
         peerid = strs[1]
         x.update("LATENCY-" + peerid, time.time() - x.data["LATENCY-" + peerid])

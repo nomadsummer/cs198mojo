@@ -262,8 +262,7 @@ def mjcallback(msg):
     # do what you want to do to the recieved message in the main thread. hekhek
     print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg
 
-    if msg.startswith('[latencyrep]'):        
-        print >>sys.stderr,"BITCH"
+    if msg.startswith('[latencyrep]'):
         strs = msg.split("][")
         peerid = strs[1]
         x.update("LATENCY-" + peerid, time.time() - x.data["LATENCY-" + peerid])
