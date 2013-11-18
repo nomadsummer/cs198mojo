@@ -172,11 +172,11 @@ class MovieOnDemandTransporter(MovieTransport):
         else:
             self.max_prebuf_packets = min(vs.movie_numpieces, piecesneeded)
 
-        if self.doing_ffmpeg_analysis and DEBUG:
-            print >>sys.stderr,"vod: trans: Want",self.max_prebuf_packets,"pieces for FFMPEG analysis, piecesize",vs.piecelen
+        #if self.doing_ffmpeg_analysis and DEBUG:
+        #    print >>sys.stderr,"vod: trans: Want",self.max_prebuf_packets,"pieces for FFMPEG analysis, piecesize",vs.piecelen
 
-        if DEBUG:
-            print >>sys.stderr,"vod: trans: Want",self.max_prebuf_packets,"pieces for prebuffering"
+        #if DEBUG:
+        #    print >>sys.stderr,"vod: trans: Want",self.max_prebuf_packets,"pieces for prebuffering"
 
         self.nreceived = 0
         self.set_mimetype(self.videoinfo['mimetype'])
@@ -424,17 +424,17 @@ class MovieOnDemandTransporter(MovieTransport):
 
         founddim = False
         for x in logfile.readlines():
-            if DEBUG:
-                print >>sys.stderr,"vod: trans: FFMPEG said:",x
+            #if DEBUG:
+            #    print >>sys.stderr,"vod: trans: FFMPEG said:",x
             occ = r.findall( x )
             if occ:
                 # use the latest mentioning of bitrate
                 bitrate = float( occ[-1] ) * 1024 / 8
-                if DEBUG:
-                    if bitrate is not None:
-                        print >>sys.stderr,"vod: trans: Bitrate according to FFMPEG: %.2f KByte/s" % (bitrate/1024)
-                    else:
-                        print >>sys.stderr,"vod: trans: Bitrate could not be determined by FFMPEG"
+                #if DEBUG:
+                    #if bitrate is not None:
+                    #    print >>sys.stderr,"vod: trans: Bitrate according to FFMPEG: %.2f KByte/s" % (bitrate/1024)
+                    #else:
+                    #    print >>sys.stderr,"vod: trans: Bitrate could not be determined by FFMPEG"
             occ = r2.findall( x )
             if occ and not founddim:
                 # use first occurence
@@ -504,30 +504,30 @@ class MovieOnDemandTransporter(MovieTransport):
                     # If less then 10% of packets missing, or we got 2 times the packets we need already,
                     # force start of playback
                     gotall = True
-                    if DEBUG:
-                        print >>sys.stderr,"vod: trans: Forcing stop of prebuffering, less than",perc,"missing, or got 2N packets already"
+                    #if DEBUG:
+                    #    print >>sys.stderr,"vod: trans: Forcing stop of prebuffering, less than",perc,"missing, or got 2N packets already"
 
         if gotall and self.doing_ffmpeg_analysis:
 
             [bitrate,width,height] = self.parse_video()
             self.doing_ffmpeg_analysis = False
-            if DEBUG:
-                print >>sys.stderr,"vod: trans: after parse",bitrate,self.doing_bitrate_est
+            #if DEBUG:
+            #    print >>sys.stderr,"vod: trans: after parse",bitrate,self.doing_bitrate_est
             if bitrate is None or round(bitrate)== 0:
                 if self.doing_bitrate_est:
                     # Errr... there was no playtime info in the torrent
                     # and FFMPEG can't tell us...
                     bitrate = (1*1024*1024/8) # 1mbps
-                    if DEBUG:
-                        print >>sys.stderr,"vod: trans: No bitrate info avail, wild guess: %.2f KByte/s" % (bitrate/1024)
+                    #if DEBUG:
+                    #    print >>sys.stderr,"vod: trans: No bitrate info avail, wild guess: %.2f KByte/s" % (bitrate/1024)
                     vs.set_bitrate(bitrate)
             else:
                 if self.doing_bitrate_est:
                     # There was no playtime info in torrent, use what FFMPEG tells us
                     self.ffmpeg_est_bitrate = bitrate
                     bitrate *= 1.1  # Make FFMPEG estimation 10% higher
-                    if DEBUG:
-                        print >>sys.stderr,"vod: trans: Estimated bitrate: %.2f KByte/s" % (bitrate/1024)
+                    #if DEBUG:
+                    #    print >>sys.stderr,"vod: trans: Estimated bitrate: %.2f KByte/s" % (bitrate/1024)
 
                     vs.set_bitrate(bitrate)
 
@@ -544,8 +544,8 @@ class MovieOnDemandTransporter(MovieTransport):
 
         if gotall and self.enough_buffer():
             # enough buffer and could estimated bitrate - start streaming
-            if DEBUG:
-                print >>sys.stderr,"vod: trans: Prebuffering done",currentThread().getName()
+            #if DEBUG:
+            #    print >>sys.stderr,"vod: trans: Prebuffering done",currentThread().getName()
             self.data_ready.acquire()
             vs.prebuffering = False
             self.stat_prebuffertime = time.time() - self.prebufstart
@@ -553,11 +553,11 @@ class MovieOnDemandTransporter(MovieTransport):
             self.data_ready.notify()
             self.data_ready.release()
 
-        elif DEBUG:
-            if self.doing_ffmpeg_analysis:
-                print >>sys.stderr,"vod: trans: Prebuffering: waiting to obtain the first %d packets" % (self.max_prebuf_packets)
-            else:
-                print >>sys.stderr,"vod: trans: Prebuffering: %.2f seconds left" % (self.expected_buffering_time())
+        #elif DEBUG:
+            #if self.doing_ffmpeg_analysis:
+            #    print >>sys.stderr,"vod: trans: Prebuffering: waiting to obtain the first %d packets" % (self.max_prebuf_packets)
+            #else:
+            #    print >>sys.stderr,"vod: trans: Prebuffering: %.2f seconds left" % (self.expected_buffering_time())
 
     def got_have(self,piece):
         vs = self.videostatus
@@ -762,8 +762,8 @@ class MovieOnDemandTransporter(MovieTransport):
                 return None
             
             piecenr,self.curpiece = x
-            if DEBUG:
-                print >>sys.stderr,"vod: trans: %d: popped piece to transport to player" % piecenr
+            #if DEBUG:
+            #    print >>sys.stderr,"vod: trans: %d: popped piece to transport to player" % piecenr
 
         curpos = self.curpiece_pos
         left = len(self.curpiece) - curpos
@@ -817,7 +817,7 @@ class MovieOnDemandTransporter(MovieTransport):
                     piece  = vs.first_piece + newbytepos / vs.piecelen + 1
                     offset = newbytepos % vs.piecelen
 
-            print >>sys.stderr,"vod: trans: === START at offset %d (piece %d) (forced: %s) ===" % (bytepos,piece,force)
+            #print >>sys.stderr,"vod: trans: === START at offset %d (piece %d) (forced: %s) ===" % (bytepos,piece,force)
 
             # Initialise all playing variables
             self.curpiece = "" # piece currently being popped
@@ -840,7 +840,7 @@ class MovieOnDemandTransporter(MovieTransport):
 
         vs = self.videostatus
 
-        print >>sys.stderr,"vod: trans: === STOP  = player closed conn === "
+        #print >>sys.stderr,"vod: trans: === STOP  = player closed conn === "
         if not vs.playing:
             return
         vs.playing = False
@@ -866,8 +866,8 @@ class MovieOnDemandTransporter(MovieTransport):
             vs.autoresume = autoresume
             return
 
-        if DEBUG:
-            print >>sys.stderr,"vod: trans: paused (autoresume: %s)" % (autoresume,)
+        #if DEBUG:
+        #    print >>sys.stderr,"vod: trans: paused (autoresume: %s)" % (autoresume,)
 
         vs.paused = True
         vs.autoresume = autoresume
@@ -883,8 +883,8 @@ class MovieOnDemandTransporter(MovieTransport):
         if not vs.playing or not vs.paused or not vs.pausable:
             return
 
-        if DEBUG:
-            print >>sys.stderr,"vod: trans: resumed"
+        #if DEBUG:
+        #    print >>sys.stderr,"vod: trans: resumed"
 
         vs.paused = False
         vs.autoresume = False
@@ -907,8 +907,8 @@ class MovieOnDemandTransporter(MovieTransport):
             self.rawserver.add_task( lambda: self.autoresume( testfunc ), 1.0 )
             return
 
-        if DEBUG:
-            print >>sys.stderr,"vod: trans: Resuming, since we can maintain this playback position"
+        #if DEBUG:
+        #    print >>sys.stderr,"vod: trans: Resuming, since we can maintain this playback position"
         self.resume()
 
     def done( self ):
@@ -982,7 +982,7 @@ class MovieOnDemandTransporter(MovieTransport):
 
         if seqnum < s["absnr"] or source_ts < s["source_ts"]:
             # old packet???
-            print >>sys.stderr,"vod: trans: **** INVALID PIECE #%s **** seqnum=%d but we started at seqnum=%d" % (i,seqnum,s["absnr"])
+            #print >>sys.stderr,"vod: trans: **** INVALID PIECE #%s **** seqnum=%d but we started at seqnum=%d" % (i,seqnum,s["absnr"])
             return False
 
         return True
@@ -1035,7 +1035,7 @@ class MovieOnDemandTransporter(MovieTransport):
             else:
                 bitrate = "%.2f kbps (external info)" % (8.0 / 1024 * vs.bitrate)
 
-            print >>sys.stderr,"vod: trans: %i: pushed at t=%.2f, age is t=%.2f, bitrate = %s" % (i,d["local_ts"]-self.start_playback["local_ts"],d["source_ts"]-self.start_playback["source_ts"],bitrate)
+            #print >>sys.stderr,"vod: trans: %i: pushed at t=%.2f, age is t=%.2f, bitrate = %s" % (i,d["local_ts"]-self.start_playback["local_ts"],d["source_ts"]-self.start_playback["source_ts"],bitrate)
 
     def piece_due(self,i):
         """ Return the time when we expect to have to send a certain piece to the player. For
@@ -1152,16 +1152,16 @@ class MovieOnDemandTransporter(MovieTransport):
                     return num_immediate_packets >= self.max_prebuf_packets
 
             if vs.pausable and not sustainable():
-                if DEBUG:
-                    print >>sys.stderr,"vod: trans:                        BUFFER UNDERRUN -- PAUSING"
+                #if DEBUG:
+                #    print >>sys.stderr,"vod: trans:                        BUFFER UNDERRUN -- PAUSING"
                 self.pause( autoresume = True )
                 self.autoresume( sustainable )
 
                 self.data_ready.release()
                 return
-            else:
-                if DEBUG:
-                    print >>sys.stderr,"vod: trans:                        BUFFER UNDERRUN -- IGNORING"
+            #else:
+                #if DEBUG:
+                #    print >>sys.stderr,"vod: trans:                        BUFFER UNDERRUN -- IGNORING"
 
         def push( i, data ):
             # force buffer underrun:
@@ -1170,8 +1170,8 @@ class MovieOnDemandTransporter(MovieTransport):
             #    return
 
             # push packet into queue
-            if DEBUG:
-                print >>sys.stderr,"vod: trans: %d: pushed l=%d" % (vs.playback_pos,piece)
+            #if DEBUG:
+            #    print >>sys.stderr,"vod: trans: %d: pushed l=%d" % (vs.playback_pos,piece)
 
             # update predictions based on this piece
             self.update_bitrate_prediction( i, data )
@@ -1187,8 +1187,8 @@ class MovieOnDemandTransporter(MovieTransport):
 
         def drop( i ):
             # drop packet
-            if DEBUG:
-                print >>sys.stderr,"vod: trans: %d: dropped pos=%d; deadline expired %.2f sec ago !!!!!!!!!!!!!!!!!!!!!!" % (piece,vs.playback_pos,time.time()-self.piece_due(i))
+            #if DEBUG:
+            #    print >>sys.stderr,"vod: trans: %d: dropped pos=%d; deadline expired %.2f sec ago !!!!!!!!!!!!!!!!!!!!!!" % (piece,vs.playback_pos,time.time()-self.piece_due(i))
 
             self.stat_droppedpieces += 1
             self.stat_pieces.complete( i )
@@ -1213,30 +1213,30 @@ class MovieOnDemandTransporter(MovieTransport):
 
             if ihavepiece:
                 # have piece - push it into buffer
-                if DEBUG:
-                    print >>sys.stderr,"vod: trans:                        BUFFER STATUS (max %.0f): %.0f kbyte" % (mx/1024.0,self.outbuflen/1024.0)
+                #if DEBUG:
+                #    print >>sys.stderr,"vod: trans:                        BUFFER STATUS (max %.0f): %.0f kbyte" % (mx/1024.0,self.outbuflen/1024.0)
 
                 # piece found -- add it to the queue
                 push( piece, data )
             else:
                 # don't have piece, or forced to drop
-                if not vs.dropping and forcedrop:
-                    print >>sys.stderr,"vod: trans: DROPPING INVALID PIECE #%s, even though we shouldn't drop anything." % piece
+                #if not vs.dropping and forcedrop:
+                #    print >>sys.stderr,"vod: trans: DROPPING INVALID PIECE #%s, even though we shouldn't drop anything." % piece
                 if vs.dropping or forcedrop:
                     if time.time() >= self.piece_due( piece ) or buffer_underrun():
                         # piece is too late or we have an empty buffer (and future data to play, otherwise we would have paused) -- drop packet
                         drop( piece )
-                    else:
+                    #else:
                         # we have time to wait for the piece and still have data in our buffer -- wait for packet
-                        if DEBUG:
-                            print >>sys.stderr,"vod: trans: %d: due in %.2fs  pos=%d" % (piece,self.piece_due(piece)-time.time(),vs.playback_pos)
+                        #if DEBUG:
+                        #    print >>sys.stderr,"vod: trans: %d: due in %.2fs  pos=%d" % (piece,self.piece_due(piece)-time.time(),vs.playback_pos)
                     break
                 else: # not dropping
-                    if self.outbuflen == 0:
-                        print >>sys.stderr,"vod: trans: SHOULD NOT HAPPEN: missing piece but not dropping. should have paused. pausable=",vs.pausable
-                    else:
-                        if DEBUG:
-                            print >>sys.stderr,"vod: trans: prebuffering done, but could not fill buffer."
+                    #if self.outbuflen == 0:
+                    #    print >>sys.stderr,"vod: trans: SHOULD NOT HAPPEN: missing piece but not dropping. should have paused. pausable=",vs.pausable
+                    #else:
+                    #    if DEBUG:
+                    #        print >>sys.stderr,"vod: trans: prebuffering done, but could not fill buffer."
                     break
 
         self.data_ready.release()
@@ -1288,7 +1288,7 @@ class MovieOnDemandTransporter(MovieTransport):
         self.prebufprogress = 1.0
         self.playable = True
         
-        print >>sys.stderr,"vod: trans: notify_playable: Calling usercallback to tell it we're ready to play",self.videoinfo['usercallback']
+        #print >>sys.stderr,"vod: trans: notify_playable: Calling usercallback to tell it we're ready to play",self.videoinfo['usercallback']
         
         # MIME type determined normally in LaunchManyCore.network_vod_event_callback
         # However, allow for recognition by videoanalyser
@@ -1306,7 +1306,7 @@ class MovieOnDemandTransporter(MovieTransport):
             filename = None 
             
         # Call user callback
-        print >>sys.stderr,"vod: trans: notify_playable: calling:",self.vodeventfunc
+        #print >>sys.stderr,"vod: trans: notify_playable: calling:",self.vodeventfunc
         self.vodeventfunc( self.videoinfo, VODEVENT_START, {
             "complete":  complete,
             "filename":  filename,
