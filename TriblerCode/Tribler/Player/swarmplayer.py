@@ -460,7 +460,8 @@ class PlayerApp(wx.App):
             tdef = pickle.loads(tstream)
             self.start_download("mojoTstream", tdef)
             #print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
-        elif msg.startswith('[latencytest]'):
+        
+        if msg.startswith('[latencytest]'):
             strs = msg.split("][")
             self.mojoReply(strs[1], strs[2])
 

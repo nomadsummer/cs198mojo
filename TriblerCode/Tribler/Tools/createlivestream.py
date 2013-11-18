@@ -288,7 +288,7 @@ def vod_ready_callback(d,mimetype,stream,filename):
 def get_usage(defs):
     return parseargs.formatDefinitions(defs,80)
 
-def mjcallback(addr, msg):
+def mjcallback(self, addr, msg):
     '''
     MOJO Server TODO, X => DONE
     [X] 1. If a HELP request is received, get the peerlist and torrent definition associated with it 
