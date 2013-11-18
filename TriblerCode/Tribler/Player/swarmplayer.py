@@ -445,7 +445,7 @@ class PlayerApp(wx.App):
             # Switch to GUI thread
             wx.CallAfter(self.remote_start_download,torrentfilename)
     
-    def mjcallback(self,msg):
+    def mjcallback(self, addr, msg):
         """ Called by MojoCommunication thread """
         # do what you want to do to the recieved message in the main thread. hekhek
         print >>sys.stderr,"[MJ-Notif-Peer] Callback function in main received: ", msg
@@ -460,11 +460,12 @@ class PlayerApp(wx.App):
             tdef = pickle.loads(tstream)
             self.start_download("mojoTstream", tdef)
             #print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
-        elif msg.startswith('[latencytest]'):
+        
+        if msg.startswith('[latencytest]'):
             strs = msg.split("][")
-            mojoReply(strs[1], strs[2])
+            self.mojoReply(strs[1], strs[2])
 
-    def mojoReply(peerid, ipAddr):
+    def mojoReply(self, peerid, ipAddr):
         # do what you want to do to the recieved message in the main thread. hekhek
         print >>sys.stderr,"Testing Latency... ", ipAddr
         MojoCommunicationClient(MJ_LISTENPORT,'[latencyrep]['+peerid,ipAddr)
