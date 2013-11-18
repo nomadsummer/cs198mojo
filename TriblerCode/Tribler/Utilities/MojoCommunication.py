@@ -56,25 +56,6 @@ class MojoCommunicationServer(Thread):
             try:
                 conn, addr = self.ss.accept()
                 print >>sys.stderr, "IP Address: ", addr
-<<<<<<< HEAD
-                print >>sys.stderr, "HEKHEK"
-                print >>sys.stderr, "HEKHEK"
-                print >>sys.stderr, "HEKHEK"
-                print >>sys.stderr, "HEKHEK"
-                print >>sys.stderr, "HEKHEK"
-                print >>sys.stderr, "HEKHEK"
-                print >>sys.stderr, "HEKHEK"
-                print >>sys.stderr, "HEKHEK"
-                print >>sys.stderr, "HEKHEK"
-                print >>sys.stderr, "HEKHEK"
-                print >>sys.stderr, "HEKHEK"
-                print >>sys.stderr, "HEKHEK"
-                print >>sys.stderr, "HEKHEK"
-                print >>sys.stderr, "HEKHEK"
-                print >>sys.stderr, "HEKHEK"
-                print >>sys.stderr, "HEKHEK"
-                print >>sys.stderr, "HEKHEK"
-=======
                 print >>sys.stderr, "hekhek"
                 print >>sys.stderr, "hekhek"
                 print >>sys.stderr, "hekhek"
@@ -88,7 +69,6 @@ class MojoCommunicationServer(Thread):
                 print >>sys.stderr, "hekhek"
                 print >>sys.stderr, "hekhek"
                 print >>sys.stderr, "hekhek"
->>>>>>> 274c013393311458273073e9456857d9edf4174c
                 buffer = StringIO()
                 sizedata = readn(conn,4,buffer)
                 size = toint(sizedata)
