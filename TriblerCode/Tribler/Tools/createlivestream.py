@@ -9,6 +9,7 @@ import time
 import tempfile
 import random
 import urllib2
+import datetime
 import wx
 from traceback import print_exc
 from threading import Condition
@@ -39,6 +40,8 @@ x.log("STARTTIME", float(x.data["TIME"][0]))
 x.log("BANDCOUNT", 1)
 x.log("BANDUTIL", 0.0)
 x.log("AVGLATENCY", 0.0)
+x.log("LATCOUNT", 0)
+x.log("LATCHECK", 0)
 twin = 15.0
 
 def state_callback(ds):
@@ -59,12 +62,12 @@ def state_callback(ds):
     print >>sys.stderr, "[MJ-ServerStats]\t%s\t%s\t%s\t%.1f\t%s\tup\t%.1f\tdown\t%.1f" % (mjtime,`d.get_def().get_name()`,dlstatus_strings[ds.get_status()],ds.get_progress(),ds.get_error(),ds.get_current_speed(UPLOAD),ds.get_current_speed(DOWNLOAD))
 
     mjpeers = ds.get_peerlist()
-    if len(mjpeers) > 0:
+    #if len(mjpeers) > 0:
         # ip, uprate, downrate, utotal, dtotal, speed
-        for mjpeer in mjpeers:
-            print >>sys.stderr,"[MJ-PL-spd]\t%s\t%s\t%s " % (mjtime, mjpeer['ip'], mjpeer['speed']/1024.0)
-            print >>sys.stderr,"[MJ-PL-drur]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['downrate']/1024.0, mjpeer['uprate']/1024.0)
-            print >>sys.stderr,"[MJ-PL-dtut]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['dtotal']/1024.0, mjpeer['utotal']/1024.0)
+        #for mjpeer in mjpeers:
+            #print >>sys.stderr,"[MJ-PL-spd]\t%s\t%s\t%s " % (mjtime, mjpeer['ip'], mjpeer['speed']/1024.0)
+            #print >>sys.stderr,"[MJ-PL-drur]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['downrate']/1024.0, mjpeer['uprate']/1024.0)
+            #print >>sys.stderr,"[MJ-PL-dtut]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['dtotal']/1024.0, mjpeer['utotal']/1024.0)
     
     # START        
     mjlog_data(ds)
@@ -73,7 +76,9 @@ def state_callback(ds):
 
     # LATENCY
     MOJOpeerlist = ds.get_peerlist()
-    if len(MOJOpeerlist) > 0:
+    if(len(MOJOpeerlist) > 0 and x.data["LATCOUNT"][0] == 0):
+        print >>sys.stderr, "[BITCH]\t%s" % (len(MOJOpeerlist))
+        x.update("LATCOUNT", len(MOJOpeerlist))
         x.update("AVGLATENCY", 0.0)
         for mjpeer in MOJOpeerlist:
             if(x.is_existing(mjpeer['id'])):
@@ -81,13 +86,14 @@ def state_callback(ds):
             else:
                 x.log("LATENCY-" + str(mjpeer['id']), time.time())
             #SEND MESSAGE
+            print >>sys.stderr, "[Latency]\t%s\t%s" % (mjpeer['id'], mjpeer['ip'])
             mojoLatencyTest(mjpeer['id'], mjpeer['ip'])
-    """
-        # WHERE TO PUT
-        x.update("AVGLATENCY", x.data["AVGLATENCY"][0]/len(MOJOpeerlist))
+
+    if(x.data["LATCHECK"][0] == x.data["LATCOUNT"][0] and x.data["LATCOUNT"][0] > 0):
+        x.update("AVGLATENCY", x.data["AVGLATENCY"][0]/x.data["LATCOUNT"][0])
         print >>sys.stderr, "[MJ-Base-Latency]\t%s" % (x.data["AVGLATENCY"][0])
-        # !
-    """
+        x.update("LATCOUNT", 0)
+        x.update("LATCHECK", 0)
 
     return (1.0,False)
 
@@ -119,23 +125,23 @@ def mjlog_data(ds):
                 x.log(mjpeer['id'], mjpeer['uprate']/1024.0)
 
             x.log("AC-"+str(mjpeer['id']), mjpeer['uprate']/1024.0)
+            x.update("IP-"+str(mjpeer['id']), mjpeer['ip'])
 
-            print >>sys.stderr, "[MJ-Log-PeerUpload]\t%s" % (x.data[mjpeer['id']])
-            print >>sys.stderr, "[MJ-AC-%s]\t%s" % (mjpeer['id'], x.data["AC-"+str(mjpeer['id'])])    
+            #print >>sys.stderr, "[MJ-Log-PeerUpload]\t%s" % (x.data[mjpeer['id']])
+            #print >>sys.stderr, "[MJ-AC-%s]\t%s" % (mjpeer['id'], x.data["AC-"+str(mjpeer['id'])])    
 
         x.update("AvgUp", averageUp/len(x.data["PEERS"]))
         x.update("BANDUTIL", (totalUpload - totalDownload)/x.data["BANDCOUNT"][0])
         x.update("BANDCOUNT", x.data["BANDCOUNT"][0] + 1)
 
-        print >>sys.stderr, "[MJ-Base-BandUtil]\t%s" % (x.data["BANDUTIL"][0])
+        #print >>sys.stderr, "[MJ-Base-BandUtil]\t%s" % (x.data["BANDUTIL"][0])
 
-        if(x.is_existing("PEERS")):
-            print >>sys.stderr, "[MJ-Log-Peers]\t%s" % (x.data["PEERS"])
+        #if(x.is_existing("PEERS")):
+            #print >>sys.stderr, "[MJ-Log-Peers]\t%s" % (x.data["PEERS"])
             
-        for mjpeer in mjpeers:
-            print >>sys.stderr, "[MJ-Log-Peers-IP]\t%s" % (mjpeer['ip'])
-
-       
+        #for mjpeer in mjpeers:
+            #print >>sys.stderr, "[MJ-Log-Peers-IP]\t%s" % (mjpeer['ip'])
+   
 def mjcompute_criterion(ds):
     mjpeers = ds.get_peerlist()
     
@@ -150,8 +156,10 @@ def mjcompute_criterion(ds):
             for mjpeer in x.data["PEERS"]:
                 totalUpload = totalUpload + float(x.data[mjpeer][0])
 
-            x.log("CIRI", totalUpload/(peercount*512))
-            print >>sys.stderr,"[MJ-CIRI-bit512]\t%f" % (x.data["CIRI"][0])
+            toParse = ds.get_videoinfo()
+            bitRate = toParse['bitrate']
+            x.update("CIRI", totalUpload/(peercount*bitRate))
+            #print >>sys.stderr,"[MJ-CIRI]\t%f" % (x.data["CIRI"][0])
 
         #AC
         #add boundary for observing window (wrt time) for each peer
@@ -166,9 +174,9 @@ def mjcompute_criterion(ds):
                 x.update("AAC-"+str(mjpeer), 0.0)
                 for mjpeerup in x.data["AC-"+str(mjpeer)]:
                     x.update("AAC-"+str(mjpeer), float(x.data["AAC-"+str(mjpeer)][0]) + float(mjpeerup))
-                x.update("AAC-"+str(mjpeer), float(x.data["AAC-"+str(mjpeer)][0])/twin)
+                x.update("AAC-"+str(mjpeer), float(float(x.data["AAC-"+str(mjpeer)][0])/len(x.data["AC-"+str(mjpeer)])))
                 x.delete("AC-"+str(mjpeer))
-                print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
+                #print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
             x.update("TIME", time.time())
 
         if(x.is_existing("AAC-RANKED")):
@@ -194,33 +202,43 @@ def mjcompute_criterion(ds):
         for mjpeer in peerrank:
             x.log("AAC-RANKED", mjpeer)
 
-        print >>sys.stderr, "[MJ-AAC-RANKED]\t%s" % (x.data["AAC-RANKED"])
+        #print >>sys.stderr, "[MJ-AAC-RANKED]\t%s" % (x.data["AAC-RANKED"])
 
-        for index in range(0, int(len(x.data["AAC-RANKED"])/5)):
+        for index in range(0, int(len(x.data["AAC-RANKED"])/5) + 1):
             x.log("HIGH-RANKED", x.data["AAC-RANKED"][index])
         
-        if(x.is_existing("HIGH-RANKED") and len(x.data["HIGH-RANKED"]) > 0):
-            print >>sys.stderr, "[MJ-HIGH-RANKED]\t%s" % (x.data["HIGH-RANKED"]) 
+        #if(x.is_existing("HIGH-RANKED") and len(x.data["HIGH-RANKED"]) > 0):
+            #print >>sys.stderr, "[MJ-HIGH-RANKED]\t%s" % (x.data["HIGH-RANKED"]) 
 
-        for index in range(0, int(len(x.data["AAC-RANKED"])/5)):
+        for index in range(0, int(len(x.data["AAC-RANKED"])/5) + 1):
             x.log("LOW-RANKED", x.data["AAC-RANKED"][len(x.data["AAC-RANKED"])-1 - index])
             
-        if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
-            print >>sys.stderr, "[MJ-LOW-RANKED]\t%s" % (x.data["LOW-RANKED"]) 
+        #if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
+            #print >>sys.stderr, "[MJ-LOW-RANKED]\t%s" % (x.data["LOW-RANKED"]) 
 
         if(x.data["CIRI"][0] < 1):
-            highpeers = []
-            lowpeers = []
+            if(x.is_existing("highpeers")):
+                x.delete("highpeers")   
+            if(x.is_existing("lowpeers")):
+                x.delete("lowpeers")
 
             if(x.is_existing("HIGH-RANKED") and len(x.data["HIGH-RANKED"]) > 0):
-                highpeers = x.data["HIGH-RANKED"]
+                for index in range(0, int(len(x.data["HIGH-RANKED"])/5) + 1):
+                    hightemp = {}
+                    hightemp['id'] = str(x.data["HIGH-RANKED"][index])
+                    hightemp['ip'] = x.data["IP-"+str(x.data["HIGH-RANKED"][index])][0]
+                    x.log("highpeers", hightemp)
 
             if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
-                lowpeers = x.data["LOW-RANKED"]
+                for index in range(0, int(len(x.data["LOW-RANKED"])/5) + 1):
+                    lowtemp = {}
+                    lowtemp['id'] = str(x.data["LOW-RANKED"][index])
+                    lowtemp['ip'] = x.data["IP-"+str(x.data["LOW-RANKED"][index])][0]
+                    x.log("lowpeers", lowtemp)
 
             print >>sys.stderr,"SWARM NEEDS HELP"
-            print >>sys.stderr,"HIGHEST AAC:\t%s" % (highpeers)
-            print >>sys.stderr,"LOWEST AAC:\t%s" % (lowpeers)
+            print >>sys.stderr,"HIGHEST AAC:\t%s" % (x.data["highpeers"])
+            print >>sys.stderr,"LOWEST AAC:\t%s" % (x.data["lowpeers"])
 
             mjbandwidth_allocation(ds)
 
@@ -228,8 +246,10 @@ def mjbandwidth_allocation(ds):
     if(x.is_existing("MIN-NEEDED")):
         x.delete("MIN-NEEDED")
 
+    toParse = ds.get_videoinfo()
+    bitRate = toParse['bitrate']
     peercount = len(x.data["PEERS"])
-    minBandwidth = peercount*512
+    minBandwidth = peercount*bitRate
     totalUpload = ds.get_current_speed(UPLOAD)
     if(peercount > 0):
         for mjpeer in x.data["PEERS"]:
@@ -247,7 +267,9 @@ def mjbandwidth_allocation(ds):
         preTotal = leftSide + rightSide
 
         x.update("BA-"+str(mjpeer), Alpha*preTotal)
-        print >>sys.stderr, "[MJ-BA-%s]\t%f" % (mjpeer, float(x.data["BA-"+str(mjpeer)][0]))
+        #print >>sys.stderr, "[MJ-AVGUP]\t%f" % (float(x.data["AvgUp"][0]))
+        #print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
+        #print >>sys.stderr, "[MJ-BA-%s]\t%f" % (mjpeer, float(x.data["BA-"+str(mjpeer)][0]))
 
 def vod_ready_callback(d,mimetype,stream,filename):
     """ Called by the Session when the content of the Download is ready
@@ -286,6 +308,9 @@ def mjcallback(addr, msg):
         peerid = strs[1]
         x.update("LATENCY-" + peerid, time.time() - x.data["LATENCY-" + peerid])
         x.update("AVGLATENCY", x.data["AVGLATENCY"][0] + x.data["LATENCY-" + peerid])
+        x.update("LATCHECK", x.data["LATCHECK"][0] + 1)
+        print >>sys.stderr,"[THIS]\t%s\t%s\t%s" % (x.data["LATENCY-"+peerid][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
+
 
 def getHelp(ipAddr):    
     '''
