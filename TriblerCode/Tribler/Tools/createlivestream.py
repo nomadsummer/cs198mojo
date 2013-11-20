@@ -79,8 +79,7 @@ def state_callback(ds):
 
     # LATENCY
     MOJOpeerlist = ds.get_peerlist()
-    if(len(MOJOpeerlist) > 0 and x.data["LATCOUNT"][0] == 0):
-        print >>sys.stderr, "[BITCH]\t%s" % (len(MOJOpeerlist))
+    if(len(MOJOpeerlist) > 0 and float(x.data["LATCOUNT"][0]) == 0):
         x.update("LATCOUNT", len(MOJOpeerlist))
         x.update("AVGLATENCY", 0.0)
         for mjpeer in MOJOpeerlist:
@@ -89,11 +88,10 @@ def state_callback(ds):
             else:
                 x.log("LATENCY-" + str(mjpeer['id']), time.time())
             #SEND MESSAGE
-            print >>sys.stderr, "[Latency]\t%s\t%s" % (mjpeer['id'], mjpeer['ip'])
             mojoLatencyTest(mjpeer['id'], mjpeer['ip'])
 
     #CHECK THIS
-    if(x.data["LATCHECK"][0] == x.data["LATCOUNT"][0] and x.data["LATCOUNT"][0] > 0):
+    if(float(x.data["LATCHECK"][0]) == float(x.data["LATCOUNT"][0]) and float(x.data["LATCOUNT"][0]) > 0):
         x.update("AVGLATENCY", x.data["AVGLATENCY"][0]/x.data["LATCOUNT"][0])
         print >>sys.stderr, "[MJ-Base-Latency]\t%s" % (x.data["AVGLATENCY"][0])
         x.update("LATCOUNT", 0)
@@ -329,10 +327,11 @@ def mjcallback(self, addr, msg):
     elif msg.startswith('[latencyrep]'):
         strs = msg.split("][")
         peerid = strs[1]
+        print >>sys.stderr,"[BEFORE]\t%s\t%s\t%s" % (x.data["LATENCY-"+peerid][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
         x.update("LATENCY-" + peerid, time.time() - float(x.data["LATENCY-" + peerid][0]))
-        x.update("AVGLATENCY", x.data["AVGLATENCY"][0] + float(x.data["LATENCY-" + peerid][0]))
-        x.update("LATCHECK", x.data["LATCHECK"][0] + 1)
-        print >>sys.stderr,"[THIS]\t%s\t%s\t%s" % (x.data["LATENCY-"+peerid][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
+        x.update("AVGLATENCY", float(x.data["AVGLATENCY"][0]) + float(x.data["LATENCY-" + peerid][0]))
+        x.update("LATCHECK", float(x.data["LATCHECK"][0]) + 1)
+        print >>sys.stderr,"[AFTER]\t%s\t%s\t%s" % (x.data["LATENCY-"+peerid][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
 
 
 def getHelp(highpeers, lowpeers):    
