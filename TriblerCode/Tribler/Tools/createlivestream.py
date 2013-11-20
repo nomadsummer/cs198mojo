@@ -62,7 +62,7 @@ def state_callback(ds):
     
     # MENMA EX
     mjtime = datetime.datetime.now().time()
-    print >>sys.stderr, "[MJ-ServerStats]\t%s\t%s\t%s\t%.1f\t%s\tup\t%.1f\tdown\t%.1f" % (mjtime,`d.get_def().get_name()`,dlstatus_strings[ds.get_status()],ds.get_progress(),ds.get_error(),ds.get_current_speed(UPLOAD),ds.get_current_speed(DOWNLOAD))
+    #print >>sys.stderr, "[MJ-ServerStats]\t%s\t%s\t%s\t%.1f\t%s\tup\t%.1f\tdown\t%.1f" % (mjtime,`d.get_def().get_name()`,dlstatus_strings[ds.get_status()],ds.get_progress(),ds.get_error(),ds.get_current_speed(UPLOAD),ds.get_current_speed(DOWNLOAD))
 
     mjpeers = ds.get_peerlist()
     #if len(mjpeers) > 0:
@@ -286,7 +286,7 @@ def vod_ready_callback(d,mimetype,stream,filename):
 def get_usage(defs):
     return parseargs.formatDefinitions(defs,80)
 
-def mjcallback(self, addr, msg):
+def mjcallback(addr, msg):
     '''
     MOJO Server TODO, X => DONE
     [X] 1. If a HELP request is received, get the peerlist and torrent definition associated with it 
@@ -380,8 +380,8 @@ def sendMojoTstream(ipAddr, torrentdef):
 def mojoLatencyTest(peerid, ipAddr):
     # do what you want to do to the recieved message in the main thread. hekhek
     print >>sys.stderr,"Testing Latency... ", ipAddr
-    toPrint = '[latencytest]['+peerid+']['+s.get_external_ip()
-    print >>sys.stderr,"PRINT: ", toPrint
+    #toPrint = '[latencytest]['+peerid+']['+s.get_external_ip()
+    #print >>sys.stderr,"PRINT: ", toPrint
     MojoCommunicationClient(MJ_LISTENPORT,'[latencytest]['+peerid+']['+s.get_external_ip(), ipAddr)
     
 def createTorrentDef():

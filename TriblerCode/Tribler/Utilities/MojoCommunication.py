@@ -86,12 +86,12 @@ class MojoCommunicationServer(Thread):
 class MojoCommunicationClient:
     
     def __init__(self,port,msg,ipaddr='127.0.0.1'):
-        print >>sys.stderr, "[IPPORTMSG1]\t%s\t%s\t%s" % (ipaddr, port, msg)
+        #print >>sys.stderr, "[IPPORTMSG1]\t%s\t%s\t%s" % (ipaddr, port, msg)
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((ipaddr,port))
         sizedata = tobinary(len(msg))
-        print >>sys.stderr, "[IPPORTMSG2]\t%s\t%s\t%s" % (ipaddr, port, msg)
+        #print >>sys.stderr, "[IPPORTMSG2]\t%s\t%s\t%s" % (ipaddr, port, msg)
         s.send(sizedata)
         s.send(msg)
         s.close()
-        print >>sys.stderr, "[IPPORTMSG3]\t%s\t%s\t%s" % (ipaddr, port, msg)
+        #print >>sys.stderr, "[IPPORTMSG3]\t%s\t%s\t%s" % (ipaddr, port, msg)
