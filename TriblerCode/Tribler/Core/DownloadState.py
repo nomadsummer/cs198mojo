@@ -324,7 +324,6 @@ class DownloadState(Serializable):
         else:
             return self.stats['spew']
 
-
     def get_coopdl_helpers(self):
         """ Returns the peers currently helping.
         @return A list of PermIDs.
@@ -332,4 +331,7 @@ class DownloadState(Serializable):
         if self.coopdl_helpers is None:
             return []
         else:
-           return self.coopdl_helpers 
+           return self.coopdl_helpers
+
+    #MOJO
+    

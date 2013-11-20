@@ -39,13 +39,16 @@ x = MJLogger()
 x.log("TIME", time.time())
 x.log("STARTTIME", float(x.data["TIME"][0]))
 x.log("BANDCOUNT", 1)
-x.log("BANDUTIL", 0.0)
-x.log("AVGLATENCY", 0.0)
 x.log("LATCOUNT", 0)
 x.log("LATCHECK", 0)
 x.log("HELPED", False)
 x.log("HELPING", True)
 twin = 15.0
+
+x.log("PACKETLOSS", 0.0)
+x.log("CONTINDEX", 0.0)
+x.log("BANDUTIL", 0.0)
+x.log("AVGLATENCY", 0.0)
 
 def state_callback(ds):
     global sendTstream
@@ -79,6 +82,7 @@ def state_callback(ds):
 
     # LATENCY
     MOJOpeerlist = ds.get_peerlist()
+    print >>sys.stderr, "[MJ-Peers]\t", len(MOJOpeerlist)
     if(len(MOJOpeerlist) > 0 and float(x.data["LATCOUNT"][0]) == 0):
         x.update("LATCOUNT", len(MOJOpeerlist))
         x.update("AVGLATENCY", 0.0)
@@ -88,15 +92,20 @@ def state_callback(ds):
             else:
                 x.log("LATENCY-" + str(mjpeer['id']), time.time())
             #SEND MESSAGE
+            print >>sys.stderr, "[MJ-Peerip]:\t", mjpeer['ip']
             mojoLatencyTest(mjpeer['id'], mjpeer['ip'])
 
-    #CHECK THIS
     if(float(x.data["LATCHECK"][0]) == float(x.data["LATCOUNT"][0]) and float(x.data["LATCOUNT"][0]) > 0):
         x.update("AVGLATENCY", x.data["AVGLATENCY"][0]/x.data["LATCOUNT"][0])
         print >>sys.stderr, "[MJ-Base-Latency]\t%s" % (x.data["AVGLATENCY"][0])
         x.update("LATCOUNT", 0)
         x.update("LATCHECK", 0)
-    #!
+
+    #PACKET LOSS
+    completePieces = ds.get_pieces_complete()
+    numTrue = completePieces.count(True)
+    if(len(completePieces) > 0):
+        print >>sys.stderr, "[MJ-DEBUG]\tTrue:\t%s\tPercent:\t%s" % (numTrue, ((float(numTrue)/float(len(completePieces)))*100))
 
     return (1.0,False)
 
