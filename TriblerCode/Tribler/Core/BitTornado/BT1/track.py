@@ -911,7 +911,6 @@ class Tracker:
             ( self.allowed, self.allowed_dir_files, self.allowed_dir_blocked,
                 added, garbage2 ) = r
             
-            print_stack()
             print >>sys.stderr,"tracker: parse_allowed: Found new",`added`
             
             
