@@ -261,8 +261,10 @@ def mjcompute_criterion(ds):
             print >>sys.stderr,"HIGHEST AAC:\t%s" % (x.data["highpeers"])
             print >>sys.stderr,"LOWEST AAC:\t%s" % (x.data["lowpeers"])
             
-            print >>sys.stderr,"Calling the getHelp() function..."
-            #getHelp(x.data["highpeers"], x.data["lowpeers"])
+            if !x.data("HELPED")[0]:
+                print >>sys.stderr,"Calling the getHelp() function..."
+                x.update("HELPED", True)
+                getHelp(x.data["highpeers"], x.data["lowpeers"])
 
             mjbandwidth_allocation(ds)
 
@@ -328,7 +330,7 @@ def mjcallback(addr, msg):
     print >>sys.stderr,"[MJ-Notif-Host]"
     print >>sys.stderr,"[MJ-Notif-Host]"
 
-    if msg.startswith('[HELP]+'):
+    if msg.startswith('[HELP]'):
         temp = msg.split("+")
         helpedTorrentDef = pickle.loads(temp[1])
         helpedhighpeers = pickle.loads(temp[2])
@@ -338,7 +340,7 @@ def mjcallback(addr, msg):
         # For each helping peers, call the function sendMojoTstream with their IP address as arguments
         # sendMojoTstream(ipAddr)
         for mjpeer in  x.data["highpeers"]:
-            sendMojoTstream(mjpeer['ip'], helpedTorrentDef)
+            sendMojoTstream(mjpeer, helpedTorrentDef)
         
         # Reply to the helped swarm with your peer list
         MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]+' + pickle.dumps(x.data["highpeers"]) + '+' + pickle.dumps(x.data["lowpeers"]), addr)
@@ -535,11 +537,12 @@ def getHelp(highpeers, lowpeers):
         helpingSwarmIP = dialog.GetValue()
     '''
     
-    helpingSwarmIP = "10.40.81.150"
+    helpingSwarmIP = "192.168.1.38"
     # After some time
     print >>sys.stderr,"Helping swarm found. Initiating connection." 
+    x.update("HELPED",True);
     #print >>sys.stderr,"orig tdef " + pickle.dumps(origTdef)
-    MojoCommunicationClient(MJ_LISTENPORT,'[HELP]+' + pickle.dumps(origTdef) + '+ '+ pickle.dumps(highpeers) + '+' + pickle.dumps(lowpeers), helpingSwarmIP)
+    MojoCommunicationClient(MJ_LISTENPORT,'[HELP]+' + pickle.dumps(origTdef) + '+' + pickle.dumps(highpeers) + '+' + pickle.dumps(lowpeers), helpingSwarmIP)
     
 def sendMojoTstream(ipAddr, torrentdef):
     """ Called by MojoCommunication thread """
