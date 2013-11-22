@@ -441,13 +441,13 @@ def mjcompute_criterion(ipAddr, AbsConUp, AbsConDown):
 
         #print >>sys.stderr, "[MJ-AAC-RANKED]\t%s" % (x.data["AAC-RANKED"])
 
-        for index in range(0, int(len(x.data["AC-RANKED"])/5) + 1):
+        for index in range(0, round(len(x.data["AC-RANKED"])/5 + .5)):
             x.log("HIGH-RANKED", x.data["AC-RANKED"][index])
         
         #if(x.is_existing("HIGH-RANKED") and len(x.data["HIGH-RANKED"]) > 0):
             #print >>sys.stderr, "[MJ-HIGH-RANKED]\t%s" % (x.data["HIGH-RANKED"]) 
 
-        for index in range(0, int(len(x.data["AC-RANKED"])/5) + 1):
+        for index in range(0, round(len(x.data["AC-RANKED"])/5 + .5)):
             x.log("LOW-RANKED", x.data["AC-RANKED"][len(x.data["AC-RANKED"])-1 - index])
             
         #if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
@@ -460,7 +460,7 @@ def mjcompute_criterion(ipAddr, AbsConUp, AbsConDown):
                 x.delete("lowpeers")
 
             if(x.is_existing("HIGH-RANKED") and len(x.data["HIGH-RANKED"]) > 0):
-                for index in range(0, int(len(x.data["HIGH-RANKED"])/5) + 1):
+                for index in range(0, round(len(x.data["HIGH-RANKED"])/5 + .5)):
                     #hightemp = {}
                     #hightemp['id'] = str(x.data["HIGH-RANKED"][index])
                     #hightemp['ip'] = x.data["IP-"+str(x.data["HIGH-RANKED"][index])][0]
@@ -468,7 +468,7 @@ def mjcompute_criterion(ipAddr, AbsConUp, AbsConDown):
                     x.log("highpeers", hightemp)
 
             if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
-                for index in range(0, int(len(x.data["LOW-RANKED"])/5) + 1):
+                for index in range(0, round(len(x.data["LOW-RANKED"])/5 + .5)):
                     #lowtemp = {}
                     #lowtemp['id'] = str(x.data["LOW-RANKED"][index])
                     #lowtemp['ip'] = x.data["IP-"+str(x.data["LOW-RANKED"][index])][0]
@@ -707,13 +707,14 @@ if __name__ == "__main__":
 
     dscfg.set_max_uploads(config['nuploads'])
     # MENMA EX
-    dscfg.set_max_speed(UPLOAD, 1000000)
+    dscfg.set_max_speed(UPLOAD, 300)
     
     # limit the # of connections to the server to only ONE peer so that other peers will connect to each other and not to server only
     # change this later so that number of connected peers  = totalServerUpload/bitrate
     # MOJO - tested and working hekhek
     # dscfg.set_max_conns_to_initiate(1)
-    #dscfg.set_max_conns(1)
+    print >>sys.stderr,"MAX CONNECTIONS:\t",dscfg.get_max_conns()
+    #dscfg.set_max_conns(2)
 
     d = s.start_download(tdef,dscfg)
     d.set_state_callback(state_callback,getpeerlist=True)
