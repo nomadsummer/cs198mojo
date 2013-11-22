@@ -737,9 +737,17 @@ class Connecter:
                or conn.upload.buffer):
             self.ratelimiter.queue(conn)
 
+    # MOJO WAS HERE
     def got_piece(self, i):
+        maxBroadcast = (float(len(self.connections.values())) / 2) + .5
+        maxBroadcast = round(maxBroadcast)
+        counter = 0
         for co in self.connections.values():
+            print >>sys.stderr, "[KOKO]\t%s" % (co.get_ip())
             co.send_have(i)
+            counter = counter + 1
+            if counter == maxBroadcast:
+                break
 
     def our_extend_msg_id_to_name(self,ext_id):
         """ find the name for the given message id (byte) """
