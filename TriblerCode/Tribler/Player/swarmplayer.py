@@ -486,7 +486,9 @@ class PlayerApp(wx.App):
     def mojoReply(self, ipAddr):
         print >>sys.stderr,"Sending Latency... ", ipAddr
         for mjpeer in x.data["PEERS"]:
-            MojoCommunicationClient(MJ_LISTENPORT,'[criterionrep]['+mjpeer+']['+str(x.data["AC-"+str(mjpeer)][0]),ipAddr)
+            toSend = '[criterionrep]['+mjpeer+']['+str(x.data["ACUP-"+str(mjpeer)][0])+']['+str(x.data["ACDOWN-"+str(mjpeer)][0])
+            print >>sys.stderr, "HAHAHA: ",toSend
+            MojoCommunicationClient(MJ_LISTENPORT,toSend,ipAddr)
 
     """
         if msg.startswith('[latencytest]'):
@@ -725,9 +727,9 @@ class PlayerApp(wx.App):
             if(x.is_existing("PEERS")):
                 x.delete("PEERS")
 
-            averageUp = 0.0
-            totalUpload = ds.get_current_speed(UPLOAD)
-            totalDownload = ds.get_current_speed(DOWNLOAD)
+            #averageUp = 0.0
+            #totalUpload = ds.get_current_speed(UPLOAD)
+            #totalDownload = ds.get_current_speed(DOWNLOAD)
 
             for mjpeer in mjpeers:
                 if(x.is_existing("PEERS")):
@@ -736,25 +738,32 @@ class PlayerApp(wx.App):
                 else:
                     x.log("PEERS", mjpeer['ip'])
 
-                totalUpload = totalUpload + mjpeer['uprate']/1024.0
-                totalDownload = totalDownload + mjpeer['downrate']/1024.0
+                #totalUpload = totalUpload + mjpeer['uprate']/1024.0
+                #totalDownload = totalDownload + mjpeer['downrate']/1024.0
 
-                averageUp = averageUp + mjpeer['uprate']/1024.0
+                #averageUp = averageUp + mjpeer['uprate']/1024.0
 
-                x.log(mjpeer['ip'], mjpeer['uprate']/1024.0)
+                x.log("UP-"+str(mjpeer['ip']), mjpeer['uprate']/1024.0)
+                x.log("DOWN-"+str(mjpeer['ip']), mjpeer['downrate']/1024.0)
 
-                if(x.is_existing("AC-"+str(mjpeer['ip']))):
-                    x.update("AC-"+str(mjpeer['ip']), x.averageData(mjpeer['ip']))
+                if(x.is_existing("ACUP-"+str(mjpeer['ip']))):
+                    x.update("ACUP-"+str(mjpeer['ip']), x.averageData("UP-"+str(mjpeer['ip'])))
                 else:
-                    x.log("AC-"+str(mjpeer['ip']), x.averageData(mjpeer['ip']))
+                    x.log("ACUP-"+str(mjpeer['ip']), x.averageData("UP-"+str(mjpeer['ip'])))
 
-                print >>sys.stderr, "[MJ-AC-%s]\t%s" % (mjpeer['ip'], x.data["AC-"+str(mjpeer['ip'])])
+                if(x.is_existing("ACDOWN-"+str(mjpeer['ip']))):
+                    x.update("ACDOWN-"+str(mjpeer['ip']), x.averageData("DOWN-"+str(mjpeer['ip'])))
+                else:
+                    x.log("ACDOWN-"+str(mjpeer['ip']), x.averageData("DOWN-"+str(mjpeer['ip'])))
 
-            x.update("AvgUp", averageUp/len(x.data["PEERS"]))
-            x.update("BANDUTIL", (totalUpload - totalDownload)/x.data["BANDCOUNT"][0])
-            x.update("BANDCOUNT", x.data["BANDCOUNT"][0] + 1)
+                print >>sys.stderr, "[MJ-ACUP-%s]\t%s" % (mjpeer['ip'], x.data["ACUP-"+str(mjpeer['ip'])])
+                print >>sys.stderr, "[MJ-ACDOWN-%s]\t%s" % (mjpeer['ip'], x.data["ACDOWN-"+str(mjpeer['ip'])])
 
-            print >>sys.stderr, "[MJ-Base-BandUtil]\t%s" % (x.data["BANDUTIL"][0])
+            #x.update("AvgUp", averageUp/len(x.data["PEERS"]))
+            #x.update("BANDUTIL", (totalUpload - totalDownload)/x.data["BANDCOUNT"][0])
+            #x.update("BANDCOUNT", x.data["BANDCOUNT"][0] + 1)
+
+            #print >>sys.stderr, "[MJ-Base-BandUtil]\t%s" % (x.data["BANDUTIL"][0])
 
             if(x.is_existing("PEERS")):
                 print >>sys.stderr, "[MJ-Log-Peers]\t%s" % (x.data["PEERS"])

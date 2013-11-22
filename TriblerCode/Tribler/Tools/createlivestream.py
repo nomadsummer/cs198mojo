@@ -39,12 +39,14 @@ argsdef = [('name', '', 'name of the stream'),
 x = MJLogger()
 x.log("TIME", time.time())
 x.log("STARTTIME", float(x.data["TIME"][0]))
+x.log("INITTIME", float(x.data["TIME"][0]))
 x.log("BANDCOUNT", 1)
 x.log("LATCOUNT", 0)
 x.log("LATCHECK", 0)
 x.log("HELPED", False)
 x.log("HELPING", True)
 twin = 15.0
+timeInterval = 10.0
 
 x.log("PACKETLOSS", 0.0)
 x.log("CONTINDEX", 0.0)
@@ -68,12 +70,13 @@ def state_callback(ds):
     #        sendMojoTstream(peer['ip'])
     
     # MENMA EX
-    mjtime = datetime.datetime.now().time()
+    mjtime = time.time() - x.data["INITTIME"][0]
     #print >>sys.stderr, "[MJ-ServerStats]\t%s\t%s\t%s\t%.1f\t%s\tup\t%.1f\tdown\t%.1f" % (mjtime,`d.get_def().get_name()`,dlstatus_strings[ds.get_status()],ds.get_progress(),ds.get_error(),ds.get_current_speed(UPLOAD),ds.get_current_speed(DOWNLOAD))
 
     mjpeers = ds.get_peerlist()
-    if len(mjpeers) > 0:
+    if(len(mjpeers) > 0 and mjtime >= 10):
         get_criterion(ds)
+        x.update("INITTIME", time.time())
 
         # ip, uprate, downrate, utotal, dtotal, speed
         #for mjpeer in mjpeers:
@@ -348,8 +351,8 @@ def mjcallback(addr, msg):
         MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]+' + pickle.dumps(x.data["highpeers"]) + '+' + pickle.dumps(x.data["lowpeers"]), addr)
     elif msg.startswith('[criterionrep]'):
         strs = msg.split("][")
-        print >>sys.stderr,"[MESSAGE] PEER:\t%s\tABSCON\t%s" % (strs[1], strs[2])
-        mjcompute_criterion(strs[1], float(strs[2]))
+        print >>sys.stderr,"[MESSAGE] PEER:\t%s\tACUP\t%sACDOWN\t%s" % (strs[1], strs[2], strs[3])
+        mjcompute_criterion(strs[1], float(strs[2]), float(strs[3]))
         """
         strs = msg.split("][")
         peerid = strs[1]
@@ -360,14 +363,15 @@ def mjcallback(addr, msg):
         print >>sys.stderr,"[AFTER]\t%s\t%s\t%s" % (x.data["LATENCY-"+peerid][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
         """
 
-def mjcompute_criterion(ipAddr, AbsCon):
+def mjcompute_criterion(ipAddr, AbsConUp, AbsConDown):
     if(x.is_existing("PEERS")):
         if(ipAddr not in x.data["PEERS"]):
             x.log("PEERS", ipAddr)
     else:
         x.log("PEERS", ipAddr)
 
-    x.log(ipAddr, AbsCon)
+    x.log("UP-"+ipAddr, AbsConUp)
+    x.log("DOWN-"+ipAddr, AbsConDown)
 
     #CIRI
     if(x.is_existing("PEERS")):
@@ -378,7 +382,7 @@ def mjcompute_criterion(ipAddr, AbsCon):
         peercount = len(x.data["PEERS"])
         if(peercount > 0):
             for mjpeer in x.data["PEERS"]:
-                totalUpload = totalUpload + float(x.data[mjpeer][0])
+                totalUpload = totalUpload + float(x.data["UP-"+mjpeer][0])
 
             toParse = dsGlobal.get_videoinfo()
             bitRate = toParse['bitrate']
@@ -396,9 +400,9 @@ def mjcompute_criterion(ipAddr, AbsCon):
         if(checktime):
             for mjpeer in x.data["PEERS"]:
                 x.update("AC-"+str(mjpeer), 0.0)
-                for mjpeerup in x.data[mjpeer]:
+                for mjpeerup in x.data["UP-"+mjpeer]:
                     x.update("AC-"+str(mjpeer), float(x.data["AC-"+str(mjpeer)][0]) + float(mjpeerup))
-                x.update("AC-"+str(mjpeer), float(float(x.data["AC-"+str(mjpeer)][0])/len(x.data[mjpeer])))
+                x.update("AC-"+str(mjpeer), float(float(x.data["AC-"+str(mjpeer)][0])/len(x.data["UP-"+mjpeer])))
                 x.delete(mjpeer)
                 #print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
             x.update("TIME", time.time())
@@ -469,9 +473,9 @@ def mjcompute_criterion(ipAddr, AbsCon):
             print >>sys.stderr,"Calling the getHelp() function..."
             #getHelp(x.data["highpeers"], x.data["lowpeers"])
 
-            #mjbandwidth_allocation(ds)
+            mjbandwidth_allocation()
 
-def mjbandwidth_allocation(ds):
+def mjbandwidth_allocation():
     if(x.is_existing("MIN-NEEDED")):
         x.delete("MIN-NEEDED")
 
@@ -480,19 +484,24 @@ def mjbandwidth_allocation(ds):
     peercount = len(x.data["PEERS"])
     minBandwidth = peercount*bitRate
     totalUpload = dsGlobal.get_current_speed(UPLOAD)
+    totalDownload = dsGlobal.get_current_speed(DOWNLOAD)
     if(peercount > 0):
         for mjpeer in x.data["PEERS"]:
-            totalUpload = totalUpload + float(x.data[mjpeer][0])
+            totalUpload = totalUpload + float(x.data["UP-"+mjpeer][0])
+            totalDownload = totalDownload + float(x.data["DOWN-"+mjpeer][0])
 
     minBandwidth = minBandwidth - totalUpload
+    x.update("AvgUp", totalUpload/peercount)
+    x.update("BANDUTIL", (totalUpload - totalDownload)/x.data["BANDCOUNT"][0])
+    x.update("BANDCOUNT", x.data["BANDCOUNT"][0] + 1)
 
     x.log("MIN-NEEDED", minBandwidth)
 
     for mjpeer in x.data["PEERS"]:
         Beta = 1
         Alpha = 1
-        leftSide = Beta*(float(x.data["AAC-"+str(mjpeer)][0]) - x.data["AvgUp"][0])
-        rightSide = (1 - Beta)*(float(x.data["AAC-"+str(mjpeer)][0]))
+        leftSide = Beta*(float(x.data["AC-"+str(mjpeer)][0]) - x.data["AvgUp"][0])
+        rightSide = (1 - Beta)*(float(x.data["AC-"+str(mjpeer)][0]))
         preTotal = leftSide + rightSide
 
         x.update("BA-"+str(mjpeer), Alpha*preTotal)
