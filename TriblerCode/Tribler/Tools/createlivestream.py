@@ -39,7 +39,6 @@ argsdef = [('name', '', 'name of the stream'),
 x = MJLogger()
 x.log("TIME", time.time())
 x.log("STARTTIME", float(x.data["TIME"][0]))
-x.log("INITTIME", float(x.data["TIME"][0]))
 x.log("BANDCOUNT", 1)
 x.log("LATCOUNT", 0)
 x.log("LATCHECK", 0)
@@ -70,13 +69,13 @@ def state_callback(ds):
     #        sendMojoTstream(peer['ip'])
     
     # MENMA EX
-    mjtime = time.time() - x.data["INITTIME"][0]
+    mjtime = time.time()
     #print >>sys.stderr, "[MJ-ServerStats]\t%s\t%s\t%s\t%.1f\t%s\tup\t%.1f\tdown\t%.1f" % (mjtime,`d.get_def().get_name()`,dlstatus_strings[ds.get_status()],ds.get_progress(),ds.get_error(),ds.get_current_speed(UPLOAD),ds.get_current_speed(DOWNLOAD))
 
     mjpeers = ds.get_peerlist()
-    if(len(mjpeers) > 0 and mjtime >= 10):
+    #print >>sys.stderr, "MJPEER:\t%s" % (mjpeers)
+    if(len(mjpeers) > 0):
         get_criterion(ds)
-        x.update("INITTIME", time.time())
 
         # ip, uprate, downrate, utotal, dtotal, speed
         #for mjpeer in mjpeers:
@@ -352,8 +351,10 @@ def mjcallback(addr, msg):
     elif msg.startswith('[criterionrep]'):
         strs = msg.split("][")
         print >>sys.stderr,"[MESSAGE] PEER:\t%s\tACUP\t%sACDOWN\t%s" % (strs[1], strs[2], strs[3])
-        mjcompute_criterion(strs[1], float(strs[2]), float(strs[3]))
+        if(strs[1] != s.get_external_ip()):
+            mjcompute_criterion(strs[1], float(strs[2]), float(strs[3]))
         """
+    elif msg.startswith('[latencyrep]'):
         strs = msg.split("][")
         peerid = strs[1]
         print >>sys.stderr,"[BEFORE]\t%s\t%s\t%s" % (x.data["LATENCY-"+peerid][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
@@ -417,15 +418,23 @@ def mjcompute_criterion(ipAddr, AbsConUp, AbsConDown):
         #RANK PEERS ACCORDING TO AAC IS POSSIBLE
         ranked = []
         for mjpeer in x.data["PEERS"]:
-            ranked.append(float(x.data["AC-"+str(mjpeer)][0]))
+            if(checktime):
+                ranked.append(float(x.data["AC-"+str(mjpeer)][0]))
+            else:
+                ranked.append(float(x.data["UP-"+str(mjpeer)][0]))
         ranked = sorted(ranked, reverse=True)
 
         peerrank = []
         for mjpeerup in ranked:
             for mjpeer in x.data["PEERS"]:
-                if(float(x.data["AC-"+str(mjpeer)][0]) == float(mjpeerup)):
-                    mjpeerup = -1
-                    peerrank.append(mjpeer)
+                if(checktime):
+                    if(float(x.data["AC-"+str(mjpeer)][0]) == float(mjpeerup)):
+                        mjpeerup = -1
+                        peerrank.append(mjpeer)
+                else:
+                    if(float(x.data["UP-"+str(mjpeer)][0]) == float(mjpeerup)):
+                        mjpeerup = -1
+                        peerrank.append(mjpeer)
 
         for mjpeer in peerrank:
             x.log("AC-RANKED", mjpeer)
@@ -473,9 +482,9 @@ def mjcompute_criterion(ipAddr, AbsConUp, AbsConDown):
             print >>sys.stderr,"Calling the getHelp() function..."
             #getHelp(x.data["highpeers"], x.data["lowpeers"])
 
-            mjbandwidth_allocation()
+            mjbandwidth_allocation(checktime)
 
-def mjbandwidth_allocation():
+def mjbandwidth_allocation(checktime):
     if(x.is_existing("MIN-NEEDED")):
         x.delete("MIN-NEEDED")
 
@@ -500,8 +509,12 @@ def mjbandwidth_allocation():
     for mjpeer in x.data["PEERS"]:
         Beta = 1
         Alpha = 1
-        leftSide = Beta*(float(x.data["AC-"+str(mjpeer)][0]) - x.data["AvgUp"][0])
-        rightSide = (1 - Beta)*(float(x.data["AC-"+str(mjpeer)][0]))
+        if(checktime):
+            leftSide = Beta*(float(x.data["AC-"+str(mjpeer)][0]) - x.data["AvgUp"][0])
+            rightSide = (1 - Beta)*(float(x.data["AC-"+str(mjpeer)][0]))
+        else:
+            leftSide = Beta*(float(x.data["UP-"+str(mjpeer)][0]) - x.data["AvgUp"][0])
+            rightSide = (1 - Beta)*(float(x.data["UP-"+str(mjpeer)][0]))
         preTotal = leftSide + rightSide
 
         x.update("BA-"+str(mjpeer), Alpha*preTotal)
@@ -700,7 +713,7 @@ if __name__ == "__main__":
     # change this later so that number of connected peers  = totalServerUpload/bitrate
     # MOJO - tested and working hekhek
     # dscfg.set_max_conns_to_initiate(1)
-    dscfg.set_max_conns(1)
+    #dscfg.set_max_conns(1)
 
     d = s.start_download(tdef,dscfg)
     d.set_state_callback(state_callback,getpeerlist=True)
