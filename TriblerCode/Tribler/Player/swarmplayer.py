@@ -479,14 +479,14 @@ class PlayerApp(wx.App):
             self.start_download("mojoTstream", tdef)
             #print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
 
-        if msg.startswith('[getlatency]'):
+        if msg.startswith('[getcriterion]'):
             strs = msg.split("][")
             self.mojoReply(strs[1])
 
     def mojoReply(self, ipAddr):
         print >>sys.stderr,"Sending Latency... ", ipAddr
         for mjpeer in x.data["PEERS"]:
-            MojoCommunicationClient(MJ_LISTENPORT,'[latencyrep]['+mjpeer+']['+x.data["AC-"+str(mjpeer)][0],ipAddr)
+            MojoCommunicationClient(MJ_LISTENPORT,'[criterionrep]['+mjpeer+']['+str(x.data["AC-"+str(mjpeer)][0]),ipAddr)
 
     """
         if msg.startswith('[latencytest]'):
