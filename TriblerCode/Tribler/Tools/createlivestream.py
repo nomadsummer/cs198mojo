@@ -60,7 +60,7 @@ def state_callback(ds):
     d = ds.get_download()
     
     #print >>sys.stderr, "MOJO Peerlist: ", ds.get_peerlist()
-    MOJOpeerlist = ds.get_peerlist()
+    #MOJOpeerlist = ds.get_peerlist()
     #if len(MOJOpeerlist) > 0:
     #    sendTstream = sendTstream + 1
     #print >>sys.stderr, "tstream: ", sendTstream 
@@ -83,14 +83,6 @@ def state_callback(ds):
             #print >>sys.stderr,"[MJ-PL-drur]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['downrate']/1024.0, mjpeer['uprate']/1024.0)
             #print >>sys.stderr,"[MJ-PL-dtut]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['dtotal']/1024.0, mjpeer['utotal']/1024.0)
 
-    
-"""
-def get_criterion(ds):
-    print >>sys.stderr,"WAHAHAHAH"
-    mjpeers = ds.get_peerlist()
-    for mjpeer in mjpeers:
-        MojoCommunicationClient(MJ_LISTENPORT,'[getcriterion]['+s.get_external_ip(), mjpeer['ip'])
-"""
     # START        
     mjlog_data(ds)
     if len(mjpeers) > 0:
@@ -103,13 +95,12 @@ def get_criterion(ds):
         x.update("LATCOUNT", len(MOJOpeerlist))
         x.update("AVGLATENCY", 0.0)
         for mjpeer in MOJOpeerlist:
-            if(x.is_existing(mjpeer['id'])):
-                x.update("LATENCY-" + str(mjpeer['id']), time.time())
+            if(x.is_existing(mjpeer['ip'])):
+                x.update("LATENCY-" + str(mjpeer['ip']), time.time())
             else:
-                x.log("LATENCY-" + str(mjpeer['id']), time.time())
+                x.log("LATENCY-" + str(mjpeer['ip']), time.time())
             #SEND MESSAGE
-            print >>sys.stderr, "[MJ-Peerip]:\t", mjpeer['ip']
-            mojoLatencyTest(mjpeer['id'], mjpeer['ip'])
+            mojoLatencyTest(mjpeer['ip'])
 
     if(float(x.data["LATCHECK"][0]) == float(x.data["LATCOUNT"][0]) and float(x.data["LATCOUNT"][0]) > 0):
         x.update("AVGLATENCY", x.data["AVGLATENCY"][0]/x.data["LATCOUNT"][0])
@@ -117,15 +108,20 @@ def get_criterion(ds):
         x.update("LATCOUNT", 0)
         x.update("LATCHECK", 0)
 
+    return (1.0,False)
     """
     #PACKET LOSS
     completePieces = ds.get_pieces_complete()
     numTrue = completePieces.count(True)
     if(len(completePieces) > 0):
         print >>sys.stderr, "[MJ-DEBUG]\tTrue:\t%s\tPercent:\t%s" % (numTrue, ((float(numTrue)/float(len(completePieces)))*100))
-    """
-    
-    return (1.0,False)
+
+def get_criterion(ds):
+    print >>sys.stderr,"WAHAHAHAH"
+    mjpeers = ds.get_peerlist()
+    for mjpeer in mjpeers:
+        MojoCommunicationClient(MJ_LISTENPORT,'[getcriterion]['+s.get_external_ip(), mjpeer['ip'])
+"""
    
 def mjlog_data(ds):
     mjpeers = ds.get_peerlist()
@@ -139,26 +135,25 @@ def mjlog_data(ds):
 
         for mjpeer in mjpeers:
             if(x.is_existing("PEERS")):
-                if(mjpeer['id'] not in x.data["PEERS"]):
-                    x.log("PEERS", mjpeer['id'])
+                if(mjpeer['ip'] not in x.data["PEERS"]):
+                    x.log("PEERS", mjpeer['ip'])
             else:
-                x.log("PEERS", mjpeer['id'])
+                x.log("PEERS", mjpeer['ip'])
 
             totalUpload = totalUpload + mjpeer['uprate']/1024.0
             totalDownload = totalDownload + mjpeer['downrate']/1024.0
 
             averageUp = averageUp + mjpeer['uprate']/1024.0
 
-            if(x.is_existing(mjpeer['id'])):
-                x.update(mjpeer['id'], mjpeer['uprate']/1024.0)
+            if(x.is_existing(mjpeer['ip'])):
+                x.update(mjpeer['ip'], mjpeer['uprate']/1024.0)
             else:
-                x.log(mjpeer['id'], mjpeer['uprate']/1024.0)
+                x.log(mjpeer['ip'], mjpeer['uprate']/1024.0)
 
-            x.log("AC-"+str(mjpeer['id']), mjpeer['uprate']/1024.0)
-            x.update("IP-"+str(mjpeer['id']), mjpeer['ip'])
+            x.log("AC-"+str(mjpeer['ip']), mjpeer['uprate']/1024.0)
 
-            #print >>sys.stderr, "[MJ-Log-PeerUpload]\t%s" % (x.data[mjpeer['id']])
-            #print >>sys.stderr, "[MJ-AC-%s]\t%s" % (mjpeer['id'], x.data["AC-"+str(mjpeer['id'])])    
+            #print >>sys.stderr, "[MJ-Log-PeerUpload]\t%s" % (x.data[mjpeer['ip']])
+            #print >>sys.stderr, "[MJ-AC-%s]\t%s" % (mjpeer['ip'], x.data["AC-"+str(mjpeer['ip'])])    
 
         x.update("AvgUp", averageUp/len(x.data["PEERS"]))
         x.update("BANDUTIL", (totalUpload - totalDownload)/x.data["BANDCOUNT"][0])
@@ -254,16 +249,12 @@ def mjcompute_criterion(ds):
 
             if(x.is_existing("HIGH-RANKED") and len(x.data["HIGH-RANKED"]) > 0):
                 for index in range(0, round(len(x.data["HIGH-RANKED"])/5 + .5)):
-                    hightemp = {}
-                    hightemp['id'] = str(x.data["HIGH-RANKED"][index])
-                    hightemp['ip'] = x.data["IP-"+str(x.data["HIGH-RANKED"][index])][0]
+                    hightemp = str(x.data["HIGH-RANKED"][index])
                     x.log("highpeers", hightemp)
 
             if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
                 for index in range(0, round(len(x.data["LOW-RANKED"])/5 + .5)):
-                    lowtemp = {}
-                    lowtemp['id'] = str(x.data["LOW-RANKED"][index])
-                    lowtemp['ip'] = x.data["IP-"+str(x.data["LOW-RANKED"][index])][0]
+                    lowtemp = str(x.data["LOW-RANKED"][index])
                     x.log("lowpeers", lowtemp)
 
             print >>sys.stderr,"SWARM NEEDS HELP"
@@ -359,13 +350,11 @@ def mjcallback(addr, msg):
             mjcompute_criterion(strs[1], float(strs[2]), float(strs[3]))
         """
     elif msg.startswith('[latencyrep]'):
-        strs = msg.split("][")
-        peerid = strs[1]
-        print >>sys.stderr,"[BEFORE]\t%s\t%s\t%s" % (x.data["LATENCY-"+peerid][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
-        x.update("LATENCY-" + peerid, time.time() - float(x.data["LATENCY-" + peerid][0]))
-        x.update("AVGLATENCY", float(x.data["AVGLATENCY"][0]) + float(x.data["LATENCY-" + peerid][0]))
+        print >>sys.stderr,"[BEFORE]\t%s\t%s\t%s" % (x.data["LATENCY-"+addr][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
+        x.update("LATENCY-" + addr, time.time() - float(x.data["LATENCY-" + addr][0]))
+        x.update("AVGLATENCY", float(x.data["AVGLATENCY"][0]) + float(x.data["LATENCY-" + addr][0]))
         x.update("LATCHECK", float(x.data["LATCHECK"][0]) + 1)
-        print >>sys.stderr,"[AFTER]\t%s\t%s\t%s" % (x.data["LATENCY-"+peerid][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
+        print >>sys.stderr,"[AFTER]\t%s\t%s\t%s" % (x.data["LATENCY-"+addr][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
 
 """
 def mjcompute_criterion(ipAddr, AbsConUp, AbsConDown):
@@ -574,7 +563,7 @@ def mojoLatencyTest(peerid, ipAddr):
     print >>sys.stderr,"Testing Latency... ", ipAddr
     #toPrint = '[latencytest]['+peerid+']['+s.get_external_ip()
     #print >>sys.stderr,"PRINT: ", toPrint
-    MojoCommunicationClient(MJ_LISTENPORT,'[latencytest]['+s.get_external_ip(), ipAddr)
+    MojoCommunicationClient(MJ_LISTENPORT,'[latencytest]', ipAddr)
     
 def createTorrentDef():
     global tdef
