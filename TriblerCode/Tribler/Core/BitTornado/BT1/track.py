@@ -31,6 +31,7 @@ import re
 import pickle
 from Tribler.Core.BitTornado.__init__ import version_short, createPeerID
 from Tribler.Core.simpledefs import TRIBLER_TORRENT_EXT
+from traceback import print_exc,print_stack
 
 try:
     True
@@ -910,6 +911,7 @@ class Tracker:
             ( self.allowed, self.allowed_dir_files, self.allowed_dir_blocked,
                 added, garbage2 ) = r
             
+            print_stack()
             print >>sys.stderr,"tracker: parse_allowed: Found new",`added`
             
             
