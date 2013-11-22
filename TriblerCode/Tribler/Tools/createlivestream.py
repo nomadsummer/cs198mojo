@@ -25,6 +25,7 @@ MJ_LISTENPORT = 6969
 sendTstream = 0
 dsGlobal = None
 tdef = None
+counter = 0
 
 argsdef = [('name', '', 'name of the stream'),
            ('source', '-', 'source to stream (url, file or "-" to indicate stdin)'),
@@ -240,8 +241,10 @@ def mjcompute_criterion(ds):
             
         #if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
             #print >>sys.stderr, "[MJ-LOW-RANKED]\t%s" % (x.data["LOW-RANKED"]) 
-
-        if(x.data["CIRI"][0] < 1):
+        counter = counter + 1
+        print >>sys.stderr,"help counter", counter
+        #if(x.data["CIRI"][0] < 1):
+        if counter == 15:
             if(x.is_existing("highpeers")):
                 x.delete("highpeers")   
             if(x.is_existing("lowpeers")):
@@ -264,9 +267,10 @@ def mjcompute_criterion(ds):
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
                 x.update("HELPED", True)
+                mjbandwidth_allocation(ds)
                 getHelp(x.data["highpeers"], x.data["lowpeers"])
 
-            mjbandwidth_allocation(ds)
+            
 
 def mjbandwidth_allocation(ds):
     if(x.is_existing("MIN-NEEDED")):

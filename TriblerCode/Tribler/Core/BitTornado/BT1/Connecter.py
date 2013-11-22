@@ -738,6 +738,7 @@ class Connecter:
             self.ratelimiter.queue(conn)
 
     # MOJO WAS HERE
+    # add isServer indicator, peers to send
     def got_piece(self, i):
         maxBroadcast = (float(len(self.connections.values())) / 2) + .5
         maxBroadcast = round(maxBroadcast)
