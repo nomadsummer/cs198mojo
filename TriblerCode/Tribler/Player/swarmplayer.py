@@ -721,7 +721,7 @@ class PlayerApp(wx.App):
             return
         else:
             self.display_stats_in_videoframe(ds,totalhelping,totalspeed)
-"""
+    """
     def mjlog_data(self, ds):
         mjpeers = ds.get_peerlist()
         if len(mjpeers) > 0:
@@ -768,7 +768,7 @@ class PlayerApp(wx.App):
 
             if(x.is_existing("PEERS")):
                 print >>sys.stderr, "[MJ-Log-Peers]\t%s" % (x.data["PEERS"])
-"""
+    """
     def display_stats_in_videoframe(self,ds,totalhelping,totalspeed):
         # Display stats for currently playing Download
         
