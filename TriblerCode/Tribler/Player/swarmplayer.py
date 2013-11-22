@@ -741,7 +741,11 @@ class PlayerApp(wx.App):
 
                 averageUp = averageUp + mjpeer['uprate']/1024.0
 
-                x.log("AC-"+str(mjpeer['ip']), x.averageData(mjpeer['ip']))
+                x.log(mjpeer['ip'], mjpeer['uprate']/1024.0)
+                if(x.is_existing("AC-"+str(mjpeer['id']))):
+                    x.update("AC-"+str(mjpeer['ip']), x.averageData(mjpeer['ip']))
+                else:
+                    x.log("AC-"+str(mjpeer['ip']), x.averageData(mjpeer['ip']))
 
                 print >>sys.stderr, "[MJ-AC-%s]\t%s" % (mjpeer['ip'], x.data["AC-"+str(mjpeer['ip'])])
 
