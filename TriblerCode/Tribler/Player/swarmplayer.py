@@ -486,7 +486,7 @@ class PlayerApp(wx.App):
     def mojoReply(self, ipAddr):
         print >>sys.stderr,"Sending Latency... ", ipAddr
         for mjpeer in x.data["PEERS"]:
-            MojoCommunicationClient(MJ_LISTENPORT,'[latencyrep]['+mjpeer+']['+pickle.dumps(x.data[mjpeer]),ipAddr)
+            MojoCommunicationClient(MJ_LISTENPORT,'[latencyrep]['+mjpeer+']['+x.data["AC-"+str(mjpeer)][0],ipAddr)
 
     """
         if msg.startswith('[latencytest]'):
@@ -742,7 +742,8 @@ class PlayerApp(wx.App):
                 averageUp = averageUp + mjpeer['uprate']/1024.0
 
                 x.log(mjpeer['ip'], mjpeer['uprate']/1024.0)
-                if(x.is_existing("AC-"+str(mjpeer['id']))):
+
+                if(x.is_existing("AC-"+str(mjpeer['ip']))):
                     x.update("AC-"+str(mjpeer['ip']), x.averageData(mjpeer['ip']))
                 else:
                     x.log("AC-"+str(mjpeer['ip']), x.averageData(mjpeer['ip']))

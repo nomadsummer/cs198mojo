@@ -70,7 +70,7 @@ def state_callback(ds):
     mjpeers = ds.get_peerlist()
     if len(mjpeers) > 0:
         get_criterion(ds)
-        
+
         # ip, uprate, downrate, utotal, dtotal, speed
         #for mjpeer in mjpeers:
             #print >>sys.stderr,"[MJ-PL-spd]\t%s\t%s\t%s " % (mjtime, mjpeer['ip'], mjpeer['speed']/1024.0)
@@ -79,11 +79,11 @@ def state_callback(ds):
 
     return (1.0,False)
 
-    def get_criterion(ds):
-        print >>sys.stderr,"WAHAHAHAH"
-        mjpeers = ds.get_peerlist()
-        for mjpeer in mjpeers:
-            MojoCommunicationClient(MJ_LISTENPORT,'[getlatency]['+s.get_external_ip(), mjpeer['ip'])
+def get_criterion(ds):
+    print >>sys.stderr,"WAHAHAHAH"
+    mjpeers = ds.get_peerlist()
+    for mjpeer in mjpeers:
+        MojoCommunicationClient(MJ_LISTENPORT,'[getlatency]['+s.get_external_ip(), mjpeer['ip'])
 
 """
     # START        
@@ -343,7 +343,8 @@ def mjcallback(addr, msg):
         # Reply to the helped swarm with your peer list
         MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]+' + pickle.dumps(x.data["highpeers"]) + '+' + pickle.dumps(x.data["lowpeers"]), addr)
     elif msg.startswith('[latencyrep]'):
-        print >>sys.stderr,"MESSAGE:\t%s" % (msg)
+        strs = msg.split("][")
+        print >>sys.stderr,"[MESSAGE] PEER:\t%s\tABSCON\t%s" % (strs[1], strs[2])
         """
         strs = msg.split("][")
         peerid = strs[1]
