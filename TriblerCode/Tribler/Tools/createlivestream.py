@@ -261,7 +261,7 @@ def mjcompute_criterion(ds):
             print >>sys.stderr,"HIGHEST AAC:\t%s" % (x.data["highpeers"])
             print >>sys.stderr,"LOWEST AAC:\t%s" % (x.data["lowpeers"])
             
-            if !x.data("HELPED")[0]:
+            if not x.data("HELPED")[0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
                 x.update("HELPED", True)
                 getHelp(x.data["highpeers"], x.data["lowpeers"])
