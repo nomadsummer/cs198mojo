@@ -23,6 +23,7 @@ from Tribler.Utilities.MojoCommunication import *
 
 MJ_LISTENPORT = 6969
 sendTstream = 0
+dsGlobal = None
 tdef = None
 
 argsdef = [('name', '', 'name of the stream'),
@@ -52,8 +53,11 @@ x.log("AVGLATENCY", 0.0)
 
 def state_callback(ds):
     global sendTstream
+    global dsGlobal
+    dsGlobal = ds
+
     d = ds.get_download()
-   
+    
     #print >>sys.stderr, "MOJO Peerlist: ", ds.get_peerlist()
     MOJOpeerlist = ds.get_peerlist()
     #if len(MOJOpeerlist) > 0:
@@ -370,13 +374,13 @@ def mjcompute_criterion(ipAddr, AbsCon):
         if(x.is_existing("CIRI")):
             x.delete("CIRI")
 
-        totalUpload = ds.get_current_speed(UPLOAD)
+        totalUpload = dsGlobal.get_current_speed(UPLOAD)
         peercount = len(x.data["PEERS"])
         if(peercount > 0):
             for mjpeer in x.data["PEERS"]:
                 totalUpload = totalUpload + float(x.data[mjpeer][0])
 
-            toParse = ds.get_videoinfo()
+            toParse = dsGlobal.get_videoinfo()
             bitRate = toParse['bitrate']
             x.update("CIRI", totalUpload/(peercount*bitRate))
             print >>sys.stderr,"[MJ-CIRI]\t%f" % (x.data["CIRI"][0])
@@ -391,16 +395,16 @@ def mjcompute_criterion(ipAddr, AbsCon):
 
         if(checktime):
             for mjpeer in x.data["PEERS"]:
-                x.update("AAC-"+str(mjpeer), 0.0)
-                for mjpeerup in x.data["AC-"+str(mjpeer)]:
-                    x.update("AAC-"+str(mjpeer), float(x.data["AAC-"+str(mjpeer)][0]) + float(mjpeerup))
-                x.update("AAC-"+str(mjpeer), float(float(x.data["AAC-"+str(mjpeer)][0])/len(x.data["AC-"+str(mjpeer)])))
-                x.delete("AC-"+str(mjpeer))
+                x.update("AC-"+str(mjpeer), 0.0)
+                for mjpeerup in x.data[mjpeer]:
+                    x.update("AC-"+str(mjpeer), float(x.data["AC-"+str(mjpeer)][0]) + float(mjpeerup))
+                x.update("AC-"+str(mjpeer), float(float(x.data["AC-"+str(mjpeer)][0])/len(x.data[mjpeer])))
+                x.delete(mjpeer)
                 #print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
             x.update("TIME", time.time())
 
-        if(x.is_existing("AAC-RANKED")):
-            x.delete("AAC-RANKED")
+        if(x.is_existing("AC-RANKED")):
+            x.delete("AC-RANKED")
         if(x.is_existing("HIGH-RANKED")):
             x.delete("HIGH-RANKED")   
         if(x.is_existing("LOW-RANKED")):
@@ -409,29 +413,29 @@ def mjcompute_criterion(ipAddr, AbsCon):
         #RANK PEERS ACCORDING TO AAC IS POSSIBLE
         ranked = []
         for mjpeer in x.data["PEERS"]:
-            ranked.append(float(x.data["AAC-"+str(mjpeer)][0]))
+            ranked.append(float(x.data["AC-"+str(mjpeer)][0]))
         ranked = sorted(ranked, reverse=True)
 
         peerrank = []
         for mjpeerup in ranked:
             for mjpeer in x.data["PEERS"]:
-                if(float(x.data["AAC-"+str(mjpeer)][0]) == float(mjpeerup)):
+                if(float(x.data["AC-"+str(mjpeer)][0]) == float(mjpeerup)):
                     mjpeerup = -1
                     peerrank.append(mjpeer)
 
         for mjpeer in peerrank:
-            x.log("AAC-RANKED", mjpeer)
+            x.log("AC-RANKED", mjpeer)
 
         #print >>sys.stderr, "[MJ-AAC-RANKED]\t%s" % (x.data["AAC-RANKED"])
 
-        for index in range(0, int(len(x.data["AAC-RANKED"])/5) + 1):
-            x.log("HIGH-RANKED", x.data["AAC-RANKED"][index])
+        for index in range(0, int(len(x.data["AC-RANKED"])/5) + 1):
+            x.log("HIGH-RANKED", x.data["AC-RANKED"][index])
         
         #if(x.is_existing("HIGH-RANKED") and len(x.data["HIGH-RANKED"]) > 0):
             #print >>sys.stderr, "[MJ-HIGH-RANKED]\t%s" % (x.data["HIGH-RANKED"]) 
 
-        for index in range(0, int(len(x.data["AAC-RANKED"])/5) + 1):
-            x.log("LOW-RANKED", x.data["AAC-RANKED"][len(x.data["AAC-RANKED"])-1 - index])
+        for index in range(0, int(len(x.data["AC-RANKED"])/5) + 1):
+            x.log("LOW-RANKED", x.data["AC-RANKED"][len(x.data["AC-RANKED"])-1 - index])
             
         #if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
             #print >>sys.stderr, "[MJ-LOW-RANKED]\t%s" % (x.data["LOW-RANKED"]) 
@@ -444,36 +448,38 @@ def mjcompute_criterion(ipAddr, AbsCon):
 
             if(x.is_existing("HIGH-RANKED") and len(x.data["HIGH-RANKED"]) > 0):
                 for index in range(0, int(len(x.data["HIGH-RANKED"])/5) + 1):
-                    hightemp = {}
-                    hightemp['id'] = str(x.data["HIGH-RANKED"][index])
-                    hightemp['ip'] = x.data["IP-"+str(x.data["HIGH-RANKED"][index])][0]
+                    #hightemp = {}
+                    #hightemp['id'] = str(x.data["HIGH-RANKED"][index])
+                    #hightemp['ip'] = x.data["IP-"+str(x.data["HIGH-RANKED"][index])][0]
+                    hightemp = str(x.data["HIGH-RANKED"][index])
                     x.log("highpeers", hightemp)
 
             if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
                 for index in range(0, int(len(x.data["LOW-RANKED"])/5) + 1):
-                    lowtemp = {}
-                    lowtemp['id'] = str(x.data["LOW-RANKED"][index])
-                    lowtemp['ip'] = x.data["IP-"+str(x.data["LOW-RANKED"][index])][0]
+                    #lowtemp = {}
+                    #lowtemp['id'] = str(x.data["LOW-RANKED"][index])
+                    #lowtemp['ip'] = x.data["IP-"+str(x.data["LOW-RANKED"][index])][0]
+                    lowtemp = str(x.data["LOW-RANKED"][index])
                     x.log("lowpeers", lowtemp)
 
             print >>sys.stderr,"SWARM NEEDS HELP"
-            print >>sys.stderr,"HIGHEST AAC:\t%s" % (x.data["highpeers"])
-            print >>sys.stderr,"LOWEST AAC:\t%s" % (x.data["lowpeers"])
+            print >>sys.stderr,"HIGHEST AC:\t%s" % (x.data["highpeers"])
+            print >>sys.stderr,"LOWEST AC:\t%s" % (x.data["lowpeers"])
             
             print >>sys.stderr,"Calling the getHelp() function..."
             #getHelp(x.data["highpeers"], x.data["lowpeers"])
 
-            mjbandwidth_allocation(ds)
+            #mjbandwidth_allocation(ds)
 
 def mjbandwidth_allocation(ds):
     if(x.is_existing("MIN-NEEDED")):
         x.delete("MIN-NEEDED")
 
-    toParse = ds.get_videoinfo()
+    toParse = dsGlobal.get_videoinfo()
     bitRate = toParse['bitrate']
     peercount = len(x.data["PEERS"])
     minBandwidth = peercount*bitRate
-    totalUpload = ds.get_current_speed(UPLOAD)
+    totalUpload = dsGlobal.get_current_speed(UPLOAD)
     if(peercount > 0):
         for mjpeer in x.data["PEERS"]:
             totalUpload = totalUpload + float(x.data[mjpeer][0])
