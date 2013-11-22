@@ -274,18 +274,8 @@ def mjcompute_criterion(ds):
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
                 x.update("HELPED", True)
-<<<<<<< HEAD
-<<<<<<< HEAD
                 mjbandwidth_allocation(ds)
                 getHelp(x.data["highpeers"], x.data["lowpeers"])
-=======
-                #getHelp(x.data["highpeers"], x.data["lowpeers"])
->>>>>>> e90fbf501bbdb1da761197c64f25e780b63231d7
-=======
-                #getHelp(x.data["highpeers"], x.data["lowpeers"])
->>>>>>> e90fbf501bbdb1da761197c64f25e780b63231d7
-
-            
 
 def mjbandwidth_allocation(ds):
     if(x.is_existing("MIN-NEEDED")):
