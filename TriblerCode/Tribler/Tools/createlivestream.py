@@ -341,7 +341,8 @@ def mjcallback(addr, msg):
     print >>sys.stderr,"[MJ-Notif-Host]"
 
     if msg.startswith('[HELP]'):
-        temp = msg.split("+")
+        temp = msg.split("XxX+XxX")
+        print >>sys.stderr, "CHECKING", temp[0]
         helpedTorrentDef = pickle.loads(temp[1])
         helpedhighpeers = pickle.loads(temp[2])
         helpedlowpeers = pickle.loads(temp[3])
@@ -353,7 +354,7 @@ def mjcallback(addr, msg):
             sendMojoTstream(mjpeer, helpedTorrentDef)
         
         # Reply to the helped swarm with your peer list
-        MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]+' + pickle.dumps(x.data["highpeers"]) + '+' + pickle.dumps(x.data["lowpeers"]), addr)
+        MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]XxX+XxX' + pickle.dumps(x.data["highpeers"]) + 'XxX+XxX' + pickle.dumps(x.data["lowpeers"]), addr)
         """
     elif msg.startswith('[criterionrep]'):
         strs = msg.split("][")
@@ -552,7 +553,7 @@ def getHelp(highpeers, lowpeers):
     print >>sys.stderr,"Helping swarm found. Initiating connection." 
     x.update("HELPED",True);
     #print >>sys.stderr,"orig tdef " + pickle.dumps(origTdef)
-    MojoCommunicationClient(MJ_LISTENPORT,'[HELP]+' + pickle.dumps(origTdef) + '+' + pickle.dumps(highpeers) + '+' + pickle.dumps(lowpeers), helpingSwarmIP)
+    MojoCommunicationClient(MJ_LISTENPORT,'[HELP]XxX+XxX' + pickle.dumps(origTdef) + 'XxX+XxX' + pickle.dumps(highpeers) + 'XxX+XxX' + pickle.dumps(lowpeers), helpingSwarmIP)
     
 def sendMojoTstream(ipAddr, torrentdef):
     """ Called by MojoCommunication thread """
