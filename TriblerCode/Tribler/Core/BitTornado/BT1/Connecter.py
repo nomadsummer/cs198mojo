@@ -216,6 +216,7 @@ class Connection:
         self._send_message(BITFIELD + bitfield)
 
     def send_have(self, index):
+        print_stack()
         self._send_message(HAVE + tobinary(index))
 
     def send_keepalive(self):
