@@ -46,7 +46,7 @@ x.log("LATCHECK", 0)
 x.log("HELPED", False)
 x.log("HELPING", True)
 twin = 15.0
-timeInterval = 10.0
+graceInt = 0
 
 x.log("PACKETLOSS", 0.0)
 x.log("CONTINDEX", 0.0)
@@ -56,6 +56,7 @@ x.log("AVGLATENCY", 0.0)
 def state_callback(ds):
     global sendTstream
     global dsGlobal
+    global graceInt
     dsGlobal = ds
 
     d = ds.get_download()
@@ -87,7 +88,9 @@ def state_callback(ds):
     # START        
     mjlog_data(ds)
     if len(mjpeers) > 0:
-        mjcompute_criterion(ds)
+        graceInt += 1
+        if(graceInt >= 5):
+            mjcompute_criterion(ds)
 
     # LATENCY
     MOJOpeerlist = ds.get_peerlist()
@@ -183,9 +186,11 @@ def mjcompute_criterion(ds):
                 totalUpload = totalUpload + float(x.data[mjpeer][0])
 
             toParse = ds.get_videoinfo()
-            bitRate = toParse['bitrate']
+            bitRate = toParse['bitrate']/1024.0
             x.update("CIRI", totalUpload/(peercount*bitRate))
-            #print >>sys.stderr,"[MJ-CIRI]\t%f" % (x.data["CIRI"][0])
+            print >>sys.stderr,"[MJ-CIRI]\t%f" % (x.data["CIRI"][0])
+            print >>sys.stderr,"[MJ-CIRI-VARIABLES]"
+            print >>sys.stderr,"[\t%f\t%f\t%f]" % (ds.get_current_speed(UPLOAD), totalUpload-ds.get_current_speed(UPLOAD), bitRate)
 
         #AC
         #add boundary for observing window (wrt time) for each peer
@@ -215,28 +220,30 @@ def mjcompute_criterion(ds):
         #RANK PEERS ACCORDING TO AAC IS POSSIBLE
         ranked = []
         for mjpeer in x.data["PEERS"]:
-            ranked.append(float(x.data["AAC-"+str(mjpeer)][0]))
+            if(x.is_existing("AAC-"+str(mjpeer))):
+                ranked.append(float(x.data["AAC-"+str(mjpeer)][0]))
         ranked = sorted(ranked, reverse=True)
 
         peerrank = []
         for mjpeerup in ranked:
             for mjpeer in x.data["PEERS"]:
-                if(float(x.data["AAC-"+str(mjpeer)][0]) == float(mjpeerup)):
-                    mjpeerup = -1
-                    peerrank.append(mjpeer)
+                if(x.is_existing("AAC-"+str(mjpeer))):
+                    if(float(x.data["AAC-"+str(mjpeer)][0]) == float(mjpeerup)):
+                        mjpeerup = -1
+                        peerrank.append(mjpeer)
 
         for mjpeer in peerrank:
             x.log("AAC-RANKED", mjpeer)
 
         #print >>sys.stderr, "[MJ-AAC-RANKED]\t%s" % (x.data["AAC-RANKED"])
 
-        for index in range(0, round(len(x.data["AAC-RANKED"])/5 + .5)):
+        for index in range(0, int(round(len(x.data["AAC-RANKED"])/5 + .5))):
             x.log("HIGH-RANKED", x.data["AAC-RANKED"][index])
         
         #if(x.is_existing("HIGH-RANKED") and len(x.data["HIGH-RANKED"]) > 0):
             #print >>sys.stderr, "[MJ-HIGH-RANKED]\t%s" % (x.data["HIGH-RANKED"]) 
 
-        for index in range(0, round(len(x.data["AAC-RANKED"])/5 + .5)):
+        for index in range(0, int(round(len(x.data["AAC-RANKED"])/5 + .5))):
             x.log("LOW-RANKED", x.data["AAC-RANKED"][len(x.data["AAC-RANKED"])-1 - index])
             
         #if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
@@ -251,12 +258,12 @@ def mjcompute_criterion(ds):
                 x.delete("lowpeers")
 
             if(x.is_existing("HIGH-RANKED") and len(x.data["HIGH-RANKED"]) > 0):
-                for index in range(0, round(len(x.data["HIGH-RANKED"])/5 + .5)):
+                for index in range(0, int(round(len(x.data["HIGH-RANKED"])/5 + .5))):
                     hightemp = str(x.data["HIGH-RANKED"][index])
                     x.log("highpeers", hightemp)
 
             if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
-                for index in range(0, round(len(x.data["LOW-RANKED"])/5 + .5)):
+                for index in range(0, int(round(len(x.data["LOW-RANKED"])/5 + .5))):
                     lowtemp = str(x.data["LOW-RANKED"][index])
                     x.log("lowpeers", lowtemp)
 
@@ -267,8 +274,12 @@ def mjcompute_criterion(ds):
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
                 x.update("HELPED", True)
+<<<<<<< HEAD
                 mjbandwidth_allocation(ds)
                 getHelp(x.data["highpeers"], x.data["lowpeers"])
+=======
+                #getHelp(x.data["highpeers"], x.data["lowpeers"])
+>>>>>>> e90fbf501bbdb1da761197c64f25e780b63231d7
 
             
 
@@ -277,7 +288,7 @@ def mjbandwidth_allocation(ds):
         x.delete("MIN-NEEDED")
 
     toParse = ds.get_videoinfo()
-    bitRate = toParse['bitrate']
+    bitRate = toParse['bitrate']/1024.0
     peercount = len(x.data["PEERS"])
     minBandwidth = peercount*bitRate
     totalUpload = ds.get_current_speed(UPLOAD)
@@ -385,7 +396,7 @@ def mjcompute_criterion(ipAddr, AbsConUp, AbsConDown):
                 totalUpload = totalUpload + float(x.data["UP-"+mjpeer][0])
 
             toParse = dsGlobal.get_videoinfo()
-            bitRate = toParse['bitrate']
+            bitRate = toParse['bitrate']/1024.0
             x.update("CIRI", totalUpload/(peercount*bitRate))
             print >>sys.stderr,"[MJ-CIRI]\t%f" % (x.data["CIRI"][0])
 
@@ -488,7 +499,7 @@ def mjbandwidth_allocation(checktime):
         x.delete("MIN-NEEDED")
 
     toParse = dsGlobal.get_videoinfo()
-    bitRate = toParse['bitrate']
+    bitRate = toParse['bitrate']/1024.0
     peercount = len(x.data["PEERS"])
     minBandwidth = peercount*bitRate
     totalUpload = dsGlobal.get_current_speed(UPLOAD)
@@ -565,7 +576,7 @@ def sendMojoTstream(ipAddr, torrentdef):
     print >>sys.stderr,"MOJO"
     print >>sys.stderr,"MOJO"
 
-def mojoLatencyTest(peerid, ipAddr):
+def mojoLatencyTest(ipAddr):
     # do what you want to do to the recieved message in the main thread. hekhek
     print >>sys.stderr,"Testing Latency... ", ipAddr
     #toPrint = '[latencytest]['+peerid+']['+s.get_external_ip()
