@@ -248,6 +248,7 @@ def mjcompute_criterion(ds):
             
         #if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
             #print >>sys.stderr, "[MJ-LOW-RANKED]\t%s" % (x.data["LOW-RANKED"]) 
+        global counter
         counter = counter + 1
         print >>sys.stderr,"help counter", counter
         #if(x.data["CIRI"][0] < 1):
