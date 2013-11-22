@@ -68,13 +68,24 @@ def state_callback(ds):
     #print >>sys.stderr, "[MJ-ServerStats]\t%s\t%s\t%s\t%.1f\t%s\tup\t%.1f\tdown\t%.1f" % (mjtime,`d.get_def().get_name()`,dlstatus_strings[ds.get_status()],ds.get_progress(),ds.get_error(),ds.get_current_speed(UPLOAD),ds.get_current_speed(DOWNLOAD))
 
     mjpeers = ds.get_peerlist()
-    #if len(mjpeers) > 0:
+    if len(mjpeers) > 0:
+        get_criterion(ds)
+        
         # ip, uprate, downrate, utotal, dtotal, speed
         #for mjpeer in mjpeers:
             #print >>sys.stderr,"[MJ-PL-spd]\t%s\t%s\t%s " % (mjtime, mjpeer['ip'], mjpeer['speed']/1024.0)
             #print >>sys.stderr,"[MJ-PL-drur]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['downrate']/1024.0, mjpeer['uprate']/1024.0)
             #print >>sys.stderr,"[MJ-PL-dtut]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['dtotal']/1024.0, mjpeer['utotal']/1024.0)
-    
+
+    return (1.0,False)
+
+    def get_criterion(ds):
+        print >>sys.stderr,"WAHAHAHAH"
+        mjpeers = ds.get_peerlist()
+        for mjpeer in mjpeers:
+            MojoCommunicationClient(MJ_LISTENPORT,'[getlatency]['+s.get_external_ip(), mjpeer['ip'])
+
+"""
     # START        
     mjlog_data(ds)
     if len(mjpeers) > 0:
@@ -106,9 +117,7 @@ def state_callback(ds):
     numTrue = completePieces.count(True)
     if(len(completePieces) > 0):
         print >>sys.stderr, "[MJ-DEBUG]\tTrue:\t%s\tPercent:\t%s" % (numTrue, ((float(numTrue)/float(len(completePieces)))*100))
-
-    return (1.0,False)
-
+   
 def mjlog_data(ds):
     mjpeers = ds.get_peerlist()
     if len(mjpeers) > 0:
@@ -285,7 +294,7 @@ def mjbandwidth_allocation(ds):
         #print >>sys.stderr, "[MJ-AVGUP]\t%f" % (float(x.data["AvgUp"][0]))
         #print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
         #print >>sys.stderr, "[MJ-BA-%s]\t%f" % (mjpeer, float(x.data["BA-"+str(mjpeer)][0]))
-
+"""
 def vod_ready_callback(d,mimetype,stream,filename):
     """ Called by the Session when the content of the Download is ready
      
@@ -334,6 +343,8 @@ def mjcallback(addr, msg):
         # Reply to the helped swarm with your peer list
         MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]+' + pickle.dumps(x.data["highpeers"]) + '+' + pickle.dumps(x.data["lowpeers"]), addr)
     elif msg.startswith('[latencyrep]'):
+        print >>sys.stderr,"MESSAGE:\t%s" % (msg)
+        """
         strs = msg.split("][")
         peerid = strs[1]
         print >>sys.stderr,"[BEFORE]\t%s\t%s\t%s" % (x.data["LATENCY-"+peerid][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
@@ -341,7 +352,7 @@ def mjcallback(addr, msg):
         x.update("AVGLATENCY", float(x.data["AVGLATENCY"][0]) + float(x.data["LATENCY-" + peerid][0]))
         x.update("LATCHECK", float(x.data["LATCHECK"][0]) + 1)
         print >>sys.stderr,"[AFTER]\t%s\t%s\t%s" % (x.data["LATENCY-"+peerid][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
-
+        """
 
 def getHelp(highpeers, lowpeers):    
     '''

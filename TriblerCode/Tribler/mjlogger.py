@@ -54,7 +54,15 @@ class MJLogger(object):
     def delete(self, logname):
         self.data[logname] = []
 
-        return
+    def averageData(self, logname):
+        aveData = -1
+        if(len(self.data[logname]) > 0):
+            aveData = 0.0
+            for data in self.data[logname]:
+                aveData = aveData + data
+            aveData = aveData / len(self.data[logname])
+
+        return aveData
 
 # a = MJLogger()
 # b = MJLogger()

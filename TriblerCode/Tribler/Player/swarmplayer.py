@@ -52,6 +52,8 @@ from Tribler.Utilities.MojoCommunication import *
 from Tribler.Main.Utility.utility import Utility # TO REMOVE
 from Tribler.Video.utils import videoextdefaults
 
+from Tribler.mjlogger import *
+
 DEBUG = True
 ONSCREENDEBUG = True
 ALLOW_MULTIPLE = True
@@ -70,6 +72,22 @@ absCon = []
 bwAlloc = 0
 MCIRI = 0
 netUpCon = 0
+
+#Log data
+x = MJLogger()
+x.log("TIME", time.time())
+x.log("STARTTIME", float(x.data["TIME"][0]))
+x.log("BANDCOUNT", 1)
+x.log("LATCOUNT", 0)
+x.log("LATCHECK", 0)
+x.log("HELPED", False)
+x.log("HELPING", True)
+twin = 15.0
+
+x.log("PACKETLOSS", 0.0)
+x.log("CONTINDEX", 0.0)
+x.log("BANDUTIL", 0.0)
+x.log("AVGLATENCY", 0.0)
 
 class PlayerFrame(VideoFrame):
 
@@ -460,7 +478,17 @@ class PlayerApp(wx.App):
             tdef = pickle.loads(tstream)
             self.start_download("mojoTstream", tdef)
             #print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
-        
+
+        if msg.startswith('[getlatency]'):
+            strs = msg.split("][")
+            self.mojoReply(strs[1])
+
+    def mojoReply(self, ipAddr):
+        print >>sys.stderr,"Sending Latency... ", ipAddr
+        for mjpeer in x.data["PEERS"]:
+            MojoCommunicationClient(MJ_LISTENPORT,'[latencyrep]['+mjpeer+']['+pickle.dumps(x.data[mjpeer]),ipAddr)
+
+    """
         if msg.startswith('[latencytest]'):
             strs = msg.split("][")
             self.mojoReply(strs[1], strs[2])
@@ -469,7 +497,7 @@ class PlayerApp(wx.App):
         # do what you want to do to the recieved message in the main thread. hekhek
         print >>sys.stderr,"Testing Latency... ", ipAddr
         MojoCommunicationClient(MJ_LISTENPORT,'[latencyrep]['+peerid,ipAddr)
-
+    """
     def remote_start_download(self,torrentfilename):
         """ Called by GUI thread """
         self.remove_current_download_if_not_complete()
@@ -652,9 +680,11 @@ class PlayerApp(wx.App):
         elif playermode == DLSTATUS_DOWNLOADING:
             # MENMA EX
             mjtime = datetime.datetime.now().time()
-            print >>sys.stderr,"[MJ-ClientStats]\t%s\tmain: Stats: DL:\t%s\t%.1f%%\t%s\tdl\t%.1f\tul\t%.1f\tn\t%d\n" % (mjtime,dlstatus_strings[ds.get_status()],100.0*ds.get_progress(),ds.get_error(),ds.get_current_speed(DOWNLOAD),ds.get_current_speed(UPLOAD),ds.get_num_peers())
             mjpeers = ds.get_peerlist()
+            self.mjlog_data(ds)
+
             """
+            print >>sys.stderr,"[MJ-ClientStats]\t%s\tmain: Stats: DL:\t%s\t%.1f%%\t%s\tdl\t%.1f\tul\t%.1f\tn\t%d\n" % (mjtime,dlstatus_strings[ds.get_status()],100.0*ds.get_progress(),ds.get_error(),ds.get_current_speed(DOWNLOAD),ds.get_current_speed(UPLOAD),ds.get_num_peers())
             if mjpeers is not None :
                 # ip, uprate, downrate, utotal, dtotal, speed
                 for mjpeer in mjpeers:
@@ -689,6 +719,40 @@ class PlayerApp(wx.App):
         else:
             self.display_stats_in_videoframe(ds,totalhelping,totalspeed)
 
+    def mjlog_data(self, ds):
+        mjpeers = ds.get_peerlist()
+        if len(mjpeers) > 0:
+            if(x.is_existing("PEERS")):
+                x.delete("PEERS")
+
+            averageUp = 0.0
+            totalUpload = ds.get_current_speed(UPLOAD)
+            totalDownload = ds.get_current_speed(DOWNLOAD)
+
+            for mjpeer in mjpeers:
+                if(x.is_existing("PEERS")):
+                    if(mjpeer['ip'] not in x.data["PEERS"]):
+                        x.log("PEERS", mjpeer['ip'])
+                else:
+                    x.log("PEERS", mjpeer['ip'])
+
+                totalUpload = totalUpload + mjpeer['uprate']/1024.0
+                totalDownload = totalDownload + mjpeer['downrate']/1024.0
+
+                averageUp = averageUp + mjpeer['uprate']/1024.0
+
+                x.log("AC-"+str(mjpeer['ip']), x.averageData(mjpeer['ip']))
+
+                print >>sys.stderr, "[MJ-AC-%s]\t%s" % (mjpeer['ip'], x.data["AC-"+str(mjpeer['ip'])])
+
+            x.update("AvgUp", averageUp/len(x.data["PEERS"]))
+            x.update("BANDUTIL", (totalUpload - totalDownload)/x.data["BANDCOUNT"][0])
+            x.update("BANDCOUNT", x.data["BANDCOUNT"][0] + 1)
+
+            print >>sys.stderr, "[MJ-Base-BandUtil]\t%s" % (x.data["BANDUTIL"][0])
+
+            if(x.is_existing("PEERS")):
+                print >>sys.stderr, "[MJ-Log-Peers]\t%s" % (x.data["PEERS"])
 
     def display_stats_in_videoframe(self,ds,totalhelping,totalspeed):
         # Display stats for currently playing Download
