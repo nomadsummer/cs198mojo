@@ -478,7 +478,7 @@ class PlayerApp(wx.App):
             tdef = pickle.loads(tstream)
             self.start_download("mojoTstream", tdef)
             #print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
-
+    """
         if msg.startswith('[getcriterion]'):
             strs = msg.split("][")
             self.mojoReply(strs[1])
@@ -493,13 +493,13 @@ class PlayerApp(wx.App):
     """
         if msg.startswith('[latencytest]'):
             strs = msg.split("][")
-            self.mojoReply(strs[1], strs[2])
+            self.mojoReply(strs[1], addr)
 
     def mojoReply(self, peerid, ipAddr):
         # do what you want to do to the recieved message in the main thread. hekhek
         print >>sys.stderr,"Testing Latency... ", ipAddr
         MojoCommunicationClient(MJ_LISTENPORT,'[latencyrep]['+peerid,ipAddr)
-    """
+    
     def remote_start_download(self,torrentfilename):
         """ Called by GUI thread """
         self.remove_current_download_if_not_complete()
@@ -683,7 +683,7 @@ class PlayerApp(wx.App):
             # MENMA EX
             mjtime = datetime.datetime.now().time()
             mjpeers = ds.get_peerlist()
-            self.mjlog_data(ds)
+            #self.mjlog_data(ds)
 
             """
             print >>sys.stderr,"[MJ-ClientStats]\t%s\tmain: Stats: DL:\t%s\t%.1f%%\t%s\tdl\t%.1f\tul\t%.1f\tn\t%d\n" % (mjtime,dlstatus_strings[ds.get_status()],100.0*ds.get_progress(),ds.get_error(),ds.get_current_speed(DOWNLOAD),ds.get_current_speed(UPLOAD),ds.get_num_peers())
@@ -720,7 +720,7 @@ class PlayerApp(wx.App):
             return
         else:
             self.display_stats_in_videoframe(ds,totalhelping,totalspeed)
-
+"""
     def mjlog_data(self, ds):
         mjpeers = ds.get_peerlist()
         if len(mjpeers) > 0:
@@ -767,7 +767,7 @@ class PlayerApp(wx.App):
 
             if(x.is_existing("PEERS")):
                 print >>sys.stderr, "[MJ-Log-Peers]\t%s" % (x.data["PEERS"])
-
+"""
     def display_stats_in_videoframe(self,ds,totalhelping,totalspeed):
         # Display stats for currently playing Download
         

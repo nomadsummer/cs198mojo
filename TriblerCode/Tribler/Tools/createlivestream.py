@@ -74,8 +74,8 @@ def state_callback(ds):
 
     mjpeers = ds.get_peerlist()
     #print >>sys.stderr, "MJPEER:\t%s" % (mjpeers)
-    if(len(mjpeers) > 0):
-        get_criterion(ds)
+    #if(len(mjpeers) > 0):
+        #get_criterion(ds)
 
         # ip, uprate, downrate, utotal, dtotal, speed
         #for mjpeer in mjpeers:
@@ -83,14 +83,13 @@ def state_callback(ds):
             #print >>sys.stderr,"[MJ-PL-drur]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['downrate']/1024.0, mjpeer['uprate']/1024.0)
             #print >>sys.stderr,"[MJ-PL-dtut]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['dtotal']/1024.0, mjpeer['utotal']/1024.0)
 
-    return (1.0,False)
-
+    
+"""
 def get_criterion(ds):
     print >>sys.stderr,"WAHAHAHAH"
     mjpeers = ds.get_peerlist()
     for mjpeer in mjpeers:
         MojoCommunicationClient(MJ_LISTENPORT,'[getcriterion]['+s.get_external_ip(), mjpeer['ip'])
-
 """
     # START        
     mjlog_data(ds)
@@ -118,11 +117,15 @@ def get_criterion(ds):
         x.update("LATCOUNT", 0)
         x.update("LATCHECK", 0)
 
+    """
     #PACKET LOSS
     completePieces = ds.get_pieces_complete()
     numTrue = completePieces.count(True)
     if(len(completePieces) > 0):
         print >>sys.stderr, "[MJ-DEBUG]\tTrue:\t%s\tPercent:\t%s" % (numTrue, ((float(numTrue)/float(len(completePieces)))*100))
+    """
+    
+    return (1.0,False)
    
 def mjlog_data(ds):
     mjpeers = ds.get_peerlist()
@@ -231,13 +234,13 @@ def mjcompute_criterion(ds):
 
         #print >>sys.stderr, "[MJ-AAC-RANKED]\t%s" % (x.data["AAC-RANKED"])
 
-        for index in range(0, int(len(x.data["AAC-RANKED"])/5) + 1):
+        for index in range(0, round(len(x.data["AAC-RANKED"])/5 + .5)):
             x.log("HIGH-RANKED", x.data["AAC-RANKED"][index])
         
         #if(x.is_existing("HIGH-RANKED") and len(x.data["HIGH-RANKED"]) > 0):
             #print >>sys.stderr, "[MJ-HIGH-RANKED]\t%s" % (x.data["HIGH-RANKED"]) 
 
-        for index in range(0, int(len(x.data["AAC-RANKED"])/5) + 1):
+        for index in range(0, round(len(x.data["AAC-RANKED"])/5 + .5)):
             x.log("LOW-RANKED", x.data["AAC-RANKED"][len(x.data["AAC-RANKED"])-1 - index])
             
         #if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
@@ -250,14 +253,14 @@ def mjcompute_criterion(ds):
                 x.delete("lowpeers")
 
             if(x.is_existing("HIGH-RANKED") and len(x.data["HIGH-RANKED"]) > 0):
-                for index in range(0, int(len(x.data["HIGH-RANKED"])/5) + 1):
+                for index in range(0, round(len(x.data["HIGH-RANKED"])/5 + .5)):
                     hightemp = {}
                     hightemp['id'] = str(x.data["HIGH-RANKED"][index])
                     hightemp['ip'] = x.data["IP-"+str(x.data["HIGH-RANKED"][index])][0]
                     x.log("highpeers", hightemp)
 
             if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
-                for index in range(0, int(len(x.data["LOW-RANKED"])/5) + 1):
+                for index in range(0, round(len(x.data["LOW-RANKED"])/5 + .5)):
                     lowtemp = {}
                     lowtemp['id'] = str(x.data["LOW-RANKED"][index])
                     lowtemp['ip'] = x.data["IP-"+str(x.data["LOW-RANKED"][index])][0]
@@ -300,7 +303,7 @@ def mjbandwidth_allocation(ds):
         #print >>sys.stderr, "[MJ-AVGUP]\t%f" % (float(x.data["AvgUp"][0]))
         #print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
         #print >>sys.stderr, "[MJ-BA-%s]\t%f" % (mjpeer, float(x.data["BA-"+str(mjpeer)][0]))
-"""
+
 def vod_ready_callback(d,mimetype,stream,filename):
     """ Called by the Session when the content of the Download is ready
      
@@ -348,6 +351,7 @@ def mjcallback(addr, msg):
         
         # Reply to the helped swarm with your peer list
         MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]+' + pickle.dumps(x.data["highpeers"]) + '+' + pickle.dumps(x.data["lowpeers"]), addr)
+        """
     elif msg.startswith('[criterionrep]'):
         strs = msg.split("][")
         print >>sys.stderr,"[MESSAGE] PEER:\t%s\tACUP\t%sACDOWN\t%s" % (strs[1], strs[2], strs[3])
@@ -362,8 +366,8 @@ def mjcallback(addr, msg):
         x.update("AVGLATENCY", float(x.data["AVGLATENCY"][0]) + float(x.data["LATENCY-" + peerid][0]))
         x.update("LATCHECK", float(x.data["LATCHECK"][0]) + 1)
         print >>sys.stderr,"[AFTER]\t%s\t%s\t%s" % (x.data["LATENCY-"+peerid][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
-        """
 
+"""
 def mjcompute_criterion(ipAddr, AbsConUp, AbsConDown):
     if(x.is_existing("PEERS")):
         if(ipAddr not in x.data["PEERS"]):
@@ -521,7 +525,7 @@ def mjbandwidth_allocation(checktime):
         #print >>sys.stderr, "[MJ-AVGUP]\t%f" % (float(x.data["AvgUp"][0]))
         #print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
         #print >>sys.stderr, "[MJ-BA-%s]\t%f" % (mjpeer, float(x.data["BA-"+str(mjpeer)][0]))
-
+"""
 def getHelp(highpeers, lowpeers):    
     '''
     MOJO Server TODO, X => DONE
@@ -570,7 +574,7 @@ def mojoLatencyTest(peerid, ipAddr):
     print >>sys.stderr,"Testing Latency... ", ipAddr
     #toPrint = '[latencytest]['+peerid+']['+s.get_external_ip()
     #print >>sys.stderr,"PRINT: ", toPrint
-    MojoCommunicationClient(MJ_LISTENPORT,'[latencytest]['+peerid+']['+s.get_external_ip(), ipAddr)
+    MojoCommunicationClient(MJ_LISTENPORT,'[latencytest]['+s.get_external_ip(), ipAddr)
     
 def createTorrentDef():
     global tdef
