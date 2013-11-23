@@ -748,7 +748,7 @@ class Connecter:
         maxBroadcast = round(maxBroadcast)
         counter = 0
         for co in self.connections.values():
-            print >>sys.stderr, "[KOKO]\t%s" % (co.get_ip())
+            #print >>sys.stderr, "[KOKO]\t%s" % (co.get_ip())
             co.send_have(i)
             counter = counter + 1
             if counter == maxBroadcast:

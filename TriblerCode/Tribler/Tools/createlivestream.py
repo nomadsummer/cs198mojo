@@ -53,6 +53,8 @@ x.log("CONTINDEX", 0.0)
 x.log("BANDUTIL", 0.0)
 x.log("AVGLATENCY", 0.0)
 
+dataFile = open("C:\\Codes\\CS198\\Baselines.txt", "a+")
+
 def state_callback(ds):
     global sendTstream
     global dsGlobal
@@ -108,9 +110,12 @@ def state_callback(ds):
 
     if(float(x.data["LATCHECK"][0]) == float(x.data["LATCOUNT"][0]) and float(x.data["LATCOUNT"][0]) > 0):
         x.update("AVGLATENCY", x.data["AVGLATENCY"][0]/x.data["LATCOUNT"][0])
-        print >>sys.stderr, "[MJ-Base-Latency]\t%s" % (x.data["AVGLATENCY"][0])
+        #print >>sys.stderr, "[MJ-Base-Latency]\t%s" % (x.data["AVGLATENCY"][0])
+        print >>dataFile, "[Latency]\t%s" % (x.data["AVGLATENCY"][0])
         x.update("LATCOUNT", 0)
         x.update("LATCHECK", 0)
+
+    dataFile.flush()
 
     return (1.0,False)
     """
@@ -164,9 +169,11 @@ def mjlog_data(ds):
         x.update("BANDCOUNT", x.data["BANDCOUNT"][0] + 1)
 
         #print >>sys.stderr, "[MJ-Base-BandUtil]\t%s" % (x.data["BANDUTIL"][0])
+        print >>dataFile, "[Bandwidth Util]\t%s" % (x.data["BANDUTIL"][0])
 
-        #if(x.is_existing("PEERS")):
+        if(x.is_existing("PEERS")):
             #print >>sys.stderr, "[MJ-Log-Peers]\t%s" % (x.data["PEERS"])
+            print >>dataFile, "[Peers]\t%s" % (x.data["PEERS"])
             
         #for mjpeer in mjpeers:
             #print >>sys.stderr, "[MJ-Log-Peers-IP]\t%s" % (mjpeer['ip'])
@@ -188,9 +195,10 @@ def mjcompute_criterion(ds):
             toParse = ds.get_videoinfo()
             bitRate = toParse['bitrate']/1024.0
             x.update("CIRI", totalUpload/(peercount*bitRate))
+            print >>dataFile,"[CIRI]\t%f" % (x.data["CIRI"][0])
             print >>sys.stderr,"[MJ-CIRI]\t%f" % (x.data["CIRI"][0])
-            print >>sys.stderr,"[MJ-CIRI-VARIABLES]"
-            print >>sys.stderr,"[\t%f\t%f\t%f]" % (ds.get_current_speed(UPLOAD), totalUpload-ds.get_current_speed(UPLOAD), bitRate)
+            #print >>sys.stderr,"[MJ-CIRI-VARIABLES]"
+            #print >>sys.stderr,"[\t%f\t%f\t%f]" % (ds.get_current_speed(UPLOAD), totalUpload-ds.get_current_speed(UPLOAD), bitRate)
 
         #AC
         #add boundary for observing window (wrt time) for each peer
@@ -208,6 +216,7 @@ def mjcompute_criterion(ds):
                 x.update("AAC-"+str(mjpeer), float(float(x.data["AAC-"+str(mjpeer)][0])/len(x.data["AC-"+str(mjpeer)])))
                 x.delete("AC-"+str(mjpeer))
                 #print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
+                print >>dataFile, "[AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
             x.update("TIME", time.time())
 
         if(x.is_existing("AAC-RANKED")):
@@ -271,6 +280,9 @@ def mjcompute_criterion(ds):
             print >>sys.stderr,"SWARM NEEDS HELP"
             print >>sys.stderr,"HIGHEST AAC:\t%s" % (x.data["highpeers"])
             print >>sys.stderr,"LOWEST AAC:\t%s" % (x.data["lowpeers"])
+
+            print >>dataFile,"[HIGHPEERS]\t%s" % (x.data["highpeers"])
+            print >>dataFile,"[LOWPEERS]\t%s" % (x.data["lowpeers"])
             
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
@@ -306,6 +318,7 @@ def mjbandwidth_allocation(ds):
         #print >>sys.stderr, "[MJ-AVGUP]\t%f" % (float(x.data["AvgUp"][0]))
         #print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
         #print >>sys.stderr, "[MJ-BA-%s]\t%f" % (mjpeer, float(x.data["BA-"+str(mjpeer)][0]))
+        print >>dataFile, "[BA-%s]\t%f" % (mjpeer, float(x.data["BA-"+str(mjpeer)][0]))
 
 def vod_ready_callback(d,mimetype,stream,filename):
     """ Called by the Session when the content of the Download is ready
@@ -328,6 +341,7 @@ def mjcallback(addr, msg):
     [X] 4. Acknowledge and reply to the swarm that needs help with your peerlist
     '''
     print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg    
+    """
     print >>sys.stderr,"[MJ-Notif-Host]"
     print >>sys.stderr,"[MJ-Notif-Host]"
     print >>sys.stderr,"[MJ-Notif-Host]"
@@ -339,10 +353,10 @@ def mjcallback(addr, msg):
     print >>sys.stderr,"[MJ-Notif-Host]"
     print >>sys.stderr,"[MJ-Notif-Host]"
     print >>sys.stderr,"[MJ-Notif-Host]"
-
+    """
     if msg.startswith('[HELP]'):
         temp = msg.split("XxX+XxX")
-        print >>sys.stderr, "CHECKING", temp[0]
+        #print >>sys.stderr, "CHECKING", temp[0]
         helpedTorrentDef = pickle.loads(temp[1])
         helpedhighpeers = pickle.loads(temp[2])
         helpedlowpeers = pickle.loads(temp[3])
@@ -364,11 +378,11 @@ def mjcallback(addr, msg):
             mjcompute_criterion(strs[1], float(strs[2]), float(strs[3]))
         """
     elif msg.startswith('[latencyrep]'):
-        print >>sys.stderr,"[BEFORE]\t%s\t%s\t%s" % (x.data["LATENCY-"+addr][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
+        #print >>sys.stderr,"[BEFORE]\t%s\t%s\t%s" % (x.data["LATENCY-"+addr][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
         x.update("LATENCY-" + addr, time.time() - float(x.data["LATENCY-" + addr][0]))
         x.update("AVGLATENCY", float(x.data["AVGLATENCY"][0]) + float(x.data["LATENCY-" + addr][0]))
         x.update("LATCHECK", float(x.data["LATCHECK"][0]) + 1)
-        print >>sys.stderr,"[AFTER]\t%s\t%s\t%s" % (x.data["LATENCY-"+addr][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
+        #print >>sys.stderr,"[AFTER]\t%s\t%s\t%s" % (x.data["LATENCY-"+addr][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
 
 """
 def mjcompute_criterion(ipAddr, AbsConUp, AbsConDown):
@@ -553,6 +567,7 @@ def getHelp(highpeers, lowpeers):
     # After some time
     print >>sys.stderr,"Helping swarm found. Initiating connection." 
     x.update("HELPED",True);
+    print >>dataFile,"===============================[SWARM HELPED]===============================" 
     #print >>sys.stderr,"orig tdef " + pickle.dumps(origTdef)
     MojoCommunicationClient(MJ_LISTENPORT,'[HELP]XxX+XxX' + pickle.dumps(origTdef) + 'XxX+XxX' + pickle.dumps(highpeers) + 'XxX+XxX' + pickle.dumps(lowpeers), helpingSwarmIP)
     
@@ -560,7 +575,12 @@ def sendMojoTstream(ipAddr, torrentdef, highpeers, lowpeers):
     """ Called by MojoCommunication thread """
     print >>sys.stderr,"Sending tstream... ", ipAddr
     #createTorrentDef()
+<<<<<<< HEAD
     MojoCommunicationClient(MJ_LISTENPORT,'[download-tstream]XxX+XxX' + pickle.dumps(torrentdef) + 'XxX+XxX' + pickle.dumps(highpeers) + 'XxX+XxX' + pickle.dumps(lowpeers), ipAddr)
+=======
+    MojoCommunicationClient(MJ_LISTENPORT,'[download-tstream] ' + pickle.dumps(torrentdef), ipAddr)
+    """
+>>>>>>> 66861354679e7b07770bc9dc1ebcdb5d4e7b368f
     print >>sys.stderr,"MOJO"
     print >>sys.stderr,"MOJO"
     print >>sys.stderr,"MOJO"
@@ -572,6 +592,7 @@ def sendMojoTstream(ipAddr, torrentdef, highpeers, lowpeers):
     print >>sys.stderr,"MOJO"
     print >>sys.stderr,"MOJO"
     print >>sys.stderr,"MOJO"
+    """
 
 def mojoLatencyTest(ipAddr):
     # do what you want to do to the recieved message in the main thread. hekhek

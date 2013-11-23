@@ -55,6 +55,7 @@ class MojoCommunicationServer(Thread):
         while True:
             try:
                 conn, addr = self.ss.accept()
+                """
                 print >>sys.stderr, "IP Address: ", addr
                 print >>sys.stderr, "hekhek"
                 print >>sys.stderr, "hekhek"
@@ -69,6 +70,7 @@ class MojoCommunicationServer(Thread):
                 print >>sys.stderr, "hekhek"
                 print >>sys.stderr, "hekhek"
                 print >>sys.stderr, "hekhek"
+                """
                 buffer = StringIO()
                 sizedata = readn(conn,4,buffer)
                 size = toint(sizedata)
