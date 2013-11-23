@@ -473,9 +473,12 @@ class PlayerApp(wx.App):
             self.videoplay.stop_playback()
             self.OnExit()
 
-        if msg.startswith('[download-tstream] '):
-            tstream = msg[19:]
-            tdef = pickle.loads(tstream)
+        if msg.startswith('[download-tstream]'):
+            temp = msg.split("XxX+XxX") 
+            tdef = pickle.loads(temp[1])
+            highpeers = pickle.loads(temp[2])
+            lowpeers = pickle.loads(temp[3])
+            
             self.start_download("mojoTstream", tdef)
             #print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
 

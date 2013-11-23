@@ -350,8 +350,9 @@ def mjcallback(addr, msg):
         
         # For each helping peers, call the function sendMojoTstream with their IP address as arguments
         # sendMojoTstream(ipAddr)
-        for mjpeer in  x.data["highpeers"]:
-            sendMojoTstream(mjpeer, helpedTorrentDef)
+        if x.is_existing("highpeers"):
+            for mjpeer in  x.data["highpeers"]:
+                sendMojoTstream(mjpeer, helpedTorrentDef, x.data["highpeers"], x.data["lowpeers"])
         
         # Reply to the helped swarm with your peer list
         MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]XxX+XxX' + pickle.dumps(x.data["highpeers"]) + 'XxX+XxX' + pickle.dumps(x.data["lowpeers"]), addr)
@@ -555,11 +556,11 @@ def getHelp(highpeers, lowpeers):
     #print >>sys.stderr,"orig tdef " + pickle.dumps(origTdef)
     MojoCommunicationClient(MJ_LISTENPORT,'[HELP]XxX+XxX' + pickle.dumps(origTdef) + 'XxX+XxX' + pickle.dumps(highpeers) + 'XxX+XxX' + pickle.dumps(lowpeers), helpingSwarmIP)
     
-def sendMojoTstream(ipAddr, torrentdef):
+def sendMojoTstream(ipAddr, torrentdef, highpeers, lowpeers):
     """ Called by MojoCommunication thread """
     print >>sys.stderr,"Sending tstream... ", ipAddr
     #createTorrentDef()
-    MojoCommunicationClient(MJ_LISTENPORT,'[download-tstream] ' + pickle.dumps(torrentdef), ipAddr)
+    MojoCommunicationClient(MJ_LISTENPORT,'[download-tstream]XxX+XxX' + pickle.dumps(torrentdef) + 'XxX+XxX' + pickle.dumps(highpeers) + 'XxX+XxX' + pickle.dumps(lowpeers), ipAddr)
     print >>sys.stderr,"MOJO"
     print >>sys.stderr,"MOJO"
     print >>sys.stderr,"MOJO"

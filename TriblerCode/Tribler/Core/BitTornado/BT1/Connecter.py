@@ -133,7 +133,6 @@ class Connection:
         # BarterCast counters
         self.total_downloaded = 0
         self.total_uploaded = 0
-        
         self.ut_pex_first_flag = True # first time we sent a ut_pex to this peer?
 
 
@@ -738,6 +737,11 @@ class Connecter:
             self.ratelimiter.queue(conn)
 
     # MOJO WAS HERE
+    def kick_peers(self, peerlist):
+        for co in self.connections.values():  
+            if(co.get_ip() not in peerlist):
+                co.download.try_kick()
+
     # add isServer indicator, peers to send
     def got_piece(self, i):
         maxBroadcast = (float(len(self.connections.values())) / 2) + .5
