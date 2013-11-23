@@ -575,8 +575,12 @@ def sendMojoTstream(ipAddr, torrentdef, highpeers, lowpeers):
     """ Called by MojoCommunication thread """
     print >>sys.stderr,"Sending tstream... ", ipAddr
     #createTorrentDef()
+<<<<<<< HEAD
     MojoCommunicationClient(MJ_LISTENPORT,'[download-tstream]XxX+XxX' + pickle.dumps(torrentdef) + 'XxX+XxX' + pickle.dumps(highpeers) + 'XxX+XxX' + pickle.dumps(lowpeers), ipAddr)
 
+=======
+    MojoCommunicationClient(MJ_LISTENPORT,'[download-tstream] ' + pickle.dumps(torrentdef), ipAddr)
+>>>>>>> 66861354679e7b07770bc9dc1ebcdb5d4e7b368f
     """
     print >>sys.stderr,"MOJO"
     print >>sys.stderr,"MOJO"
