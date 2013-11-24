@@ -772,3 +772,6 @@ class BT1Download:
 
     def get_moviestreamtransport(self):
         return self.voddownload
+    
+    def update_peerlist(self, peerlist):
+        self.connecter.kick_peers(peerlist)

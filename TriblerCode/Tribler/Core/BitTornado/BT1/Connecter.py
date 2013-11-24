@@ -738,6 +738,7 @@ class Connecter:
 
     # MOJO WAS HERE
     def kick_peers(self, peerlist):
+        print_stack()
         for co in self.connections.values():  
             if(co.get_ip() not in peerlist):
                 co.download.try_kick()

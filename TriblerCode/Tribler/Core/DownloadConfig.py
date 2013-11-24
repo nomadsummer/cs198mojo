@@ -253,6 +253,12 @@ class DownloadConfigInterface:
         @return A number of connections.
         """
         return self.dlconfig['max_initiate']
+        
+    def update_peerlist(self,peerlist):
+        self.dlconfig['mojopeerlist'] = peerlist
+
+    def get_mojopeerlist(self):
+        return self.dlconfig['mojopeerlist']
 
     def set_max_conns(self,nconns):
         """ Sets the maximum number of connections to connections for this 

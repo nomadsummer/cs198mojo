@@ -346,7 +346,10 @@ class DownloadImpl:
             self.session.lm.rawserver.add_task(self.network_restart,0.0)
         finally:
             self.dllock.release()
-
+    
+    def update_peerlist(self, peerlist):
+        self.sd.get_bt1download().update_peerlist(peerlist)
+    
     def network_restart(self):
         """ Called by network thread """
         # Must schedule the hash check via lm. In some cases we have batch stops

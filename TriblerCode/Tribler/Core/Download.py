@@ -84,6 +84,11 @@ class Download(DownloadRuntimeConfig,DownloadImpl):
         # Called by any thread
         DownloadImpl.restart(self)
         
+    def update_peerlist(self, peerlist):
+        """ Updates peerlist. """
+        # Called by any thread
+        DownloadImpl.update_peerlist(self, peerlist)
+       
     #
     # Config parameters that only exists at runtime 
     #

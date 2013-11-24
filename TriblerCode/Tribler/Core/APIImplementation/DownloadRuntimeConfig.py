@@ -5,7 +5,7 @@ import sys
 from traceback import print_exc
 
 from Tribler.Core.DownloadConfig import DownloadConfigInterface
-
+from traceback import print_exc,print_stack
 DEBUG = True
 
 class DownloadRuntimeConfig(DownloadConfigInterface):
@@ -107,6 +107,16 @@ class DownloadRuntimeConfig(DownloadConfigInterface):
         finally:
             self.dllock.release()
 
+    def update_peerlist(self,peerlist):
+        self.dllock.acquire()
+        try:
+            if self.sd is not None:
+                set_max_conns2init_lambda = lambda:self.sd.update_peerlist(peerlist,None)
+                self.session.lm.rawserver.add_task(set_max_conns2init_lambda,0.0)
+            DownloadConfigInterface.update_peerlist(self,peerlist)
+        finally:
+            self.dllock.release()
+            
     def set_max_conns_to_initiate(self,nconns):
         self.dllock.acquire()
         try:
