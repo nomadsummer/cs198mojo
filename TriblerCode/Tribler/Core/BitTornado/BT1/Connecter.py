@@ -199,6 +199,8 @@ class Connection:
                 self.just_unchoked = clock()
 
     def send_request(self, index, begin, length):
+        #if helping and self.get_ip() in helpedlowpeers:
+        #    return
         self._send_message(REQUEST + tobinary(index) + 
             tobinary(begin) + tobinary(length))
         if DEBUG_NORMAL_MSGS:
@@ -738,13 +740,15 @@ class Connecter:
 
     # MOJO WAS HERE
     def kick_peers(self, peerlist):
-        print_stack()
+        # print_stack()
         for co in self.connections.values():  
             if(co.get_ip() not in peerlist):
                 co.download.try_kick()
 
     # add isServer indicator, peers to send
     def got_piece(self, i):
+        #if helping and co.get_ip() in helpedhighpeerlist:
+        #    return
         maxBroadcast = (float(len(self.connections.values())) / 2) + .5
         maxBroadcast = round(maxBroadcast)
         counter = 0

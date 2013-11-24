@@ -89,7 +89,7 @@ x.log("CONTINDEX", 0.0)
 x.log("BANDUTIL", 0.0)
 x.log("AVGLATENCY", 0.0)
 
-counter = 0
+#counter = 0
 
 class PlayerFrame(VideoFrame):
 
@@ -313,7 +313,7 @@ class PlayerApp(wx.App):
         return filename
 
 
-    def start_download(self,torrentfilename, newTdef = None, peerlist = None):
+    def start_download(self,torrentfilename, newTdef = None):
         
         if newTdef is None:
         	tdef = TorrentDef.load(torrentfilename)
@@ -479,10 +479,12 @@ class PlayerApp(wx.App):
             temp = msg.split("XxX+XxX") 
             tdef = pickle.loads(temp[1])
             highpeers = pickle.loads(temp[2])
+            #include midpeers
             lowpeers = pickle.loads(temp[3])
             
             self.start_download("mojoTstream", tdef)
-            self.d.update_peerlist(None)
+            #kickout mid peers
+            #self.d.update_peerlist(midpeers)
             #print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
 
         if msg.startswith('[latencytest]'):
@@ -633,8 +635,8 @@ class PlayerApp(wx.App):
         """ Called by *GUI* thread.
         CAUTION: As this method is called by the GUI thread don't to any 
         time-consuming stuff here! """
-        global counter
-        counter += 1
+        #global counter
+        #counter += 1
         
         #print >>sys.stderr,"main: Stats:"
         if self.shuttingdown:
@@ -644,9 +646,9 @@ class PlayerApp(wx.App):
         self.dlock.acquire()
         playermode = self.playermode
         d = self.d
-        print >>sys.stderr,"update Peerlist counter: ", counter 
-        if(counter == 15) :
-            d.update_peerlist(None)
+        #print >>sys.stderr,"update Peerlist counter: ", counter 
+        #if(counter == 15) :
+        #   d.update_peerlist(None)
         self.dlock.release()
 
         totalspeed = {}
