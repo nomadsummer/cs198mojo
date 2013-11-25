@@ -156,10 +156,13 @@ def mjlog_data(ds):
 
             if(x.is_existing(mjpeer['ip'])):
                 x.update(mjpeer['ip'], mjpeer['uprate']/1024.0)
+                x.update("DL-"+mjpeer['ip'], mjpeer['downrate']/1024.0)
             else:
                 x.log(mjpeer['ip'], mjpeer['uprate']/1024.0)
+                x.log("DL-"+mjpeer['ip'], mjpeer['downrate']/1024.0)
 
             x.log("AC-"+str(mjpeer['ip']), mjpeer['uprate']/1024.0)
+            x.log("ACDL-"+str(mjpeer['ip']), mjpeer['downrate']/1024.0)
 
             #print >>sys.stderr, "[MJ-Log-PeerUpload]\t%s" % (x.data[mjpeer['ip']])
             #print >>sys.stderr, "[MJ-AC-%s]\t%s" % (mjpeer['ip'], x.data["AC-"+str(mjpeer['ip'])])    
@@ -183,23 +186,6 @@ def mjcompute_criterion(ds):
     
     #CIRI
     if(x.is_existing("PEERS")):
-        if(x.is_existing("CIRI")):
-            x.delete("CIRI")
-
-        totalUpload = ds.get_current_speed(UPLOAD)
-        peercount = len(x.data["PEERS"])
-        if(peercount > 0):
-            for mjpeer in x.data["PEERS"]:
-                totalUpload = totalUpload + float(x.data[mjpeer][0])
-
-            toParse = ds.get_videoinfo()
-            bitRate = toParse['bitrate']/1024.0
-            x.update("CIRI", totalUpload/(peercount*bitRate))
-            print >>dataFile,"[CIRI]\t%f" % (x.data["CIRI"][0])
-            print >>sys.stderr,"[MJ-CIRI]\t%f" % (x.data["CIRI"][0])
-            #print >>sys.stderr,"[MJ-CIRI-VARIABLES]"
-            #print >>sys.stderr,"[\t%f\t%f\t%f]" % (ds.get_current_speed(UPLOAD), totalUpload-ds.get_current_speed(UPLOAD), bitRate)
-
         #AC
         #add boundary for observing window (wrt time) for each peer
         #average all AC
@@ -211,13 +197,55 @@ def mjcompute_criterion(ds):
         if(checktime):
             for mjpeer in x.data["PEERS"]:
                 x.update("AAC-"+str(mjpeer), 0.0)
+                x.update("AACDL-"+str(mjpeer), 0.0)
                 for mjpeerup in x.data["AC-"+str(mjpeer)]:
                     x.update("AAC-"+str(mjpeer), float(x.data["AAC-"+str(mjpeer)][0]) + float(mjpeerup))
+                    x.update("AACDL-"+str(mjpeer), float(x.data["AACDL-"+str(mjpeer)][0]) + float(mjpeerup))
                 x.update("AAC-"+str(mjpeer), float(float(x.data["AAC-"+str(mjpeer)][0])/len(x.data["AC-"+str(mjpeer)])))
+                x.update("AACDL-"+str(mjpeer), float(float(x.data["AACDL-"+str(mjpeer)][0])/len(x.data["ACDL-"+str(mjpeer)])))
                 x.delete("AC-"+str(mjpeer))
+                x.delete("ACDL-"+str(mjpeer))
                 #print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
                 print >>dataFile, "[AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
             x.update("TIME", time.time())
+
+        if(x.data['HELPED'][0]):
+            if(x.is_existing("MCIRI")):
+                x.update("MCIRI", 0.0)
+            if(x.is_existing("NetUpCon")):
+                x.update("NetUpCon", 0.0)
+
+            for mjpeer in x.data["HELPERS"]:
+                x.update("NetUpCon", (x.data["NetUpCon"] + x.data["AAC-"+mjpeer] - x.data["AACDL-"+mjpeer]))
+
+            totalUpload = ds.get_current_speed(UPLOAD)
+            peercount = len(x.data["PEERS"]) - len(x.data["HELPERS"])
+            if(peercount > 0):
+                for mjpeer in x.data["PEERS"]:
+                    if(mjpeer not in x.data["HELPERS"]):
+                        totalUpload = totalUpload + float(x.data[mjpeer][0])
+
+                toParse = ds.get_videoinfo()
+                bitRate = toParse['bitrate']/1024.0
+                x.update("MCIRI", totalUpload/(peercount*bitRate))
+                print >>dataFile,"[MCIRI]\t%f" % (x.data["MCIRI"][0])
+        else:
+            if(x.is_existing("CIRI")):
+                x.delete("CIRI")
+
+            totalUpload = ds.get_current_speed(UPLOAD)
+            peercount = len(x.data["PEERS"])
+            if(peercount > 0):
+                for mjpeer in x.data["PEERS"]:
+                    totalUpload = totalUpload + float(x.data[mjpeer][0])
+
+                toParse = ds.get_videoinfo()
+                bitRate = toParse['bitrate']/1024.0
+                x.update("CIRI", totalUpload/(peercount*bitRate))
+                print >>dataFile,"[CIRI]\t%f" % (x.data["CIRI"][0])
+                #print >>sys.stderr,"[MJ-CIRI]\t%f" % (x.data["CIRI"][0])
+                #print >>sys.stderr,"[MJ-CIRI-VARIABLES]"
+                #print >>sys.stderr,"[\t%f\t%f\t%f]" % (ds.get_current_speed(UPLOAD), totalUpload-ds.get_current_speed(UPLOAD), bitRate)
 
         if(x.is_existing("AAC-RANKED")):
             x.delete("AAC-RANKED")
@@ -261,7 +289,7 @@ def mjcompute_criterion(ds):
         counter = counter + 1
         print >>sys.stderr,"help counter", counter
         #if(x.data["CIRI"][0] < 1):
-        if counter == 15:
+        if counter == 30:
             if(x.is_existing("highpeers")):
                 x.delete("highpeers")   
             if(x.is_existing("lowpeers")):
@@ -284,6 +312,7 @@ def mjcompute_criterion(ds):
             print >>dataFile,"[HIGHPEERS]\t%s" % (x.data["highpeers"])
             print >>dataFile,"[LOWPEERS]\t%s" % (x.data["lowpeers"])
             
+            counter = 0
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
                 x.update("HELPED", True)
@@ -369,7 +398,7 @@ def mjcallback(addr, msg):
                 sendMojoTstream(mjpeer, helpedTorrentDef, x.data["highpeers"], x.data["lowpeers"])
         
         # Reply to the helped swarm with your peer list
-        MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]XxX+XxX' + pickle.dumps(x.data["highpeers"]) + 'XxX+XxX' + pickle.dumps(x.data["lowpeers"]), addr)
+        MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]XxX+XxX' + pickle.dumps(x.data["highpeers"]) + 'XxX+XxX' + pickle.dumps(x.data["lowpeers"]), addr[0])
         """
     elif msg.startswith('[criterionrep]'):
         strs = msg.split("][")
@@ -383,6 +412,12 @@ def mjcallback(addr, msg):
         x.update("AVGLATENCY", float(x.data["AVGLATENCY"][0]) + float(x.data["LATENCY-" + addr][0]))
         x.update("LATCHECK", float(x.data["LATCHECK"][0]) + 1)
         #print >>sys.stderr,"[AFTER]\t%s\t%s\t%s" % (x.data["LATENCY-"+addr][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
+    elif msg.startswith('[ACK-HELP]'):
+        print >>sys.stderr, "+++++++++++++++++++++++++[HAHAHAHAHAHA]++++++++++++++++++++++++"
+        temp = msg.split("XxX+XxX")
+        helpingPeers = pickle.loads(temp[1])
+        x.update("HELPERS", helpingPeers)
+
 
 """
 def mjcompute_criterion(ipAddr, AbsConUp, AbsConDown):
@@ -563,7 +598,7 @@ def getHelp(highpeers, lowpeers):
         helpingSwarmIP = dialog.GetValue()
     '''
     
-    helpingSwarmIP = "192.168.1.38"
+    helpingSwarmIP = "10.40.81.146"
     # After some time
     print >>sys.stderr,"Helping swarm found. Initiating connection." 
     x.update("HELPED",True);
@@ -733,7 +768,7 @@ if __name__ == "__main__":
 
     dscfg.set_max_uploads(config['nuploads'])
     # MENMA EX
-    dscfg.set_max_speed(UPLOAD, 300)
+    dscfg.set_max_speed(UPLOAD, 150)
     
     # limit the # of connections to the server to only ONE peer so that other peers will connect to each other and not to server only
     # change this later so that number of connected peers  = totalServerUpload/bitrate
