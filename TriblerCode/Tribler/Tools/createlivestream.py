@@ -53,7 +53,7 @@ x.log("CONTINDEX", 0.0)
 x.log("BANDUTIL", 0.0)
 x.log("AVGLATENCY", 0.0)
 
-dataFile = open("C:\\temp\\Baselines.txt", "a+")
+dataFile = open("C:\\Codes\\CS198\\Baselines.txt", "a+")
 
 def state_callback(ds):
     global sendTstream
