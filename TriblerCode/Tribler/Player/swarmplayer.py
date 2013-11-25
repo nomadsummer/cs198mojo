@@ -66,30 +66,7 @@ MJ_LISTENPORT = 6969
 PLAYER_LISTENPORT = 8620
 VIDEOHTTP_LISTENPORT = 6879
 
-# MOJO peer behavior variable decalarations
-CIRI = 0
-absCon = []
-bwAlloc = 0
-MCIRI = 0
-netUpCon = 0
-
-#Log data
-x = MJLogger()
-x.log("TIME", time.time())
-x.log("STARTTIME", float(x.data["TIME"][0]))
-x.log("BANDCOUNT", 1)
-x.log("LATCOUNT", 0)
-x.log("LATCHECK", 0)
-x.log("HELPED", False)
-x.log("HELPING", True)
-twin = 15.0
-
-x.log("PACKETLOSS", 0.0)
-x.log("CONTINDEX", 0.0)
-x.log("BANDUTIL", 0.0)
-x.log("AVGLATENCY", 0.0)
-
-#counter = 0
+x.log("HELPING", False)
 
 class PlayerFrame(VideoFrame):
 
@@ -483,8 +460,9 @@ class PlayerApp(wx.App):
             lowpeers = pickle.loads(temp[3])
             
             self.start_download("mojoTstream", tdef)
+            x.update("HELPING", True)
             #kickout mid peers
-            self.d.update_peerlist(None)
+            #self.d.update_peerlist(None)
             #print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
 
         if msg.startswith('[latencytest]'):
@@ -647,8 +625,8 @@ class PlayerApp(wx.App):
         playermode = self.playermode
         d = self.d
         #print >>sys.stderr,"update Peerlist counter: ", counter 
-        #if(counter == 15) :
-        #   d.update_peerlist(None)
+        if(x.data["HELPING"][0]) :
+           d.update_peerlist(None)
         self.dlock.release()
 
         totalspeed = {}
