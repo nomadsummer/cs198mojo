@@ -172,7 +172,7 @@ def mjlog_data(ds):
         x.update("BANDCOUNT", x.data["BANDCOUNT"][0] + 1)
 
         #print >>sys.stderr, "[MJ-Base-BandUtil]\t%s" % (x.data["BANDUTIL"][0])
-        print >>dataFile, "[Bandwidth Util]\t%s" % (x.data["BANDUTIL"][0])
+        #print >>dataFile, "[Bandwidth Util]\t%s" % (x.data["BANDUTIL"][0])
 
         if(x.is_existing("PEERS")):
             #print >>sys.stderr, "[MJ-Log-Peers]\t%s" % (x.data["PEERS"])
@@ -193,14 +193,20 @@ def mjcompute_criterion(ds):
             checktime = True
         else:
             checktime = False
-
+        """
+        for mjpeer in x.data["PEERS"]:
+            x.update("AAC-"+str(mjpeer), 0.0)
+            x.update("AACDL-"+str(mjpeer), 0.0)
+        """
         if(checktime):
             for mjpeer in x.data["PEERS"]:
                 x.update("AAC-"+str(mjpeer), 0.0)
                 x.update("AACDL-"+str(mjpeer), 0.0)
                 for mjpeerup in x.data["AC-"+str(mjpeer)]:
                     x.update("AAC-"+str(mjpeer), float(x.data["AAC-"+str(mjpeer)][0]) + float(mjpeerup))
+                for mjpeerup in x.data["ACDL-"+str(mjpeer)]:
                     x.update("AACDL-"+str(mjpeer), float(x.data["AACDL-"+str(mjpeer)][0]) + float(mjpeerup))
+
                 x.update("AAC-"+str(mjpeer), float(float(x.data["AAC-"+str(mjpeer)][0])/len(x.data["AC-"+str(mjpeer)])))
                 x.update("AACDL-"+str(mjpeer), float(float(x.data["AACDL-"+str(mjpeer)][0])/len(x.data["ACDL-"+str(mjpeer)])))
                 x.delete("AC-"+str(mjpeer))
@@ -209,14 +215,21 @@ def mjcompute_criterion(ds):
                 print >>dataFile, "[AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
             x.update("TIME", time.time())
 
-        if(x.data['HELPED'][0]):
+        if(x.data['HELPED'][0] and x.is_existing("HELPERS")):
             if(x.is_existing("MCIRI")):
                 x.update("MCIRI", 0.0)
-            if(x.is_existing("NetUpCon")):
-                x.update("NetUpCon", 0.0)
+
+            x.update("NetUpCon", 0.0)
 
             for mjpeer in x.data["HELPERS"]:
-                x.update("NetUpCon", (x.data["NetUpCon"] + x.data["AAC-"+mjpeer] - x.data["AACDL-"+mjpeer]))
+                if(checktime):
+                    x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data["AAC-"+str(mjpeer)][0] - x.data["AACDL-"+str(mjpeer)][0]))
+                    #print >>dataFile, "[AAC-%s]\t%s" % (str(mjpeer), x.data["AAC-"+str(mjpeer)][0])
+                    #print >>dataFile, "[AACDL-%s]\t%s" % (str(mjpeer), x.data["AACDL-"+str(mjpeer)][0])
+                else:
+                    x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data[str(mjpeer)][0] - x.data["DL-"+str(mjpeer)][0]))
+                    #print >>dataFile, "[AC-%s]\t%s" % (str(mjpeer), x.data[str(mjpeer)][0])
+                    #print >>dataFile, "[ACDL-%s]\t%s" % (str(mjpeer), x.data["DL-"+str(mjpeer)][0])
 
             totalUpload = ds.get_current_speed(UPLOAD)
             peercount = len(x.data["PEERS"]) - len(x.data["HELPERS"])
@@ -228,6 +241,8 @@ def mjcompute_criterion(ds):
                 toParse = ds.get_videoinfo()
                 bitRate = toParse['bitrate']/1024.0
                 x.update("MCIRI", totalUpload/(peercount*bitRate))
+                #print >>dataFile,"[UP]\t%s" % (totalUpload)
+                #print >>dataFile,"[bitRate]\t%f\t[peercount]\t%f" % (bitRate, peercount)
                 print >>dataFile,"[MCIRI]\t%f" % (x.data["MCIRI"][0])
         else:
             if(x.is_existing("CIRI")):
@@ -317,7 +332,7 @@ def mjcompute_criterion(ds):
                 print >>sys.stderr,"Calling the getHelp() function..."
                 #x.update("HELPED", True)
                 mjbandwidth_allocation(ds)
-                #getHelp(x.data["highpeers"], x.data["lowpeers"])
+                getHelp(x.data["highpeers"], x.data["lowpeers"])
 
 def mjbandwidth_allocation(ds):
     if(x.is_existing("MIN-NEEDED")):
@@ -434,15 +449,21 @@ def mjcallback(addr, msg):
         print >>sys.stderr, "Latency"
         print >>sys.stderr, "Latency"
         #print >>sys.stderr,"[BEFORE]\t%s\t%s\t%s" % (x.data["LATENCY-"+addr][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
+<<<<<<< HEAD
         x.update("LATENCY-" + addr[0], time.time() - float(x.data["LATENCY-" + addr][0]))
         x.update("AVGLATENCY", float(x.data["AVGLATENCY"][0]) + float(x.data["LATENCY-" + addr][0]))
+=======
+        x.update("LATENCY-" + addr[0], time.time() - float(x.data["LATENCY-" + addr[0]][0]))
+        x.update("AVGLATENCY", float(x.data["AVGLATENCY"][0]) + float(x.data["LATENCY-" + addr[0]][0]))
+>>>>>>> dbf8b830d2761c33bb70040ad8c000c2a74a9cbd
         x.update("LATCHECK", float(x.data["LATCHECK"][0]) + 1)
         #print >>sys.stderr,"[AFTER]\t%s\t%s\t%s" % (x.data["LATENCY-"+addr][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
     elif msg.startswith('[ACK-HELP]'):
         print >>sys.stderr, "+++++++++++++++++++++++++[HAHAHAHAHAHA]++++++++++++++++++++++++"
         temp = msg.split("XxX+XxX")
         helpingPeers = pickle.loads(temp[1])
-        x.update("HELPERS", helpingPeers)
+        x.update("HELPERS", helpingPeers[0])
+        print >>sys.stderr, "HELPEERS", x.data["HELPERS"]
 
 
 """
@@ -826,7 +847,7 @@ if __name__ == "__main__":
     dscfg.set_max_uploads(config['nuploads'])
     # MENMA EX
 
-    dscfg.set_max_speed(UPLOAD, 100000)
+    dscfg.set_max_speed(UPLOAD, 200)
     
     # limit the # of connections to the server to only ONE peer so that other peers will connect to each other and not to server only
     # change this later so that number of connected peers  = totalServerUpload/bitrate
