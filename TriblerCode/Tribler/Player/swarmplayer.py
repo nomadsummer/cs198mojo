@@ -66,6 +66,7 @@ MJ_LISTENPORT = 6969
 PLAYER_LISTENPORT = 8620
 VIDEOHTTP_LISTENPORT = 6879
 
+x = MJLogger()
 x.log("HELPING", False)
 
 class PlayerFrame(VideoFrame):
