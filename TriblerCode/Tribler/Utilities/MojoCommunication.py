@@ -75,7 +75,7 @@ class MojoCommunicationServer(Thread):
                 sizedata = readn(conn,4,buffer)
                 size = toint(sizedata)
                 msg = readn(conn,size,buffer)
-                print >>sys.stderr, "[MJ-Notif] Received Message: ", msg
+                #print >>sys.stderr, "[MJ-Notif] Received Message: ", msg
                 
                 self.callback(addr, msg)
                 conn.close()

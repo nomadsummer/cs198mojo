@@ -384,7 +384,7 @@ def mjcallback(addr, msg):
            by calling the function sendMojoTstream(ipAddr)
     [X] 4. Acknowledge and reply to the swarm that needs help with your peerlist
     '''
-    print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg    
+    #print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg    
     """
     print >>sys.stderr,"[MJ-Notif-Host]"
     print >>sys.stderr,"[MJ-Notif-Host]"
@@ -399,6 +399,7 @@ def mjcallback(addr, msg):
     print >>sys.stderr,"[MJ-Notif-Host]"
     """
     if msg.startswith('[HELP]'):
+        """
         print >>sys.stderr, "HELP"
         print >>sys.stderr, "HELP"
         print >>sys.stderr, "HELP"
@@ -412,6 +413,7 @@ def mjcallback(addr, msg):
         print >>sys.stderr, "HELP"
         print >>sys.stderr, "HELP"
         print >>sys.stderr, "HELP"
+        """
         temp = msg.split("XxX+XxX")
         #print >>sys.stderr, "CHECKING", temp[0]
         helpedTorrentDef = pickle.loads(temp[1])
@@ -655,7 +657,7 @@ def sendMojoTstream(ipAddr, torrentdef, highpeers, lowpeers):
 
 def mojoLatencyTest(ipAddr):
     # do what you want to do to the recieved message in the main thread. hekhek
-    print >>sys.stderr,"Testing Latency... ", ipAddr
+    #print >>sys.stderr,"Testing Latency... ", ipAddr
     #toPrint = '[latencytest]['+peerid+']['+s.get_external_ip()
     #print >>sys.stderr,"PRINT: ", toPrint
     MojoCommunicationClient(MJ_LISTENPORT,'[latencytest]', ipAddr)
@@ -833,7 +835,7 @@ if __name__ == "__main__":
     # change this later so that number of connected peers  = totalServerUpload/bitrate
     # MOJO - tested and working hekhek
     # dscfg.set_max_conns_to_initiate(1)
-    print >>sys.stderr,"MAX CONNECTIONS:\t",dscfg.get_max_conns()
+    #print >>sys.stderr,"MAX CONNECTIONS:\t",dscfg.get_max_conns()
     #dscfg.set_max_conns(2)
 
     d = s.start_download(tdef,dscfg)
