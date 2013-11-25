@@ -315,7 +315,7 @@ def mjcompute_criterion(ds):
             counter = 0
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
-                x.update("HELPED", True)
+                #x.update("HELPED", True)
                 mjbandwidth_allocation(ds)
                 #getHelp(x.data["highpeers"], x.data["lowpeers"])
 
@@ -420,8 +420,21 @@ def mjcallback(addr, msg):
             mjcompute_criterion(strs[1], float(strs[2]), float(strs[3]))
         """
     elif msg.startswith('[latencyrep]'):
+        print >>sys.stderr, "Latency"
+        print >>sys.stderr, "Latency"
+        print >>sys.stderr, "Latency"
+        print >>sys.stderr, "Latency"
+        print >>sys.stderr, "Latency"
+        print >>sys.stderr, "Latency"
+        print >>sys.stderr, "Latency"
+        print >>sys.stderr, "Latency"
+        print >>sys.stderr, "Latency"
+        print >>sys.stderr, "Latency"
+        print >>sys.stderr, "Latency"
+        print >>sys.stderr, "Latency"
+        print >>sys.stderr, "Latency"
         #print >>sys.stderr,"[BEFORE]\t%s\t%s\t%s" % (x.data["LATENCY-"+addr][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
-        x.update("LATENCY-" + addr, time.time() - float(x.data["LATENCY-" + addr][0]))
+        x.update("LATENCY-" + addr[0], time.time() - float(x.data["LATENCY-" + addr][0]))
         x.update("AVGLATENCY", float(x.data["AVGLATENCY"][0]) + float(x.data["LATENCY-" + addr][0]))
         x.update("LATCHECK", float(x.data["LATCHECK"][0]) + 1)
         #print >>sys.stderr,"[AFTER]\t%s\t%s\t%s" % (x.data["LATENCY-"+addr][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])

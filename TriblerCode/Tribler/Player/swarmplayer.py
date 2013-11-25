@@ -488,7 +488,7 @@ class PlayerApp(wx.App):
             #print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
 
         if msg.startswith('[latencytest]'):
-            self.mojoReply(addr)
+            self.mojoReply(addr[0])
 
     """
         if msg.startswith('[getcriterion]'):
