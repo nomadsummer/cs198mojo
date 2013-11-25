@@ -288,7 +288,7 @@ def mjcompute_criterion(ds):
                 print >>sys.stderr,"Calling the getHelp() function..."
                 x.update("HELPED", True)
                 mjbandwidth_allocation(ds)
-                getHelp(x.data["highpeers"], x.data["lowpeers"])
+                #getHelp(x.data["highpeers"], x.data["lowpeers"])
 
 def mjbandwidth_allocation(ds):
     if(x.is_existing("MIN-NEEDED")):
@@ -355,6 +355,19 @@ def mjcallback(addr, msg):
     print >>sys.stderr,"[MJ-Notif-Host]"
     """
     if msg.startswith('[HELP]'):
+        print >>sys.stderr, "HELP"
+        print >>sys.stderr, "HELP"
+        print >>sys.stderr, "HELP"
+        print >>sys.stderr, "HELP"
+        print >>sys.stderr, "HELP"
+        print >>sys.stderr, "HELP"
+        print >>sys.stderr, "HELP"
+        print >>sys.stderr, "HELP"
+        print >>sys.stderr, "HELP"
+        print >>sys.stderr, "HELP"
+        print >>sys.stderr, "HELP"
+        print >>sys.stderr, "HELP"
+        print >>sys.stderr, "HELP"
         temp = msg.split("XxX+XxX")
         #print >>sys.stderr, "CHECKING", temp[0]
         helpedTorrentDef = pickle.loads(temp[1])
@@ -369,7 +382,8 @@ def mjcallback(addr, msg):
                 sendMojoTstream(mjpeer, helpedTorrentDef, x.data["highpeers"], x.data["lowpeers"])
         
         # Reply to the helped swarm with your peer list
-        MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]XxX+XxX' + pickle.dumps(x.data["highpeers"]) + 'XxX+XxX' + pickle.dumps(x.data["lowpeers"]), addr)
+        
+        MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]XxX+XxX' + pickle.dumps(x.data["highpeers"]) + 'XxX+XxX' + pickle.dumps(x.data["lowpeers"]), addr[0])
         """
     elif msg.startswith('[criterionrep]'):
         strs = msg.split("][")
@@ -633,7 +647,35 @@ def createTorrentDef():
     torrentbasename = config['name']+'.tstream'
     torrentfilename = os.path.join(config['destdir'],torrentbasename)
     tdef.save(torrentfilename)
+'''
+class PlayerApp(wx.App):
+    def __init__(self, x):
+        wx.App.__init__(self, x)
+        
+    def OnInit(self):
+        self.videoplay = None 
+        self.start_video_frame()
+        
+        # Start HTTP server for serving video to player widget
+        self.videoserv = VideoHTTPServer.getInstance(VIDEOHTTP_LISTENPORT) # create
+        self.videoserv.background_serve()
+        self.videoserv.register(self.videoserver_error_callback,self.videoserver_set_status_callback)
 
+        # Initialize the player manager
+        self.videoplay = VideoPlayer.getInstance()
+        
+        # H4xor: Use external player on Ubuntu when no VLC python bindings avail 
+        if Tribler.Video.EmbeddedPlayer.REALVLC:
+            playbackmode = PLAYBACKMODE_INTERNAL
+        else:
+            playbackmode = PLAYBACKMODE_EXTERNAL_DEFAULT
+        self.videoplay.register(self.utility,overrideplaybackmode=playbackmode)
+        self.videoplay.set_parentwindow(self.videoFrame)
+        
+        if False: # just play video file
+            self.videoplay.play_from_file(self.params[0])
+            return True
+'''        
 if __name__ == "__main__":
     global origTdef
     # mjl = MJLogger()
@@ -705,6 +747,9 @@ if __name__ == "__main__":
     dscfg = DownloadStartupConfig()
     dscfg.set_dest_dir(config['destdir'])
 
+    #app = PlayerApp(0)
+    #app.MainLoop()
+    
     if config['source'] == '-':
         # Arno: doesn't appear to work on Linux
         source = sys.stdin
@@ -733,7 +778,7 @@ if __name__ == "__main__":
 
     dscfg.set_max_uploads(config['nuploads'])
     # MENMA EX
-    dscfg.set_max_speed(UPLOAD, 300)
+    dscfg.set_max_speed(UPLOAD, 100000)
     
     # limit the # of connections to the server to only ONE peer so that other peers will connect to each other and not to server only
     # change this later so that number of connected peers  = totalServerUpload/bitrate
