@@ -54,7 +54,7 @@ from Tribler.Video.utils import videoextdefaults
 
 from Tribler.mjlogger import *
 
-DEBUG = True
+DEBUG = False
 ONSCREENDEBUG = True
 ALLOW_MULTIPLE = True
 RATELIMITADSL = False

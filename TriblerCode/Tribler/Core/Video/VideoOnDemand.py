@@ -31,7 +31,7 @@ from Tribler.mjlogger import *
 # pull all video data as if a video player was attached
 FAKEPLAYBACK = False
 
-DEBUG = True
+DEBUG = False
 DEBUGPP = False
 
 x = MJLogger()
@@ -334,7 +334,7 @@ class MovieOnDemandTransporter(MovieTransport):
                 return True
 
 
-        print >>sys.stderr,"vod: === HOOKING IN AT PIECE %d (based on have: %s) ===" % (maxnum,have)
+        #print >>sys.stderr,"vod: === HOOKING IN AT PIECE %d (based on have: %s) ===" % (maxnum,have)
         toinvalidateset = vs.set_live_startpos( maxnum )
         #print >>sys.stderr,"vod: invalidateset is",`toinvalidateset`
         for piece in toinvalidateset:
@@ -345,7 +345,7 @@ class MovieOnDemandTransporter(MovieTransport):
     def live_streaming_timer(self):
         """ Background 'thread' to check where to hook in if live streaming. """
 
-        print >>sys.stderr,"vod: live_streaming_timer: Finding hookin"
+        #print >>sys.stderr,"vod: live_streaming_timer: Finding hookin"
         if self.videostatus.playing:
             # Stop adjusting the download range
             return
@@ -488,7 +488,7 @@ class MovieOnDemandTransporter(MovieTransport):
         else:
             if not x.is_existing("SUDELAY"):
                 x.log("SUDELAY", time.time() - x.data["TIME"][0])
-                print >>sys.stderr,"[MJ-Base-Sudelay]\t%s" % (x.data["SUDELAY"][0])
+                #print >>sys.stderr,"[MJ-Base-Sudelay]\t%s" % (x.data["SUDELAY"][0])
 
 
         #mjtime = datetime.datetime.now().time() 
