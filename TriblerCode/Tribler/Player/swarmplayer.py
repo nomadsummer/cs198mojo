@@ -484,7 +484,7 @@ class PlayerApp(wx.App):
             
             self.start_download("mojoTstream", tdef)
             #kickout mid peers
-            #self.d.update_peerlist(midpeers)
+            self.d.update_peerlist(None)
             #print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
 
         if msg.startswith('[latencytest]'):
