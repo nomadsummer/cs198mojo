@@ -314,11 +314,13 @@ def mjcompute_criterion(ds):
                 for index in range(0, int(round(len(x.data["HIGH-RANKED"])/5 + .5))):
                     hightemp = str(x.data["HIGH-RANKED"][index])
                     x.log("highpeers", hightemp)
+                print >>sys.stderr, "HPEERS:", x.data["highpeers"]
 
             if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
                 for index in range(0, int(round(len(x.data["LOW-RANKED"])/5 + .5))):
                     lowtemp = str(x.data["LOW-RANKED"][index])
                     x.log("lowpeers", lowtemp)
+                print >>sys.stderr, "LPEERS:", x.data["lowpeers"]
 
             print >>sys.stderr,"SWARM NEEDS HELP"
             print >>sys.stderr,"HIGHEST AAC:\t%s" % (x.data["highpeers"])
@@ -445,7 +447,7 @@ def mjcallback(addr, msg):
     elif msg.startswith('[ACK-HELP]'):
         temp = msg.split("XxX+XxX")
         helpingPeers = pickle.loads(temp[1])
-        x.update("HELPERS", helpingPeers[0])
+        x.equate("HELPERS", helpingPeers)
 
 
 """
