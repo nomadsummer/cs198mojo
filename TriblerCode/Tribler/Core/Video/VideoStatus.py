@@ -113,7 +113,7 @@ class VideoStatus:
                 oldrange = self.first_piece,self.last_piece
             else:
                 oldrange = self.live_get_valid_range()
-            print >>sys.stderr,"vodstatus: set_live_pos: old",oldrange
+            #print >>sys.stderr,"vodstatus: set_live_pos: old",oldrange
         self.live_startpos = pos
         self.playback_pos = pos
         for o in self.playback_pos_observers:
@@ -121,7 +121,7 @@ class VideoStatus:
         
         if self.wraparound:
             newrange = self.live_get_valid_range()
-            print >>sys.stderr,"vodstatus: set_live_pos: new",newrange
+            #print >>sys.stderr,"vodstatus: set_live_pos: new",newrange
             return self.get_range_diff(oldrange,newrange)
         else:
             return Set()
