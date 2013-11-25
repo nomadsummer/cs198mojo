@@ -411,10 +411,6 @@ def mjcallback(addr, msg):
                 sendMojoTstream(mjpeer, helpedTorrentDef, x.data["highpeers"], x.data["lowpeers"])
         
         # Reply to the helped swarm with your peer list
-<<<<<<< HEAD
-        
-=======
->>>>>>> ba88d96df4231b2425a9fe43276fad3a36d4d0b1
         MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]XxX+XxX' + pickle.dumps(x.data["highpeers"]) + 'XxX+XxX' + pickle.dumps(x.data["lowpeers"]), addr[0])
         """
     elif msg.startswith('[criterionrep]'):
@@ -816,11 +812,8 @@ if __name__ == "__main__":
 
     dscfg.set_max_uploads(config['nuploads'])
     # MENMA EX
-<<<<<<< HEAD
+
     dscfg.set_max_speed(UPLOAD, 100000)
-=======
-    dscfg.set_max_speed(UPLOAD, 150)
->>>>>>> ba88d96df4231b2425a9fe43276fad3a36d4d0b1
     
     # limit the # of connections to the server to only ONE peer so that other peers will connect to each other and not to server only
     # change this later so that number of connected peers  = totalServerUpload/bitrate
