@@ -40,7 +40,7 @@ except:
     False = 0
 
 KICK_OLD_CLIENTS=False
-DEBUG = True
+DEBUG = False
 DEBUG_NORMAL_MSGS = False
 DEBUG_UT_PEX = False
 
@@ -647,6 +647,7 @@ class Connecter:
         #MojoCommunicationClient(MJ_LISTENPORT,'[download-tstream] testing...',c.get_ip())
         
         print >>sys.stderr,"Connecter: live: setting",connection.get_ip(),c.get_ip()
+        """
         print >>sys.stderr,"MOJO"
         print >>sys.stderr,"MOJO"
         print >>sys.stderr,"MOJO"
@@ -664,16 +665,18 @@ class Connecter:
         print >>sys.stderr,"MOJO"
         print >>sys.stderr,"MOJO"
         print >>sys.stderr,"MOJO"
-        
+        """
         self.connections[connection] = c
 
         if connection.supports_extend_messages():
+            """
             print >>sys.stderr,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
             print >>sys.stderr,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
             print >>sys.stderr,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
             print >>sys.stderr,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
             print >>sys.stderr,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-            print_stack()
+            """
+            #print_stack()
             # The peer either supports our overlay-swarm extension or 
             # the utorrent extended protocol.
             
@@ -722,10 +725,10 @@ class Connecter:
 
 
         print >>sys.stderr,"Connecter: live: del1: deleting",connection.get_ip(),c.get_ip()
-        print_stack()
+        #print_stack()
         if c.get_ip() == self.tracker_ip:
             print >>sys.stderr,"connecter: connection_lost: live: WAAH2 closing SOURCE"
-            print_stack()
+            #print_stack()
             
         del self.connections[connection]
         if c.download:
