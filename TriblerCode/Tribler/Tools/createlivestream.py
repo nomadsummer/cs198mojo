@@ -333,7 +333,7 @@ def mjcompute_criterion(ds, mjpeers):
             counter = 0
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
-                #x.update("HELPED", True)
+                x.update("HELPED", True)
                 mjbandwidth_allocation(ds)
                 getHelp(x.data["highpeers"], x.data["lowpeers"])
 
@@ -428,10 +428,9 @@ def mjcallback(addr, msg):
         # sendMojoTstream(ipAddr)
         if x.is_existing("highpeers"):
             for mjpeer in  x.data["highpeers"]:
-                sendMojoTstream(mjpeer, helpedTorrentDef, x.data["highpeers"], x.data["lowpeers"])
+                sendMojoTstream(mjpeer, helpedTorrentDef, x.data["highpeers"] + s.get_external_ip(), x.data["lowpeers"])
         
         # Reply to the helped swarm with your peer list
-        x.log("highpeers", s.get_external_ip())
         MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]XxX+XxX' + pickle.dumps(x.data["highpeers"]) + 'XxX+XxX' + pickle.dumps(x.data["lowpeers"]), addr[0])
         """
     elif msg.startswith('[criterionrep]'):
