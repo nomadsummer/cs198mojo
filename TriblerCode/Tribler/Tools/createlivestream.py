@@ -431,7 +431,8 @@ def mjcallback(addr, msg):
                 sendMojoTstream(mjpeer, helpedTorrentDef, x.data["highpeers"], x.data["lowpeers"])
         
         # Reply to the helped swarm with your peer list
-        MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]XxX+XxX' + pickle.dumps(x.data["highpeers"] + s.get_external_ip()) + 'XxX+XxX' + pickle.dumps(x.data["lowpeers"]), addr[0])
+        x.log("highpeers", s.get_external_ip())
+        MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]XxX+XxX' + pickle.dumps(x.data["highpeers"]) + 'XxX+XxX' + pickle.dumps(x.data["lowpeers"]), addr[0])
         """
     elif msg.startswith('[criterionrep]'):
         strs = msg.split("][")
