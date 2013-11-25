@@ -744,8 +744,9 @@ class Connecter:
     # MOJO WAS HERE
     def kick_peers(self, peerlist):
         #print_stack()
+        print >>sys.stderr, "[Helpedpeerlist]:\t", peerlist
         for co in self.connections.values():  
-            print >>sys.stderr, "[Helpedpeerlist]:\t", peerlist
+            print >>sys.stderr, "[COIP]:\t", co.get_ip()
             if(co.get_ip() not in peerlist):
                 co.download.try_kick()
 
