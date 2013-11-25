@@ -627,6 +627,7 @@ class PlayerApp(wx.App):
         d = self.d
         #print >>sys.stderr,"update Peerlist counter: ", counter 
         if(x.data["HELPING"][0]) :
+           x.update("HELPING", False)
            d.update_peerlist(None)
         self.dlock.release()
 
