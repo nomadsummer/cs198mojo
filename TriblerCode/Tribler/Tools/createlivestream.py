@@ -435,30 +435,15 @@ def mjcallback(addr, msg):
             mjcompute_criterion(strs[1], float(strs[2]), float(strs[3]))
         """
     elif msg.startswith('[latencyrep]'):
-        print >>sys.stderr, "Latency"
-        print >>sys.stderr, "Latency"
-        print >>sys.stderr, "Latency"
-        print >>sys.stderr, "Latency"
-        print >>sys.stderr, "Latency"
-        print >>sys.stderr, "Latency"
-        print >>sys.stderr, "Latency"
-        print >>sys.stderr, "Latency"
-        print >>sys.stderr, "Latency"
-        print >>sys.stderr, "Latency"
-        print >>sys.stderr, "Latency"
-        print >>sys.stderr, "Latency"
-        print >>sys.stderr, "Latency"
         #print >>sys.stderr,"[BEFORE]\t%s\t%s\t%s" % (x.data["LATENCY-"+addr][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
         x.update("LATENCY-" + addr[0], time.time() - float(x.data["LATENCY-" + addr[0]][0]))
         x.update("AVGLATENCY", float(x.data["AVGLATENCY"][0]) + float(x.data["LATENCY-" + addr[0]][0]))
         x.update("LATCHECK", float(x.data["LATCHECK"][0]) + 1)
         #print >>sys.stderr,"[AFTER]\t%s\t%s\t%s" % (x.data["LATENCY-"+addr][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
     elif msg.startswith('[ACK-HELP]'):
-        print >>sys.stderr, "+++++++++++++++++++++++++[HAHAHAHAHAHA]++++++++++++++++++++++++"
         temp = msg.split("XxX+XxX")
         helpingPeers = pickle.loads(temp[1])
         x.update("HELPERS", helpingPeers[0])
-        print >>sys.stderr, "HELPEERS", x.data["HELPERS"]
 
 
 """
