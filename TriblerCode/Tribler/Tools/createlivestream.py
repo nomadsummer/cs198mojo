@@ -449,13 +449,8 @@ def mjcallback(addr, msg):
         print >>sys.stderr, "Latency"
         print >>sys.stderr, "Latency"
         #print >>sys.stderr,"[BEFORE]\t%s\t%s\t%s" % (x.data["LATENCY-"+addr][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
-<<<<<<< HEAD
-        x.update("LATENCY-" + addr[0], time.time() - float(x.data["LATENCY-" + addr][0]))
-        x.update("AVGLATENCY", float(x.data["AVGLATENCY"][0]) + float(x.data["LATENCY-" + addr][0]))
-=======
         x.update("LATENCY-" + addr[0], time.time() - float(x.data["LATENCY-" + addr[0]][0]))
         x.update("AVGLATENCY", float(x.data["AVGLATENCY"][0]) + float(x.data["LATENCY-" + addr[0]][0]))
->>>>>>> dbf8b830d2761c33bb70040ad8c000c2a74a9cbd
         x.update("LATCHECK", float(x.data["LATCHECK"][0]) + 1)
         #print >>sys.stderr,"[AFTER]\t%s\t%s\t%s" % (x.data["LATENCY-"+addr][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
     elif msg.startswith('[ACK-HELP]'):
