@@ -88,11 +88,11 @@ def state_callback(ds):
             #print >>sys.stderr,"[MJ-PL-dtut]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['dtotal']/1024.0, mjpeer['utotal']/1024.0)
 
     # START        
-    mjlog_data(ds)
-    if len(mjpeers) > 0:
+    mjlog_data(ds, mjpeers)
+    if(len(mjpeers) > 0):
         graceInt += 1
         if(graceInt >= 5):
-            mjcompute_criterion(ds)
+            mjcompute_criterion(ds, mjpeers)
 
     # LATENCY
     MOJOpeerlist = ds.get_peerlist()
@@ -132,8 +132,7 @@ def get_criterion(ds):
         MojoCommunicationClient(MJ_LISTENPORT,'[getcriterion]['+s.get_external_ip(), mjpeer['ip'])
 """
    
-def mjlog_data(ds):
-    mjpeers = ds.get_peerlist()
+def mjlog_data(ds, mjpeers):
     if len(mjpeers) > 0:
         if(x.is_existing("PEERS")):
             x.delete("PEERS")
@@ -181,9 +180,7 @@ def mjlog_data(ds):
         #for mjpeer in mjpeers:
             #print >>sys.stderr, "[MJ-Log-Peers-IP]\t%s" % (mjpeer['ip'])
    
-def mjcompute_criterion(ds):
-    mjpeers = ds.get_peerlist()
-    
+def mjcompute_criterion(ds, mjpeers):
     #CIRI
     if(x.is_existing("PEERS")):
         #AC
@@ -221,13 +218,17 @@ def mjcompute_criterion(ds):
 
             x.update("NetUpCon", 0.0)
 
+            print >>sys.stderr, "HELPERS:", x.data["HELPERS"]
             for mjpeer in x.data["HELPERS"]:
                 if(checktime):
                     x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data["AAC-"+str(mjpeer)][0] - x.data["AACDL-"+str(mjpeer)][0]))
                     #print >>dataFile, "[AAC-%s]\t%s" % (str(mjpeer), x.data["AAC-"+str(mjpeer)][0])
                     #print >>dataFile, "[AACDL-%s]\t%s" % (str(mjpeer), x.data["AACDL-"+str(mjpeer)][0])
                 else:
-                    x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data[str(mjpeer)][0] - x.data["DL-"+str(mjpeer)][0]))
+                    if(x.is_existing(str(mjpeer))):
+                        x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data[str(mjpeer)][0] - x.data["DL-"+str(mjpeer)][0]))
+                    else:
+                        x.update("NetUpCon", 0.0)
                     #print >>dataFile, "[AC-%s]\t%s" % (str(mjpeer), x.data[str(mjpeer)][0])
                     #print >>dataFile, "[ACDL-%s]\t%s" % (str(mjpeer), x.data["DL-"+str(mjpeer)][0])
 

@@ -461,8 +461,10 @@ class PlayerApp(wx.App):
             lowpeers = pickle.loads(temp[3])
             
             self.start_download("mojoTstream", tdef)
+            print >>sys.stderr, "HAHAHAHAHAHA\t%s\t%s" % (highpeers, lowpeers)
             x.update("HELPING", True)
             x.update("HELPEDPEERLIST", highpeers + lowpeers)
+            print >>sys.stderr, "HAHAHAHAHAHA2\t%s" % (x.data['HELPEDPEERLIST'])
             #kickout mid peers
             #self.d.update_peerlist(None)
             #print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
