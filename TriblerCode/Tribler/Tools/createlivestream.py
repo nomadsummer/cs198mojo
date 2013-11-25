@@ -428,11 +428,7 @@ def mjcallback(addr, msg):
         # sendMojoTstream(ipAddr)
         if x.is_existing("highpeers"):
             for mjpeer in  x.data["highpeers"]:
-<<<<<<< HEAD
-                sendMojoTstream(mjpeer, helpedTorrentDef, x.data["highpeers"] + [s.get_external_ip()], x.data["lowpeers"])
-=======
                 sendMojoTstream(mjpeer, helpedTorrentDef, helpedhighpeers + [addr[0]], helpedlowpeers)
->>>>>>> 75ea1ff71ac2eacb86d96928b8696fd19bdebc59
         
         # Reply to the helped swarm with your peer list
 
