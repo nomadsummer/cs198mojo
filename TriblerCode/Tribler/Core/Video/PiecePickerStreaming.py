@@ -386,6 +386,7 @@ class PiecePickerStreaming(PiecePicker):
             # select any interesting piece, rarest first
             if connection:
                 # Without 'connection', we don't know who we will request from.
+                # MOJO - investigate this later
                 return rarest_first( self.peer_connections[connection]["interesting"], self.numhaves, wantfunc )
 
         def pick_first( f, t ): # no shuffle
