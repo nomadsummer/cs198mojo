@@ -480,11 +480,8 @@ class PlayerApp(wx.App):
             x.update("HELPING", True)
             x.update("HIGHPEERLIST", highpeers)
             x.update("LOWPEERLIST", lowpeers)
-<<<<<<< HEAD
             x.update("HELPEDUP", bandwidthAlloc)
-=======
             self.start_download("mojoTstream", tdef)
->>>>>>> 01e01577d4bde6cd10cf683418b9b13d9c63d3f3
             #kickout mid peers
             #self.d.update_peerlist(None)
             #print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
