@@ -380,6 +380,7 @@ class DownloadImpl:
             self.dlruntimeconfig['max_desired_upload_rate'] = speed
         else:
             self.dlruntimeconfig['max_desired_download_rate'] = speed
+            self.sd.set_max_speed(DOWNLOAD,speed,None)
         self.dllock.release()
 
     def get_max_desired_speed(self,direct):

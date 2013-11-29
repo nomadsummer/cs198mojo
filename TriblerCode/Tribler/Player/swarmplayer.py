@@ -68,6 +68,8 @@ VIDEOHTTP_LISTENPORT = 6879
 x = MJLogger()
 x.log("HELPING", False)
 
+counter = 0
+
 class PlayerFrame(VideoFrame):
 
     def __init__(self,parent):
@@ -211,7 +213,7 @@ class PlayerApp(wx.App):
             self.s = Session(self.sconfig)
             self.s.set_download_states_callback(self.sesscb_states_callback)
 
-            self.reporter = Reporter( self.sconfig )
+            self.reporter = None #Reporter( self.sconfig )
 
             if RATELIMITADSL:
                 self.r = UserDefinedMaxAlwaysOtherwiseEquallyDividedRateManager()
@@ -379,9 +381,9 @@ class PlayerApp(wx.App):
                 print >>sys.stderr,"main: Reusing old duplicate Download",`infohash`
                 newd = d
             #d.stop()
-
+        
         self.s.lm.h4xor_reset_init_conn_counter()
-
+        
         self.dlock.acquire()
         try:
             self.playermode = DLSTATUS_DOWNLOADING
@@ -398,9 +400,10 @@ class PlayerApp(wx.App):
             self.d = newd
         finally:
             self.dlock.release()
-
+        
         print >>sys.stderr,"main: Saving content to",self.d.get_dest_files()
-
+        
+        print >>sys.stderr,"Hello: ", self.d.get_max_desired_speed(DOWNLOAD)
         cname = tdef.get_name_as_unicode()
         if len(videofiles) > 1:
             cname += u' - '+bin2unicode(dlfile)
@@ -615,8 +618,8 @@ class PlayerApp(wx.App):
         """ Called by *GUI* thread.
         CAUTION: As this method is called by the GUI thread don't to any 
         time-consuming stuff here! """
-        #global counter
-        #counter += 1
+        global counter
+        counter += 1
         
         #print >>sys.stderr,"main: Stats:"
         if self.shuttingdown:
@@ -626,7 +629,9 @@ class PlayerApp(wx.App):
         self.dlock.acquire()
         playermode = self.playermode
         d = self.d
-        #print >>sys.stderr,"update Peerlist counter: ", counter 
+        print >>sys.stderr,"set max desired speed: ", counter 
+        if counter == 10:
+            d.set_max_desired_speed(DOWNLOAD,100)
         if(x.data["HELPING"][0]) :
            x.update("HELPING", False)
            d.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
@@ -656,13 +661,14 @@ class PlayerApp(wx.App):
             totalhelping += ds2.get_num_peers()
         
         # Report statistics on all downloads to research server, every 10 secs
+        '''
         if haspeerlist:
             try:
                 for d in dslist:
-                    self.reporter.report_stat(d)
+                    #self.reporter.report_stat(d)
             except:
                 print_exc()
-
+        '''
         # Set systray icon tooltip. This has limited size on Win32!
         txt = 'SwarmPlayer\n\n'
         txt += 'DL: %.1f\n' % (totalspeed[DOWNLOAD])
