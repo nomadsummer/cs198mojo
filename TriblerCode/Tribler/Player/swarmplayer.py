@@ -403,7 +403,7 @@ class PlayerApp(wx.App):
                 if not x.data["HELPING"][0]:
                     global origDownload
                     origDownload = newd
-                    origDownload.set_max_desired_speed(dcfg.get_max_speed(UPLOAD))
+                    #origDownload.set_max_desired_speed(self, dcfg.get_max_speed(UPLOAD))
             else:
                 newd.set_video_event_callback(self.sesscb_vod_event_callback)
                 if tdef.is_multifile_torrent():
@@ -661,14 +661,14 @@ class PlayerApp(wx.App):
         self.dlock.acquire()
         playermode = self.playermode
         d = self.d
-
+        # print >>sys.stderr,"Orig Download! upload:", origDownload.get_max_desired_speed(UPLOAD)
         if(x.data["HELPING"][0]) :
             x.update("HELPING", False)
             x.update("STILLH", True)
             d.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
-            d.set_max_desired_speed(UPLOAD,x.data["HELPEDUP"][0])
+            d.set_max_desired_speed(self, UPLOAD,x.data["HELPEDUP"][0])
             adjust = origDownload.get_max_desired_speed(UPLOAD) - d.get_max_desired_speed(UPLOAD)
-            origDownload.set_max_desired_speed(UPLOAD, adjust)
+            origDownload.set_max_desired_speed(self, UPLOAD, adjust)
             
         #if(x.data["STILLH"][0]):
 
@@ -918,7 +918,7 @@ class PlayerApp(wx.App):
             peertxt = " peer %d" % (totalhelping)
             extra = ''
             if(x.data["STILLH"][0]):
-                extra = '\norigUp' + x.data["ORIGUP"][0] + '\norigDown' + x.data["ORIGDOWN"][0]
+                extra = '\norigUp' + origDownload.get_max_desired_speed(UPLOAD) + '\norigDown' + origDownload.get_max_desired_speed(DOWNLOAD) + '\nhelpedUp' + self.d.get_max_desired_speed(UPLOAD) + '\nhelpedDown' + self.d.get_max_desired_speed(DOWNLOAD)
             
             msg = uptxt + downtxt + peertxt + extra + '\n--------'
 
