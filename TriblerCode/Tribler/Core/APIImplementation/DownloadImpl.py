@@ -347,6 +347,9 @@ class DownloadImpl:
         finally:
             self.dllock.release()
     
+    def set_server_ip(self, ipAddr):
+        self.sd.get_bt1download().set_server_ip(ipAddr)
+        
     def update_peerlist(self, highpeers, lowpeers):
         self.sd.get_bt1download().update_peerlist(highpeers, lowpeers)
     

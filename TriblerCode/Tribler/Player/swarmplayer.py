@@ -67,6 +67,8 @@ VIDEOHTTP_LISTENPORT = 6879
 
 x = MJLogger()
 x.log("HELPING", False)
+x.log("MAXUP", 0.0)
+x.log("MAXDOWN", 0.0)
 
 counter = 0
 
@@ -344,6 +346,9 @@ class PlayerApp(wx.App):
         # MENMA EX
         dcfg.set_max_speed(UPLOAD, 50)
         dcfg.set_max_speed(DOWNLOAD, 300000)
+
+        x.update("MAXUP", dcfg.get_max_speed(UPLOAD))
+        x.update("MAXDOWN", dcfg.get_max_speed(DOWNLOAD))
         
         if tdef.is_multifile_torrent():
             dcfg.set_selected_files([dlfile])
@@ -471,7 +476,15 @@ class PlayerApp(wx.App):
             #print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
 
         if msg.startswith('[latencytest]'):
-            self.mojoReply(addr[0])
+            #self.mojoReply(addr[0])
+            MojoCommunicationClient(MJ_LISTENPORT,'[latencyrep]',ipAddr)
+
+        if msg.startswith('[maxspeed]'):
+            reply = '[maxspeed]['+str(x.data["MAXUP"][0])+']['+str(x.data["MAXDOWN"][0])
+            MojoCommunicationClient(MJ_LISTENPORT,reply,ipAddr)
+
+        if msg.startswith('[setip]'):
+           self.d.set_server_ip(addr[0])
 
     """
         if msg.startswith('[getcriterion]'):
@@ -485,12 +498,12 @@ class PlayerApp(wx.App):
             print >>sys.stderr, "HAHAHA: ",toSend
             MojoCommunicationClient(MJ_LISTENPORT,toSend,ipAddr)
 
-    """
-
     def mojoReply(self, ipAddr):
         # do what you want to do to the recieved message in the main thread. hekhek
         print >>sys.stderr,"Testing Latency... ", ipAddr
         MojoCommunicationClient(MJ_LISTENPORT,'[latencyrep]',ipAddr)
+
+    """
     
     def remote_start_download(self,torrentfilename):
         """ Called by GUI thread """
@@ -684,6 +697,7 @@ class PlayerApp(wx.App):
             # MENMA EX
             mjtime = datetime.datetime.now().time()
             mjpeers = ds.get_peerlist()
+            #print >>sys.stderr, "[MJ-MAXSPEED]\t%s\t%s" % (x.data["MAXDOWN"][0], x.data["MAXUP"][0])
             #self.mjlog_data(ds)
 
             """
@@ -887,9 +901,10 @@ class PlayerApp(wx.App):
         # MENMA EX
         boolArray = ds.get_pieces_complete()
         mjtime = datetime.datetime.now().time()
-        if len(boolArray) != 0:
+        #if len(boolArray) != 0:
             # PACKET LOSS TEST
-            print >>sys.stderr,"[MJ-pieces]\t%s\tTrueCount:\t%d\tTotalCount:\t%d\tPercentage:\t%.5f" % (mjtime,boolArray.count(True),len(boolArray),(boolArray.count(True) + 0.0)/len(boolArray))
+            #print >>sys.stderr,"[MJ-pieces]\t%s\tTrueCount:\t%d\tTotalCount:\t%d\tPercentage:\t%.5f" % (mjtime,boolArray.count(True),len(boolArray),(boolArray.count(True) + 0.0)/len(boolArray))
+            #print >>sys.stderr,"[MJ-PACKETLOSS]\t%s" % (ds.get_packet_loss())
 
         # Toggle save button
         self.videoFrame.videopanel.enableSaveButton(ds.get_status() == DLSTATUS_SEEDING, self.save_video_copy)    

@@ -27,6 +27,9 @@ from Tribler.Core.simpledefs import *
 from Tribler.Core.Video.LiveSourceAuth import ECDSAAuthenticator,AuthStreamWrapper
 
 from Tribler.mjlogger import *
+from Tribler.Utilities.MojoCommunication import *
+
+MJ_LISTENPORT = 6969
 
 # pull all video data as if a video player was attached
 FAKEPLAYBACK = False
@@ -99,6 +102,8 @@ class MovieOnDemandTransporter(MovieTransport):
 
     # maximum delay between pops before we force a restart (seconds)
     MAX_POP_TIME = 60
+
+    SERVER_IP = None
 
     def __init__(self,bt1download,videostatus,videoinfo,videoanalyserpath,vodeventfunc):
         self.videoinfo = videoinfo
@@ -454,6 +459,10 @@ class MovieOnDemandTransporter(MovieTransport):
 
         return [bitrate,width,height]
 
+    def set_server_ip(self, ipAddr):
+        global SERVER_IP
+        SERVER_IP = ipAddr
+
     def update_prebuffering(self,received_piece=None):
         """ Update prebuffering process. 'received_piece' is a hint that we just received this piece;
             keep at 'None' for an update in general. """
@@ -483,11 +492,16 @@ class MovieOnDemandTransporter(MovieTransport):
         # MENMA EX
         # START UP DELAY
         if not gotall:
+            #print >>sys.stderr, "[SERVER]", self.rawserver.get_stats()
             if not x.is_existing("TIME"):
                 x.log("TIME", time.time())
         else:
+            mojoServer = MojoCommunicationServer(MJ_LISTENPORT,mjcallback) 
+            mojoServer.start()
             if not x.is_existing("SUDELAY"):
                 x.log("SUDELAY", time.time() - x.data["TIME"][0])
+                sudelay = '[sudelay]['+ str(x.data["SUDELAY"][0])
+                MojoCommunicationClient(MJ_LISTENPORT,sudelay, SERVER_IP)
                 #print >>sys.stderr,"[MJ-Base-Sudelay]\t%s" % (x.data["SUDELAY"][0])
 
 
@@ -576,6 +590,18 @@ class MovieOnDemandTransporter(MovieTransport):
                 self.start(force=True)
         """
 
+    def mjcallback(addr, msg):
+        '''
+        MOJO Server TODO, X => DONE
+        [X] 1. If a HELP request is received, get the peerlist and torrent definition associated with it 
+        [ ] 2. Call the createTorrentDef() to update the torrent definition to be user by sendMojoTstream()
+        [ ] 2. Using the peerlist, get the peers that have the lowest absolute contribution.
+               How to know how high is high and how low is low?
+        [ ] 3. Instruct your peers with the highest absolute contribution to connect to the swarm that needs help
+               by calling the function sendMojoTstream(ipAddr)
+        [X] 4. Acknowledge and reply to the swarm that needs help with your peerlist
+        '''
+        print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg
 
     def complete(self,piece,downloaded=True):
         """ Called when a movie piece has been downloaded or was available from the start (disk). """

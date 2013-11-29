@@ -115,6 +115,10 @@ class DownloadState(Serializable):
                     self.status = DLSTATUS_SEEDING
                     self.progress = 1.0
 
+    def get_packet_loss(self):
+    	# PACKET LOSS
+    	return self.haveslice
+
     def get_peerid(self):
         """ Returns our own peer id in this swarm, or None if unknown.
         @return String or None.
