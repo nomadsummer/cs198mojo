@@ -62,7 +62,7 @@ class VideoFrame(wx.Frame):
         if REALVLC:
             size = (800,520) # Use 16:9 aspect ratio: 500 = (800/16) * 9 + 50 for controls
         else:
-            size = (800,175)
+            size = (800,300)
         wx.Frame.__init__(self, None, -1, title, size=size) 
                           
         
@@ -222,7 +222,7 @@ class EmbeddedPlayer(wx.Panel):
         ctrlsizer.Add(self.save_button, 0, wx.ALIGN_CENTER_VERTICAL)
         
         mainbox.Add(self.mediactrl, 1, wx.EXPAND, 1)
-        mainbox.Add(self.statuslabel, 0, wx.EXPAND|wx.LEFT|wx.RIGHT, 30)
+        mainbox.Add(self.statuslabel, 1, wx.EXPAND|wx.LEFT|wx.RIGHT, 30)
         mainbox.Add(ctrlsizer, 0, wx.ALIGN_BOTTOM|wx.EXPAND, 1)
         self.SetSizerAndFit(mainbox)
         

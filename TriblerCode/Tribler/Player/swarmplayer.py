@@ -899,7 +899,7 @@ class PlayerApp(wx.App):
                 else:
                     videofile = videofiles[0]
                 if tdef.get_bitrate(videofile) is None:
-                    msg += '. This video may not play properly because its bitrate is unknown.'
+                    msg += '. This video may not playmsgproperly because its bitrate is unknown.'
             except:
                 print_exc()
         else:
@@ -910,7 +910,11 @@ class PlayerApp(wx.App):
             uptxt = "up %.1f" % (totalspeed[UPLOAD])
             downtxt = " down %.1f" % (totalspeed[DOWNLOAD])
             peertxt = " peer %d" % (totalhelping)
-            msg = uptxt + downtxt + peertxt
+            extra = ''
+            if(x.data["STILLH"][0]):
+                extra = '\norigUp' + x.data["ORIGUP"][0] + '\norigDown' + x.data["ORIGDOWN"][0]
+            
+            msg = uptxt + downtxt + peertxt + extra + '\n--------'
 
         if msg is not None:    
             self.videoFrame.set_player_status(msg)
