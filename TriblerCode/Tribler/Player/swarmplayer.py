@@ -664,7 +664,7 @@ class PlayerApp(wx.App):
             x.update("HELPING", False)
             x.update("STILLH", True)
             d.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
-        if(x.data["STILLH"][0]):
+        #if(x.data["STILLH"][0]):
 
         self.dlock.release()
 
