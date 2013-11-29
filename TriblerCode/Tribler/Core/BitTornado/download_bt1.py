@@ -773,13 +773,8 @@ class BT1Download:
     def get_moviestreamtransport(self):
         return self.voddownload
     
-<<<<<<< HEAD
-    def update_peerlist(self, peerlist):
-        self.connecter.kick_peers(peerlist)
-
     def set_server_ip(self, ipAddr):
         self.voddownload.set_server_ip(ipAddr)
-=======
+
     def update_peerlist(self, highpeers, lowpeers):
         self.connecter.kick_peers(highpeers, lowpeers)
->>>>>>> 89e66865fcf58a1894be311aac75212773d9b417

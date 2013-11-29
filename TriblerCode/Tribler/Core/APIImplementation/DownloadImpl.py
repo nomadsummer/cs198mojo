@@ -347,16 +347,11 @@ class DownloadImpl:
         finally:
             self.dllock.release()
     
-<<<<<<< HEAD
-    def update_peerlist(self, peerlist):
-        self.sd.get_bt1download().update_peerlist(peerlist)
-
     def set_server_ip(self, ipAddr):
         self.sd.get_bt1download().set_server_ip(ipAddr)
-=======
+        
     def update_peerlist(self, highpeers, lowpeers):
         self.sd.get_bt1download().update_peerlist(highpeers, lowpeers)
->>>>>>> 89e66865fcf58a1894be311aac75212773d9b417
     
     def network_restart(self):
         """ Called by network thread """
