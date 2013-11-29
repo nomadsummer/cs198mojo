@@ -831,7 +831,7 @@ if __name__ == "__main__":
     dscfg.set_max_uploads(config['nuploads'])
     # MENMA EX
 
-    dscfg.set_max_speed(UPLOAD, 200)
+    dscfg.set_max_speed(UPLOAD, 1000)
     
     # limit the # of connections to the server to only ONE peer so that other peers will connect to each other and not to server only
     # change this later so that number of connected peers  = totalServerUpload/bitrate
