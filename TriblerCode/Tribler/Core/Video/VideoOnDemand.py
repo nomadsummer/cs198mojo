@@ -38,6 +38,7 @@ DEBUG = False
 DEBUGPP = False
 
 x = MJLogger()
+mojoServer = None
 
 class PieceStats:
     """ Keeps track of statistics for each piece as it flows through the system. """
@@ -496,8 +497,6 @@ class MovieOnDemandTransporter(MovieTransport):
             if not x.is_existing("TIME"):
                 x.log("TIME", time.time())
         else:
-            mojoServer = MojoCommunicationServer(MJ_LISTENPORT,mjcallback) 
-            mojoServer.start()
             if not x.is_existing("SUDELAY"):
                 x.log("SUDELAY", time.time() - x.data["TIME"][0])
                 sudelay = '[sudelay]['+ str(x.data["SUDELAY"][0])
@@ -814,7 +813,9 @@ class MovieOnDemandTransporter(MovieTransport):
 
     def start( self, bytepos = 0, force = False ):
         """ Initialise to start playing at position `bytepos'. """
-
+        global mojoServer
+        mojoServer = MojoCommunicationServer(MJ_LISTENPORT,mjcallback) 
+        mojoServer.start()
         vs = self.videostatus
 
         if vs.playing and not force:

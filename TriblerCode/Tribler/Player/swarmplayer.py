@@ -67,8 +67,13 @@ VIDEOHTTP_LISTENPORT = 6879
 
 x = MJLogger()
 x.log("HELPING", False)
+x.log("STILLH", False)
 x.log("MAXUP", 0.0)
 x.log("MAXDOWN", 0.0)
+x.log("ORIGUP", 0.0)
+x.log("ORIGDOWN", 0.0)
+x.log("HELPEDUP", 0.0)
+x.log("HELPEDDOWN", 0.0)
 
 counter = 0
 
@@ -486,6 +491,16 @@ class PlayerApp(wx.App):
         if msg.startswith('[setip]'):
            self.d.set_server_ip(addr[0])
 
+        if msg.startswith('[stats1]'):
+            temp = msg.split("][")
+            x.update("ORIGUP", temp[1])
+            x.update("ORIGDOWN", temp[2])
+
+        if msg.startswith('[stats2]'):
+            temp = msg.split("][")
+            x.update("HELPEDUP", temp[1])
+            x.update("HELPEDDOWN", temp[2])
+
     """
         if msg.startswith('[getcriterion]'):
             strs = msg.split("][")
@@ -646,8 +661,11 @@ class PlayerApp(wx.App):
         if counter == 10:
             d.set_max_desired_speed(DOWNLOAD,100)
         if(x.data["HELPING"][0]) :
-           x.update("HELPING", False)
-           d.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
+            x.update("HELPING", False)
+            x.update("STILLH", True)
+            d.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
+        if(x.data["STILLH"][0]):
+
         self.dlock.release()
 
         totalspeed = {}
