@@ -214,7 +214,7 @@ class TorrentDef(Serializable,Copyable):
          
         @param name The name of the stream.
         @param bitrate The desired bitrate in bytes per second.
-        @param playtime The virtual playtime f the stream as a string in 
+        @param playtime The virtual playtime of the stream as a string in 
         [hh:]mm:ss format.
         @param authconfig Parameters for the authentication of the source
         """

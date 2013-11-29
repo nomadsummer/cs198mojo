@@ -45,7 +45,6 @@ from Tribler.Video.EmbeddedPlayer import VideoFrame,MEDIASTATE_STOPPED,MEDIASTAT
 from Tribler.Video.VideoServer import VideoHTTPServer
 from Tribler.Video.VideoPlayer import VideoPlayer, VideoChooser, PLAYBACKMODE_INTERNAL, PLAYBACKMODE_EXTERNAL_DEFAULT 
 from Tribler.Player.systray import PlayerTaskBarIcon
-from Tribler.Player.Reporter import Reporter
 from Tribler.Utilities.Instance2Instance import *
 from Tribler.Utilities.MojoCommunication import *
 
