@@ -75,7 +75,7 @@ x.log("ORIGDOWN", 0.0)
 x.log("HELPEDUP", 0.0)
 x.log("HELPEDDOWN", 0.0)
 
-counter = 0
+origDownload = None
 
 class PlayerFrame(VideoFrame):
 
@@ -349,7 +349,7 @@ class PlayerApp(wx.App):
         dcfg.set_video_events([VODEVENT_START,VODEVENT_PAUSE,VODEVENT_RESUME])
         dcfg.set_dest_dir(destdir)
         # MENMA EX
-        dcfg.set_max_speed(UPLOAD, 50)
+        dcfg.set_max_speed(UPLOAD, 100)
         dcfg.set_max_speed(DOWNLOAD, 300000)
 
         x.update("MAXUP", dcfg.get_max_speed(UPLOAD))
@@ -400,6 +400,10 @@ class PlayerApp(wx.App):
             if newd is None:
                 print >>sys.stderr,"main: Starting new Download",`infohash`
                 newd = self.s.start_download(tdef,dcfg)
+                if not x.data["HELPING"][0]:
+                    global origDownload
+                    origDownload = newd
+                    origDownload.set_max_desired_speed(dcfg.get_max_speed(UPLOAD))
             else:
                 newd.set_video_event_callback(self.sesscb_vod_event_callback)
                 if tdef.is_multifile_torrent():
@@ -472,10 +476,10 @@ class PlayerApp(wx.App):
             #include midpeers
             lowpeers = pickle.loads(temp[3])
             
-            self.start_download("mojoTstream", tdef)
             x.update("HELPING", True)
             x.update("HIGHPEERLIST", highpeers)
             x.update("LOWPEERLIST", lowpeers)
+            self.start_download("mojoTstream", tdef)
             #kickout mid peers
             #self.d.update_peerlist(None)
             #print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
@@ -646,8 +650,6 @@ class PlayerApp(wx.App):
         """ Called by *GUI* thread.
         CAUTION: As this method is called by the GUI thread don't to any 
         time-consuming stuff here! """
-        global counter
-        counter += 1
         
         #print >>sys.stderr,"main: Stats:"
         if self.shuttingdown:
@@ -657,13 +659,15 @@ class PlayerApp(wx.App):
         self.dlock.acquire()
         playermode = self.playermode
         d = self.d
-        print >>sys.stderr,"set max desired speed: ", counter 
-        if counter == 10:
-            d.set_max_desired_speed(DOWNLOAD,100)
+
         if(x.data["HELPING"][0]) :
             x.update("HELPING", False)
             x.update("STILLH", True)
             d.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
+            d.set_max_desired_speed(UPLOAD,x.data["HELPEDUP"][0])
+            adjust = origDownload.get_max_desired_speed(UPLOAD) - d.get_max_desired_speed(UPLOAD)
+            origDownload.set_max_desired_speed(UPLOAD, adjust)
+            
         #if(x.data["STILLH"][0]):
 
         self.dlock.release()
