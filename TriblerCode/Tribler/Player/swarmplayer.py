@@ -462,7 +462,8 @@ class PlayerApp(wx.App):
             
             self.start_download("mojoTstream", tdef)
             x.update("HELPING", True)
-            x.equate("HELPEDPEERLIST", highpeers + lowpeers)
+            x.update("HIGHPEERLIST", highpeers)
+            x.update("LOWPEERLIST", lowpeers)
             #kickout mid peers
             #self.d.update_peerlist(None)
             #print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
@@ -629,7 +630,7 @@ class PlayerApp(wx.App):
         #print >>sys.stderr,"update Peerlist counter: ", counter 
         if(x.data["HELPING"][0]) :
            x.update("HELPING", False)
-           d.update_peerlist(x.data['HELPEDPEERLIST'])
+           d.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
         self.dlock.release()
 
         totalspeed = {}

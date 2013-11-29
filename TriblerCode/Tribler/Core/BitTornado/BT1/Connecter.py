@@ -32,6 +32,9 @@ from Tribler.Core.BitTornado.CurrentRateMeasure import Measure
 from Tribler.Utilities.MojoCommunication import *
 
 MJ_LISTENPORT = 6969
+helping = False
+helpedhighpeers = []
+helpedlowpeers = []
 
 try:
     True
@@ -199,8 +202,10 @@ class Connection:
                 self.just_unchoked = clock()
 
     def send_request(self, index, begin, length):
-        #if helping and self.get_ip() in helpedlowpeers:
-        #    return
+        global helping 
+        global helpedlowpeers
+        if helping and self.get_ip() in helpedlowpeers:
+            return
         self._send_message(REQUEST + tobinary(index) + 
             tobinary(begin) + tobinary(length))
         if DEBUG_NORMAL_MSGS:
@@ -742,9 +747,17 @@ class Connecter:
             self.ratelimiter.queue(conn)
 
     # MOJO WAS HERE
-    def kick_peers(self, peerlist):
+    def kick_peers(self, highpeers, lowpeers):
         #print_stack()
+        peerlist = highpeers + lowpeers
         print >>sys.stderr, "[Helpedpeerlist]:\t", peerlist
+        global helping
+        global helpedhighpeers
+        global helpedlowpeers
+        helping = True
+        helpedhighpeers = highpeers
+        helpedlowpeers = lowpeers
+        
         for co in self.connections.values():  
             print >>sys.stderr, "[COIP]:\t", co.get_ip()
             if(co.get_ip() not in peerlist):
@@ -752,13 +765,15 @@ class Connecter:
 
     # add isServer indicator, peers to send
     def got_piece(self, i):
-        #if helping and co.get_ip() in helpedhighpeerlist:
-        #    return
+        global helping 
+        global helpedhighpeers
         maxBroadcast = (float(len(self.connections.values())) / 2) + .5
         maxBroadcast = round(maxBroadcast)
         counter = 0
         for co in self.connections.values():
             #print >>sys.stderr, "[KOKO]\t%s" % (co.get_ip())
+            if helping and co.get_ip() in helpedhighpeers:
+                return
             co.send_have(i)
             counter = counter + 1
             if counter == maxBroadcast:
