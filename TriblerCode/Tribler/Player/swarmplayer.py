@@ -471,11 +471,13 @@ class PlayerApp(wx.App):
             highpeers = pickle.loads(temp[2])
             #include midpeers
             lowpeers = pickle.loads(temp[3])
+            bandwidthAlloc = pickle.loads(temp[4])
             
             self.start_download("mojoTstream", tdef)
             x.update("HELPING", True)
             x.update("HIGHPEERLIST", highpeers)
             x.update("LOWPEERLIST", lowpeers)
+            x.update("HELPEDUP", bandwidthAlloc)
             #kickout mid peers
             #self.d.update_peerlist(None)
             #print >>sys.stderr, "Succesfully downloaded tstream: ", tstream
@@ -485,12 +487,13 @@ class PlayerApp(wx.App):
             MojoCommunicationClient(MJ_LISTENPORT,'[latencyrep]',addr[0])
 
         if msg.startswith('[maxspeed]'):
-            reply = '[maxspeed]['+str(x.data["MAXUP"][0])+']['+str(x.data["MAXDOWN"][0])
+            reply = '[maxspeed]['+pickle.dumps(x.data["MAXUP"][0])+']['+pickle.dumps(x.data["MAXDOWN"][0])
             MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
 
         if msg.startswith('[setip]'):
            self.d.set_server_ip(addr[0])
 
+        """
         if msg.startswith('[stats1]'):
             temp = msg.split("][")
             x.update("ORIGUP", temp[1])
@@ -500,8 +503,7 @@ class PlayerApp(wx.App):
             temp = msg.split("][")
             x.update("HELPEDUP", temp[1])
             x.update("HELPEDDOWN", temp[2])
-
-    """
+            
         if msg.startswith('[getcriterion]'):
             strs = msg.split("][")
             self.mojoReply(strs[1])
