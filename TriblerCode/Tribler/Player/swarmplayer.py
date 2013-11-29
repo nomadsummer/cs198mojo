@@ -665,7 +665,11 @@ class PlayerApp(wx.App):
             x.update("STILLH", True)
             d.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
         #if(x.data["STILLH"][0]):
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 6b21beb24ed6dad4190ad0ed86e9607bcd13c70e
         self.dlock.release()
 
         totalspeed = {}

@@ -589,7 +589,7 @@ class MovieOnDemandTransporter(MovieTransport):
                 self.start(force=True)
         """
 
-    def mjcallback(addr, msg):
+    def mjcallback(self, addr, msg):
         '''
         MOJO Server TODO, X => DONE
         [X] 1. If a HELP request is received, get the peerlist and torrent definition associated with it 
@@ -814,7 +814,7 @@ class MovieOnDemandTransporter(MovieTransport):
     def start( self, bytepos = 0, force = False ):
         """ Initialise to start playing at position `bytepos'. """
         global mojoServer
-        mojoServer = MojoCommunicationServer(MJ_LISTENPORT,mjcallback) 
+        mojoServer = MojoCommunicationServer(MJ_LISTENPORT,self.mjcallback) 
         mojoServer.start()
         vs = self.videostatus
 
