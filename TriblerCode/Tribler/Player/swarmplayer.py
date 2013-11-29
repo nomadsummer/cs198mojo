@@ -666,8 +666,11 @@ class PlayerApp(wx.App):
             d.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
         #if(x.data["STILLH"][0]):
 <<<<<<< HEAD
+<<<<<<< HEAD
             
 =======
+=======
+>>>>>>> 6b21beb24ed6dad4190ad0ed86e9607bcd13c70e
 
 >>>>>>> 6b21beb24ed6dad4190ad0ed86e9607bcd13c70e
         self.dlock.release()
