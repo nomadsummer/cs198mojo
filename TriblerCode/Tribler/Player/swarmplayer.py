@@ -482,11 +482,11 @@ class PlayerApp(wx.App):
 
         if msg.startswith('[latencytest]'):
             #self.mojoReply(addr[0])
-            MojoCommunicationClient(MJ_LISTENPORT,'[latencyrep]',ipAddr)
+            MojoCommunicationClient(MJ_LISTENPORT,'[latencyrep]',addr[0])
 
         if msg.startswith('[maxspeed]'):
             reply = '[maxspeed]['+str(x.data["MAXUP"][0])+']['+str(x.data["MAXDOWN"][0])
-            MojoCommunicationClient(MJ_LISTENPORT,reply,ipAddr)
+            MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
 
         if msg.startswith('[setip]'):
            self.d.set_server_ip(addr[0])

@@ -137,6 +137,7 @@ def get_baselines(ds, mjpeers):
                 x.log("LATENCY-" + str(mjpeer['ip']), time.time())
             #SEND MESSAGE
             mojoLatencyTest(mjpeer['ip'])
+            print >>sys.stderr, "hahaha"
 
     if(float(x.data["LATCHECK"][0]) == float(x.data["LATCOUNT"][0]) and float(x.data["LATCOUNT"][0]) > 0):
         x.update("AVGLATENCY", x.data["AVGLATENCY"][0]/x.data["LATCOUNT"][0])
@@ -156,6 +157,7 @@ def get_baselines(ds, mjpeers):
         x.update("BUCHECK", 0)
         for mjpeer in mjpeers:    
             mojoBUSend(mjpeer['ip'])
+            print >>sys.stderr, "hohoho"
 
     if(float(x.data["BUCHECK"][0]) == float(x.data["BUCOUNT"][0]) and float(x.data["BUCOUNT"][0]) > 0):
         print >>dataFile, "[BandUtilUp]\t%s" % (float(x.data["TOTALUP"][0]) / float(x.data["BUUP"][0]))
