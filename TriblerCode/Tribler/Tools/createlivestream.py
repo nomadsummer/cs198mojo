@@ -40,17 +40,21 @@ argsdef = [('name', '', 'name of the stream'),
 x = MJLogger()
 x.log("TIME", time.time())
 x.log("STARTTIME", float(x.data["TIME"][0]))
-x.log("BANDCOUNT", 1)
-x.log("LATCOUNT", 0)
-x.log("LATCHECK", 0)
 x.log("HELPED", False)
 x.log("HELPING", True)
 twin = 15.0
 graceInt = 0
+flag = True
 
 x.log("PACKETLOSS", 0.0)
-x.log("CONTINDEX", 0.0)
-x.log("BANDUTIL", 0.0)
+x.log("BUUP", 0.0)
+x.log("BUDOWN", 0.0)
+x.log("TOTALUP", 0.0)
+x.log("TOTALDOWN", 0.0)
+x.log("BUCOUNT", 0)
+x.log("BUCHECK", 0)
+x.log("LATCOUNT", 0)
+x.log("LATCHECK", 0)
 x.log("AVGLATENCY", 0.0)
 
 dataFile = open("C:\\Temp\\Baselines.txt", "a+")
@@ -88,19 +92,29 @@ def state_callback(ds):
             #print >>sys.stderr,"[MJ-PL-dtut]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['dtotal']/1024.0, mjpeer['utotal']/1024.0)
 
     # START        
-    mjlog_data(ds, mjpeers)
+    print >>sys.stderr, "MJPEERS", len(mjpeers)
+    if(len(mjpeers) == 0 and flag):
+        for mjpeer in mjpeers:
+            MojoCommunicationClient(MJ_LISTENPORT,'[setip]', mjpeer['ip'])
+        flag == False
+
     if(len(mjpeers) > 0):
+        mjlog_data(ds, mjpeers)
         graceInt += 1
         if(graceInt >= 5):
             mjcompute_criterion(ds, mjpeers)
+        get_baselines(ds, mjpeers)
 
+    dataFile.flush()
+
+    return (1.0,False)
+
+def get_baselines(ds, mjpeers):
     # LATENCY
-    MOJOpeerlist = ds.get_peerlist()
-    print >>sys.stderr, "[MJ-Peers]\t", len(MOJOpeerlist)
-    if(len(MOJOpeerlist) > 0 and float(x.data["LATCOUNT"][0]) == 0):
-        x.update("LATCOUNT", len(MOJOpeerlist))
+    if(len(mjpeers) > 0 and float(x.data["LATCOUNT"][0]) == 0):
+        x.update("LATCOUNT", len(mjpeers))
         x.update("AVGLATENCY", 0.0)
-        for mjpeer in MOJOpeerlist:
+        for mjpeer in mjpeers:
             if(x.is_existing(mjpeer['ip'])):
                 x.update("LATENCY-" + str(mjpeer['ip']), time.time())
             else:
@@ -115,9 +129,22 @@ def state_callback(ds):
         x.update("LATCOUNT", 0)
         x.update("LATCHECK", 0)
 
-    dataFile.flush()
+    #PACKET LOSS
+    completePieces = ds.get_pieces_complete()
+    numTrue = completePieces.count(True)
+    #if(len(completePieces) > 0):
 
-    return (1.0,False)
+    #BANDWIDTH UTIL
+    if(len(mjpeers) > 0 and float(x.data["BUCOUNT"][0]) == 0):
+        x.update("BUCOUNT", len(mjpeers))
+        x.update("BUCHECK", 0)
+        #for mjpeer in mjpeers:    
+        #    mojoBUSend(mjpeer['ip'])
+
+    if(float(x.data["BUCHECK"][0]) == float(x.data["BUCOUNT"][0]) and float(x.data["BUCOUNT"][0]) > 0):
+        print >>dataFile, "[BandUtilUp]\t%s" % (float(x.data["TOTALUP"][0]) / float(x.data["BUUP"][0]))
+        print >>dataFile, "[BandUtilDown]\t%s" % (float(x.data["TOTALDOWN"][0]) / float(x.data["BUDOWN"][0]))
+
     """
     #PACKET LOSS
     completePieces = ds.get_pieces_complete()
@@ -130,7 +157,7 @@ def get_criterion(ds):
     mjpeers = ds.get_peerlist()
     for mjpeer in mjpeers:
         MojoCommunicationClient(MJ_LISTENPORT,'[getcriterion]['+s.get_external_ip(), mjpeer['ip'])
-"""
+    """
    
 def mjlog_data(ds, mjpeers):
     if len(mjpeers) > 0:
@@ -167,8 +194,8 @@ def mjlog_data(ds, mjpeers):
             #print >>sys.stderr, "[MJ-AC-%s]\t%s" % (mjpeer['ip'], x.data["AC-"+str(mjpeer['ip'])])    
 
         x.update("AvgUp", averageUp/len(x.data["PEERS"]))
-        x.update("BANDUTIL", (totalUpload - totalDownload)/x.data["BANDCOUNT"][0])
-        x.update("BANDCOUNT", x.data["BANDCOUNT"][0] + 1)
+        x.update("TOTALUP", totalUpload)
+        x.update("TOTALDOWN", totalDownload)
 
         #print >>sys.stderr, "[MJ-Base-BandUtil]\t%s" % (x.data["BANDUTIL"][0])
         #print >>dataFile, "[Bandwidth Util]\t%s" % (x.data["BANDUTIL"][0])
@@ -240,7 +267,7 @@ def mjcompute_criterion(ds, mjpeers):
                         totalUpload = totalUpload + float(x.data[mjpeer][0])
 
                 toParse = ds.get_videoinfo()
-                bitRate = toParse['bitrate']/1024.0
+                bitRate = (toParse['bitrate']/1024.0)*8
                 x.update("MCIRI", totalUpload/(peercount*bitRate))
                 #print >>dataFile,"[UP]\t%s" % (totalUpload)
                 #print >>dataFile,"[bitRate]\t%f\t[peercount]\t%f" % (bitRate, peercount)
@@ -256,7 +283,7 @@ def mjcompute_criterion(ds, mjpeers):
                     totalUpload = totalUpload + float(x.data[mjpeer][0])
 
                 toParse = ds.get_videoinfo()
-                bitRate = toParse['bitrate']/1024.0
+                bitRate = (toParse['bitrate']/1024.0)*8
                 x.update("CIRI", totalUpload/(peercount*bitRate))
                 print >>dataFile,"[CIRI]\t%f" % (x.data["CIRI"][0])
                 #print >>sys.stderr,"[MJ-CIRI]\t%f" % (x.data["CIRI"][0])
@@ -333,16 +360,16 @@ def mjcompute_criterion(ds, mjpeers):
             counter = 0
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
-                #x.update("HELPED", True)
+                x.update("HELPED", True)
                 mjbandwidth_allocation(ds)
-                #getHelp(x.data["highpeers"], x.data["lowpeers"])
+                getHelp(x.data["highpeers"], x.data["lowpeers"])
 
 def mjbandwidth_allocation(ds):
     if(x.is_existing("MIN-NEEDED")):
         x.delete("MIN-NEEDED")
 
     toParse = ds.get_videoinfo()
-    bitRate = toParse['bitrate']/1024.0
+    bitRate = (toParse['bitrate']/1024.0)*8
     peercount = len(x.data["PEERS"])
     minBandwidth = peercount*bitRate
     totalUpload = ds.get_current_speed(UPLOAD)
@@ -388,35 +415,7 @@ def mjcallback(addr, msg):
     [X] 4. Acknowledge and reply to the swarm that needs help with your peerlist
     '''
     #print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg    
-    """
-    print >>sys.stderr,"[MJ-Notif-Host]"
-    print >>sys.stderr,"[MJ-Notif-Host]"
-    print >>sys.stderr,"[MJ-Notif-Host]"
-    print >>sys.stderr,"[MJ-Notif-Host]"
-    print >>sys.stderr,"[MJ-Notif-Host]"
-    print >>sys.stderr,"[MJ-Notif-Host]"
-    print >>sys.stderr,"[MJ-Notif-Host]"
-    print >>sys.stderr,"[MJ-Notif-Host]"
-    print >>sys.stderr,"[MJ-Notif-Host]"
-    print >>sys.stderr,"[MJ-Notif-Host]"
-    print >>sys.stderr,"[MJ-Notif-Host]"
-    """
     if msg.startswith('[HELP]'):
-        """
-        print >>sys.stderr, "HELP"
-        print >>sys.stderr, "HELP"
-        print >>sys.stderr, "HELP"
-        print >>sys.stderr, "HELP"
-        print >>sys.stderr, "HELP"
-        print >>sys.stderr, "HELP"
-        print >>sys.stderr, "HELP"
-        print >>sys.stderr, "HELP"
-        print >>sys.stderr, "HELP"
-        print >>sys.stderr, "HELP"
-        print >>sys.stderr, "HELP"
-        print >>sys.stderr, "HELP"
-        print >>sys.stderr, "HELP"
-        """
         temp = msg.split("XxX+XxX")
         #print >>sys.stderr, "CHECKING", temp[0]
         helpedTorrentDef = pickle.loads(temp[1])
@@ -446,6 +445,15 @@ def mjcallback(addr, msg):
         x.update("AVGLATENCY", float(x.data["AVGLATENCY"][0]) + float(x.data["LATENCY-" + addr[0]][0]))
         x.update("LATCHECK", float(x.data["LATCHECK"][0]) + 1)
         #print >>sys.stderr,"[AFTER]\t%s\t%s\t%s" % (x.data["LATENCY-"+addr][0], x.data["AVGLATENCY"][0], x.data["LATCHECK"][0])
+    elif msg.startswith('[maxspeed]'):
+        temp = msg.split("][")
+        x.update("BUUP", float(x.data["BUUP"][0]) + float(temp[1]))
+        x.update("BUDOWN", float(x.data["BUDOWN"][0]) + float(temp[2]))
+        x.update("BUCHECK", float(x.data["BUUP"][0]) + 1)
+    elif msg.startswith('[sudelay]'):
+        temp = msg.split("][")
+        sudelay = temp[1]
+        print >>dataFile, "[SUDELAY]\t%s" % (sudelay)
     elif msg.startswith('[ACK-HELP]'):
         temp = msg.split("XxX+XxX")
         helpingPeers = pickle.loads(temp[1])
@@ -645,19 +653,9 @@ def sendMojoTstream(ipAddr, torrentdef, highpeers, lowpeers):
     #createTorrentDef()
     MojoCommunicationClient(MJ_LISTENPORT,'[download-tstream]XxX+XxX' + pickle.dumps(torrentdef) + 'XxX+XxX' + pickle.dumps(highpeers) + 'XxX+XxX' + pickle.dumps(lowpeers), ipAddr)
 
-    """
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    print >>sys.stderr,"MOJO"
-    """
+def mojoBUSend(ipAddr):
+    # do what you want to do to the recieved message in the main thread. hekhek
+    MojoCommunicationClient(MJ_LISTENPORT,'[maxspeed]', ipAddr)
 
 def mojoLatencyTest(ipAddr):
     # do what you want to do to the recieved message in the main thread. hekhek

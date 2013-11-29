@@ -171,7 +171,7 @@ class SingleDownload:
         if self.dow is not None:
             self.dow.update_peerlist(self, peerlist)
         if callback is not None:
-            callback(nconns)
+            callback(nconns)	    
 
     def set_max_conns(self,nconns,callback):
         if self.dow is not None:

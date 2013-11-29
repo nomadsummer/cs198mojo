@@ -89,6 +89,10 @@ class Download(DownloadRuntimeConfig,DownloadImpl):
         # Called by any thread
         DownloadImpl.update_peerlist(self, peerlist)
        
+    def set_server_ip(self, ipAddr):
+        # Called by any thread
+        DownloadImpl.set_server_ip(self, ipAddr)
+
     #
     # Config parameters that only exists at runtime 
     #

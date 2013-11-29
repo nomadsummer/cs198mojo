@@ -349,6 +349,9 @@ class DownloadImpl:
     
     def update_peerlist(self, peerlist):
         self.sd.get_bt1download().update_peerlist(peerlist)
+
+    def set_server_ip(self, ipAddr):
+        self.sd.get_bt1download().set_server_ip(ipAddr)
     
     def network_restart(self):
         """ Called by network thread """

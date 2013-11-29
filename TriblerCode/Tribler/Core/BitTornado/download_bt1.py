@@ -775,3 +775,6 @@ class BT1Download:
     
     def update_peerlist(self, peerlist):
         self.connecter.kick_peers(peerlist)
+
+    def set_server_ip(self, ipAddr):
+        self.voddownload.set_server_ip(ipAddr)
