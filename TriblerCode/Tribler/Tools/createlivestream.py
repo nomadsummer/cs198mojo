@@ -41,7 +41,7 @@ x = MJLogger()
 x.log("TIME", time.time())
 x.log("STARTTIME", float(x.data["TIME"][0]))
 x.log("HELPED", False)
-x.log("HELPING", True)
+x.log("HELPING", False)
 twin = 15.0
 graceInt = 0
 flag = True
@@ -63,6 +63,7 @@ def state_callback(ds):
     global sendTstream
     global dsGlobal
     global graceInt
+    global flag
     dsGlobal = ds
 
     d = ds.get_download()
@@ -93,10 +94,10 @@ def state_callback(ds):
 
     # START        
     print >>sys.stderr, "MJPEERS", len(mjpeers)
-    if(len(mjpeers) == 0 and flag):
+    if(len(mjpeers) == 1 and flag):
         for mjpeer in mjpeers:
             MojoCommunicationClient(MJ_LISTENPORT,'[setip]', mjpeer['ip'])
-        flag == False
+        flag = False
 
     if(len(mjpeers) > 0):
         mjlog_data(ds, mjpeers)
@@ -105,9 +106,24 @@ def state_callback(ds):
             mjcompute_criterion(ds, mjpeers)
         get_baselines(ds, mjpeers)
 
+        if(x.data["HELPING"][0]):
+            sendPeerStats(ds, x.data['highpeers'], 1)
+        elif(x.data["HELPED"][0]):
+            sendPeerStats(ds, x.data['HELPERS'], 2)
+
     dataFile.flush()
 
     return (1.0,False)
+
+def sendPeerStats(ds, hpeers, flag):
+    mjpeers = ds.get_peerlist()
+    for mjpeer in mjpeers:
+        if(mjpeer['ip'] in hpeers):
+            if(flag == 1):
+                peerstats = '[stats1]['+str(mjpeer['uprate']/1024.0)+']['+str(mjpeer['downrate']/1024.0)
+            else:
+                peerstats = '[stats2]['+str(mjpeer['uprate']/1024.0)+']['+str(mjpeer['downrate']/1024.0)
+            MojoCommunicationClient(MJ_LISTENPORT,peerstats, mjpeer['ip'])
 
 def get_baselines(ds, mjpeers):
     # LATENCY
@@ -138,8 +154,8 @@ def get_baselines(ds, mjpeers):
     if(len(mjpeers) > 0 and float(x.data["BUCOUNT"][0]) == 0):
         x.update("BUCOUNT", len(mjpeers))
         x.update("BUCHECK", 0)
-        #for mjpeer in mjpeers:    
-        #    mojoBUSend(mjpeer['ip'])
+        for mjpeer in mjpeers:    
+            mojoBUSend(mjpeer['ip'])
 
     if(float(x.data["BUCHECK"][0]) == float(x.data["BUCOUNT"][0]) and float(x.data["BUCOUNT"][0]) > 0):
         print >>dataFile, "[BandUtilUp]\t%s" % (float(x.data["TOTALUP"][0]) / float(x.data["BUUP"][0]))
@@ -332,7 +348,7 @@ def mjcompute_criterion(ds, mjpeers):
         counter = counter + 1
         print >>sys.stderr,"help counter", counter
         #if(x.data["CIRI"][0] < 1):
-        if counter == 30:
+        if counter == 30 and not x.data["HELPING"][0]:
             if(x.is_existing("highpeers")):
                 x.delete("highpeers")   
             if(x.is_existing("lowpeers")):
@@ -414,7 +430,7 @@ def mjcallback(addr, msg):
            by calling the function sendMojoTstream(ipAddr)
     [X] 4. Acknowledge and reply to the swarm that needs help with your peerlist
     '''
-    #print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg    
+    print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg    
     if msg.startswith('[HELP]'):
         temp = msg.split("XxX+XxX")
         #print >>sys.stderr, "CHECKING", temp[0]
@@ -430,6 +446,7 @@ def mjcallback(addr, msg):
                 sendMojoTstream(mjpeer, helpedTorrentDef, helpedhighpeers + [addr[0]], helpedlowpeers)
         
         # Reply to the helped swarm with your peer list
+        x.update("HELPING", True)
 
         MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]XxX+XxX' + pickle.dumps(x.data["highpeers"]) + 'XxX+XxX' + pickle.dumps(x.data["lowpeers"]), addr[0])
         """
