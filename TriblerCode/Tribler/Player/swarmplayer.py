@@ -453,7 +453,7 @@ class PlayerApp(wx.App):
     def mjcallback(self, addr, msg):
         """ Called by MojoCommunication thread """
         # do what you want to do to the recieved message in the main thread. hekhek
-        #print >>sys.stderr,"[MJ-Notif-Peer] Callback function in main received: ", msg
+        print >>sys.stderr,"[MJ-Notif-Peer] Callback function in main received: ", msg
         if(msg == "[MOJO] disconnect"):
             #print >>sys.stderr,"ELIJAH hekhek: ", ipAddr
             self.clear_session_state()
