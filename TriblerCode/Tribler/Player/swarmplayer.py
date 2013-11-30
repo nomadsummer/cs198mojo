@@ -918,7 +918,7 @@ class PlayerApp(wx.App):
             peertxt = " peer %d" % (totalhelping)
             extra = ''
             if(x.data["STILLH"][0]):
-                extra = '\norigUp' + origDownload.get_max_desired_speed(UPLOAD) + '\norigDown' + origDownload.get_max_desired_speed(DOWNLOAD) + '\nhelpedUp' + self.d.get_max_desired_speed(UPLOAD) + '\nhelpedDown' + self.d.get_max_desired_speed(DOWNLOAD)
+                extra = '\norigUp' + str(origDownload.get_max_desired_speed(UPLOAD)) + '\norigDown' + str(origDownload.get_max_desired_speed(DOWNLOAD)) + '\nhelpedUp' + str(self.d.get_max_desired_speed(UPLOAD)) + '\nhelpedDown' + str(self.d.get_max_desired_speed(DOWNLOAD))
             
             msg = uptxt + downtxt + peertxt + extra + '\n--------'
 
