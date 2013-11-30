@@ -384,9 +384,9 @@ def mjcompute_criterion(ds, mjpeers):
             counter = 0
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
-                x.update("HELPED", True)
-                min_needed(ds)
-                getHelp(x.data["highpeers"], x.data["lowpeers"])
+                #x.update("HELPED", True)
+                mjmin_needed(ds)
+                #getHelp(x.data["highpeers"], x.data["lowpeers"])
 
 def mjmin_needed(ds):
     if(x.is_existing("MIN-NEEDED")):
