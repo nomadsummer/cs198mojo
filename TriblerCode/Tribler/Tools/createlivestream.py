@@ -92,6 +92,8 @@ def state_callback(ds):
             #print >>sys.stderr,"[MJ-PL-drur]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['downrate']/1024.0, mjpeer['uprate']/1024.0)
             #print >>sys.stderr,"[MJ-PL-dtut]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['dtotal']/1024.0, mjpeer['utotal']/1024.0)
 
+    #MojoCommunicationClient(MJ_LISTENPORT,'[ULOL-CUBAO]', "192.168.1.40")
+
     # START        
     print >>sys.stderr, "MJPEERS", len(mjpeers)
     if(len(mjpeers) == 1 and flag):
@@ -141,7 +143,6 @@ def get_baselines(ds, mjpeers):
                 x.log("LATENCY-" + str(mjpeer['ip']), time.time())
             #SEND MESSAGE
             mojoLatencyTest(mjpeer['ip'])
-            print >>sys.stderr, "hahaha"
 
     if(float(x.data["LATCHECK"][0]) == float(x.data["LATCOUNT"][0]) and float(x.data["LATCOUNT"][0]) > 0):
         x.update("AVGLATENCY", x.data["AVGLATENCY"][0]/x.data["LATCOUNT"][0])
@@ -161,7 +162,6 @@ def get_baselines(ds, mjpeers):
         x.update("BUCHECK", 0)
         for mjpeer in mjpeers:    
             mojoBUSend(mjpeer['ip'])
-            print >>sys.stderr, "hohoho"
 
     if(float(x.data["BUCHECK"][0]) == float(x.data["BUCOUNT"][0]) and float(x.data["BUCOUNT"][0]) > 0):
         print >>dataFile, "[BandUtilUp]\t%s" % (float(x.data["TOTALUP"][0]) / float(x.data["BUUP"][0]))
@@ -483,7 +483,8 @@ def mjcallback(addr, msg):
     elif msg.startswith('[sudelay]'):
         temp = msg.split("][")
         sudelay = pickle.loads(temp[1])
-        print >>dataFile, "[SUDELAY]\t%s" % (sudelay)
+        x.update("SU-"+str(addr[0]), sudelay)
+        #print >>dataFile, "[SUDELAY]\t%s" % (sudelay)
     elif msg.startswith('[ACK-HELP]'):
         temp = msg.split("XxX+XxX")
         helpingPeers = pickle.loads(temp[1])
