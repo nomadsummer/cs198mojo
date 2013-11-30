@@ -57,7 +57,11 @@ x.log("LATCOUNT", 0)
 x.log("LATCHECK", 0)
 x.log("AVGLATENCY", 0.0)
 
-dataFile = open("C:\\Temp\\Baselines.txt", "a+")
+dataFile = open("C:\\Temp\\Latency.txt", "a+")
+dataFile2 = open("C:\\Temp\\BandUtil.txt", "a+")
+dataFile3 = open("C:\\Temp\\CIRI.txt", "a+")
+dataFile4 = open("C:\\Temp\\Extra.txt", "a+")
+
 
 def state_callback(ds):
     global sendTstream
@@ -116,6 +120,9 @@ def state_callback(ds):
         """
 
     dataFile.flush()
+    dataFile2.flush()
+    dataFile3.flush()
+    dataFile4.flush()
 
     return (1.0,False)
 
@@ -147,7 +154,7 @@ def get_baselines(ds, mjpeers):
     if(float(x.data["LATCHECK"][0]) == float(x.data["LATCOUNT"][0]) and float(x.data["LATCOUNT"][0]) > 0):
         x.update("AVGLATENCY", x.data["AVGLATENCY"][0]/x.data["LATCOUNT"][0])
         #print >>sys.stderr, "[MJ-Base-Latency]\t%s" % (x.data["AVGLATENCY"][0])
-        print >>dataFile, "[Latency]\t%s" % (x.data["AVGLATENCY"][0])
+        print >>dataFile, "%f\t%f" % (time.time(), x.data["AVGLATENCY"][0])
         x.update("LATCOUNT", 0)
         x.update("LATCHECK", 0)
 
@@ -164,8 +171,9 @@ def get_baselines(ds, mjpeers):
             mojoBUSend(mjpeer['ip'])
 
     if(float(x.data["BUCHECK"][0]) == float(x.data["BUCOUNT"][0]) and float(x.data["BUCOUNT"][0]) > 0):
-        print >>dataFile, "[BandUtilUp]\t%s" % (float(x.data["TOTALUP"][0]) / float(x.data["BUUP"][0]))
-        print >>dataFile, "[BandUtilDown]\t%s" % (float(x.data["TOTALDOWN"][0]) / float(x.data["BUDOWN"][0]))
+        buUp = float(x.data["TOTALUP"][0]) / float(x.data["BUUP"][0])
+        buDown = float(x.data["TOTALDOWN"][0]) / float(x.data["BUDOWN"][0])
+        print >>dataFile2, "%f\t%f\t%f" % (time.time(), buUp, buDown)
         x.update("BUCOUNT", 0)
         x.update("BUCHECK", 0)
 
@@ -221,15 +229,8 @@ def mjlog_data(ds, mjpeers):
         x.update("TOTALUP", totalUpload)
         x.update("TOTALDOWN", totalDownload)
 
-        #print >>sys.stderr, "[MJ-Base-BandUtil]\t%s" % (x.data["BANDUTIL"][0])
-        #print >>dataFile, "[Bandwidth Util]\t%s" % (x.data["BANDUTIL"][0])
-
-        #if(x.is_existing("PEERS")):
-            #print >>sys.stderr, "[MJ-Log-Peers]\t%s" % (x.data["PEERS"])
-            #print >>dataFile, "[Peers]\t%s" % (x.data["PEERS"])
-            
-        #for mjpeer in mjpeers:
-            #print >>sys.stderr, "[MJ-Log-Peers-IP]\t%s" % (mjpeer['ip'])
+        if(x.is_existing("PEERS")):
+            print >>dataFile4, "[Peers]\t%s" % (x.data["PEERS"])
    
 def mjcompute_criterion(ds, mjpeers):
     #CIRI
@@ -259,8 +260,7 @@ def mjcompute_criterion(ds, mjpeers):
                 x.update("AACDL-"+str(mjpeer), float(float(x.data["AACDL-"+str(mjpeer)][0])/len(x.data["ACDL-"+str(mjpeer)])))
                 x.delete("AC-"+str(mjpeer))
                 x.delete("ACDL-"+str(mjpeer))
-                #print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
-                print >>dataFile, "[AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
+                print >>dataFile4, "[AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
             x.update("TIME", time.time())
 
         if(x.data['HELPED'][0] and x.is_existing("HELPERS")):
@@ -273,15 +273,11 @@ def mjcompute_criterion(ds, mjpeers):
             for mjpeer in x.data["HELPERS"]:
                 if(checktime):
                     x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data["AAC-"+str(mjpeer)][0] - x.data["AACDL-"+str(mjpeer)][0]))
-                    #print >>dataFile, "[AAC-%s]\t%s" % (str(mjpeer), x.data["AAC-"+str(mjpeer)][0])
-                    #print >>dataFile, "[AACDL-%s]\t%s" % (str(mjpeer), x.data["AACDL-"+str(mjpeer)][0])
                 else:
                     if(x.is_existing(str(mjpeer))):
                         x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data[str(mjpeer)][0] - x.data["DL-"+str(mjpeer)][0]))
                     else:
                         x.update("NetUpCon", 0.0)
-                    #print >>dataFile, "[AC-%s]\t%s" % (str(mjpeer), x.data[str(mjpeer)][0])
-                    #print >>dataFile, "[ACDL-%s]\t%s" % (str(mjpeer), x.data["DL-"+str(mjpeer)][0])
 
             totalUpload = ds.get_current_speed(UPLOAD)
             peercount = len(x.data["PEERS"]) - len(x.data["HELPERS"])
@@ -295,7 +291,7 @@ def mjcompute_criterion(ds, mjpeers):
                 x.update("MCIRI", totalUpload/(peercount*bitRate))
                 #print >>dataFile,"[UP]\t%s" % (totalUpload)
                 #print >>dataFile,"[bitRate]\t%f\t[peercount]\t%f" % (bitRate, peercount)
-                print >>dataFile,"[MCIRI]\t%f" % (x.data["MCIRI"][0])
+                print >>dataFile3,"%f\t%f" % (time.time(), x.data["MCIRI"][0])
         else:
             if(x.is_existing("CIRI")):
                 x.delete("CIRI")
@@ -309,7 +305,7 @@ def mjcompute_criterion(ds, mjpeers):
                 toParse = ds.get_videoinfo()
                 bitRate = (toParse['bitrate']/1024.0)*8
                 x.update("CIRI", totalUpload/(peercount*bitRate))
-                print >>dataFile,"[CIRI]\t%f" % (x.data["CIRI"][0])
+                print >>dataFile3,"%f\t%f" % (time.time(), x.data["CIRI"][0])
                 #print >>sys.stderr,"[MJ-CIRI]\t%f" % (x.data["CIRI"][0])
                 #print >>sys.stderr,"[MJ-CIRI-VARIABLES]"
                 #print >>sys.stderr,"[\t%f\t%f\t%f]" % (ds.get_current_speed(UPLOAD), totalUpload-ds.get_current_speed(UPLOAD), bitRate)
@@ -380,8 +376,8 @@ def mjcompute_criterion(ds, mjpeers):
             print >>sys.stderr,"HIGHEST AAC:\t%s" % (x.data["highpeers"])
             print >>sys.stderr,"LOWEST AAC:\t%s" % (x.data["lowpeers"])
 
-            print >>dataFile,"[HIGHPEERS]\t%s" % (x.data["highpeers"])
-            print >>dataFile,"[LOWPEERS]\t%s" % (x.data["lowpeers"])
+            print >>dataFile4,"[HIGHPEERS]\t%s" % (x.data["highpeers"])
+            print >>dataFile4,"[LOWPEERS]\t%s" % (x.data["lowpeers"])
             
             counter = 0
             if not x.data["HELPED"][0]:
@@ -418,7 +414,7 @@ def mjbandwidth_allocation(mjpeer):
     #print >>sys.stderr, "[MJ-AVGUP]\t%f" % (float(x.data["AvgUp"][0]))
     #print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
     #print >>sys.stderr, "[MJ-BA-%s]\t%f" % (mjpeer, float(x.data["BA-"+str(mjpeer)][0]))
-    print >>dataFile, "[BA-%s]\t%f" % (mjpeer, float(x.data["BA-"+str(mjpeer)][0]))
+    print >>dataFile4, "[BA-%s]\t%f" % (mjpeer, float(x.data["BA-"+str(mjpeer)][0]))
 
 def vod_ready_callback(d,mimetype,stream,filename):
     """ Called by the Session when the content of the Download is ready
@@ -675,6 +671,9 @@ def getHelp(highpeers, lowpeers):
     print >>sys.stderr,"Helping swarm found. Initiating connection." 
     x.update("HELPED",True);
     print >>dataFile,"===============================[SWARM HELPED]===============================" 
+    print >>dataFile2,"===============================[SWARM HELPED]===============================" 
+    print >>dataFile3,"===============================[SWARM HELPED]===============================" 
+    print >>dataFile4,"===============================[SWARM HELPED]===============================" 
     #print >>sys.stderr,"orig tdef " + pickle.dumps(origTdef)
     MojoCommunicationClient(MJ_LISTENPORT,'[HELP]XxX+XxX' + pickle.dumps(origTdef) + 'XxX+XxX' + pickle.dumps(highpeers) + 'XxX+XxX' + pickle.dumps(lowpeers), helpingSwarmIP)
     
