@@ -45,6 +45,7 @@ x.log("HELPING", False)
 twin = 15.0
 graceInt = 0
 flag = True
+firstTime = True
 
 x.log("PACKETLOSS", 0.0)
 x.log("BUUP", 0.0)
@@ -57,10 +58,10 @@ x.log("LATCOUNT", 0)
 x.log("LATCHECK", 0)
 x.log("AVGLATENCY", 0.0)
 
-dataFile = open("C:\\Temp\\Latency.txt", "a+")
-dataFile2 = open("C:\\Temp\\BandUtil.txt", "a+")
-dataFile3 = open("C:\\Temp\\CIRI.txt", "a+")
-dataFile4 = open("C:\\Temp\\Extra.txt", "a+")
+dataFile = open("C:\\Temp\\Latency.txt", "w+")
+dataFile2 = open("C:\\Temp\\BandUtil.txt", "w+")
+dataFile3 = open("C:\\Temp\\CIRI.txt", "w+")
+dataFile4 = open("C:\\Temp\\Extra.txt", "w+")
 
 
 def state_callback(ds):
@@ -68,6 +69,11 @@ def state_callback(ds):
     global dsGlobal
     global graceInt
     global flag
+    global firstTime
+    global dataFile
+    global dataFile2
+    global dataFile3
+    global dataFile4
     dsGlobal = ds
 
     d = ds.get_download()
@@ -99,13 +105,23 @@ def state_callback(ds):
     #MojoCommunicationClient(MJ_LISTENPORT,'[ULOL-CUBAO]', "192.168.1.40")
 
     # START        
-    print >>dataFile, "##\t##"
-    print >>dataFile2, "##\t##\t##"
-    print >>dataFile3, "##\t##"
+    if(firstTime):
+        print >>dataFile, "##\t##"
+        #print >>dataFile2, "##\t##\t##"
+        print >>dataFile2, "##\t##"
+        print >>dataFile3, "##\t##"
 
-    print >>dataFile, "Time\tLatency"
-    print >>dataFile2, "Time\tBandUtilUp\tBandUtilDown"
-    print >>dataFile3, "Time\tCIRI/MCIRI"
+        print >>dataFile, "Time\tLatency"
+        #print >>dataFile2, "Time\tBandUtilUp\tBandUtilDown"
+        print >>dataFile2, "Time\tBandUtilUp"
+        print >>dataFile3, "Time\tCIRI/MCIRI"
+
+        dataFile = open("C:\\Temp\\Latency.txt", "a+")
+        dataFile2 = open("C:\\Temp\\BandUtil.txt", "a+")
+        dataFile3 = open("C:\\Temp\\CIRI.txt", "a+")
+        dataFile4 = open("C:\\Temp\\Extra.txt", "a+")
+
+        firstTime = False
 
     print >>sys.stderr, "MJPEERS", len(mjpeers)
     if(len(mjpeers) == 1 and flag):
@@ -181,7 +197,8 @@ def get_baselines(ds, mjpeers):
     if(float(x.data["BUCHECK"][0]) == float(x.data["BUCOUNT"][0]) and float(x.data["BUCOUNT"][0]) > 0):
         buUp = float(x.data["TOTALUP"][0]) / float(x.data["BUUP"][0])
         buDown = float(x.data["TOTALDOWN"][0]) / float(x.data["BUDOWN"][0])
-        print >>dataFile2, "%f\t%f\t%f" % (time.time(), buUp, buDown)
+        #print >>dataFile2, "%f\t%f\t%f" % (time.time(), buUp, buDown)
+        print >>dataFile2, "%f\t%f" % (time.time(), buUp)
         x.update("BUCOUNT", 0)
         x.update("BUCHECK", 0)
 
@@ -204,7 +221,7 @@ def mjlog_data(ds, mjpeers):
         if(x.is_existing("PEERS")):
             x.delete("PEERS")
 
-        averageUp = 0.0
+        #averageUp = 0.0
         totalUpload = ds.get_current_speed(UPLOAD)
         totalDownload = ds.get_current_speed(DOWNLOAD)
 
@@ -218,7 +235,7 @@ def mjlog_data(ds, mjpeers):
             totalUpload = totalUpload + mjpeer['uprate']/1024.0
             totalDownload = totalDownload + mjpeer['downrate']/1024.0
 
-            averageUp = averageUp + mjpeer['uprate']/1024.0
+            #averageUp = averageUp + mjpeer['uprate']/1024.0
 
             if(x.is_existing(mjpeer['ip'])):
                 x.update(mjpeer['ip'], mjpeer['uprate']/1024.0)
@@ -233,7 +250,7 @@ def mjlog_data(ds, mjpeers):
             #print >>sys.stderr, "[MJ-Log-PeerUpload]\t%s" % (x.data[mjpeer['ip']])
             #print >>sys.stderr, "[MJ-AC-%s]\t%s" % (mjpeer['ip'], x.data["AC-"+str(mjpeer['ip'])])    
 
-        x.update("AvgUp", averageUp/len(x.data["PEERS"]))
+        #x.update("AvgUp", averageUp/len(x.data["PEERS"]))
         x.update("TOTALUP", totalUpload)
         x.update("TOTALDOWN", totalDownload)
 
@@ -256,6 +273,7 @@ def mjcompute_criterion(ds, mjpeers):
             x.update("AACDL-"+str(mjpeer), 0.0)
         """
         if(checktime):
+            averageUp = 0.0
             for mjpeer in x.data["PEERS"]:
                 x.update("AAC-"+str(mjpeer), 0.0)
                 x.update("AACDL-"+str(mjpeer), 0.0)
@@ -264,11 +282,13 @@ def mjcompute_criterion(ds, mjpeers):
                 for mjpeerup in x.data["ACDL-"+str(mjpeer)]:
                     x.update("AACDL-"+str(mjpeer), float(x.data["AACDL-"+str(mjpeer)][0]) + float(mjpeerup))
 
-                x.update("AAC-"+str(mjpeer), float(float(x.data["AAC-"+str(mjpeer)][0])/len(x.data["AC-"+str(mjpeer)])))
-                x.update("AACDL-"+str(mjpeer), float(float(x.data["AACDL-"+str(mjpeer)][0])/len(x.data["ACDL-"+str(mjpeer)])))
+                x.update("AAC-"+str(mjpeer), float(x.data["AAC-"+str(mjpeer)][0])/float(len(x.data["AC-"+str(mjpeer)])))
+                averageUp = averageUp + x.data["AAC-"+str(mjpeer)][0]
+                x.update("AACDL-"+str(mjpeer), float(x.data["AACDL-"+str(mjpeer)][0])/float(len(x.data["ACDL-"+str(mjpeer)])))
                 x.delete("AC-"+str(mjpeer))
                 x.delete("ACDL-"+str(mjpeer))
                 print >>dataFile4, "[AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
+            x.update("AvgUp", averageUp/len(x.data["PEERS"]))
             x.update("TIME", time.time())
 
         if(x.data['HELPED'][0] and x.is_existing("HELPERS")):
@@ -390,9 +410,9 @@ def mjcompute_criterion(ds, mjpeers):
             counter = 0
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
-                #x.update("HELPED", True)
+                x.update("HELPED", True)
                 mjmin_needed(ds)
-                #getHelp(x.data["highpeers"], x.data["lowpeers"])
+                getHelp(x.data["highpeers"], x.data["lowpeers"])
 
 def mjmin_needed(ds):
     if(x.is_existing("MIN-NEEDED")):
