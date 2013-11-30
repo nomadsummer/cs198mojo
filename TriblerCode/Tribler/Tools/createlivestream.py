@@ -224,9 +224,9 @@ def mjlog_data(ds, mjpeers):
         #print >>sys.stderr, "[MJ-Base-BandUtil]\t%s" % (x.data["BANDUTIL"][0])
         #print >>dataFile, "[Bandwidth Util]\t%s" % (x.data["BANDUTIL"][0])
 
-        if(x.is_existing("PEERS")):
+        #if(x.is_existing("PEERS")):
             #print >>sys.stderr, "[MJ-Log-Peers]\t%s" % (x.data["PEERS"])
-            print >>dataFile, "[Peers]\t%s" % (x.data["PEERS"])
+            #print >>dataFile, "[Peers]\t%s" % (x.data["PEERS"])
             
         #for mjpeer in mjpeers:
             #print >>sys.stderr, "[MJ-Log-Peers-IP]\t%s" % (mjpeer['ip'])
@@ -386,9 +386,9 @@ def mjcompute_criterion(ds, mjpeers):
             counter = 0
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
-                #x.update("HELPED", True)
+                x.update("HELPED", True)
                 mjmin_needed(ds)
-                #getHelp(x.data["highpeers"], x.data["lowpeers"])
+                getHelp(x.data["highpeers"], x.data["lowpeers"])
 
 def mjmin_needed(ds):
     if(x.is_existing("MIN-NEEDED")):
