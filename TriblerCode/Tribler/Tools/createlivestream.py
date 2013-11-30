@@ -336,6 +336,8 @@ def mjcompute_criterion(ds, mjpeers):
                         mjpeerup = -1
                         peerrank.append(mjpeer)
 
+        #print >>sys.stderr, "PEERRANK", peerrank
+
         for mjpeer in peerrank:
             x.log("AAC-RANKED", mjpeer)
 
@@ -363,13 +365,13 @@ def mjcompute_criterion(ds, mjpeers):
                 x.delete("lowpeers")
 
             if(x.is_existing("HIGH-RANKED") and len(x.data["HIGH-RANKED"]) > 0):
-                for index in range(0, int(round(len(x.data["HIGH-RANKED"])/5 + .5))):
+                for index in range(0, int(len(x.data["HIGH-RANKED"]))):
                     hightemp = str(x.data["HIGH-RANKED"][index])
                     x.log("highpeers", hightemp)
                 print >>sys.stderr, "HPEERS:", x.data["highpeers"]
 
             if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
-                for index in range(0, int(round(len(x.data["LOW-RANKED"])/5 + .5))):
+                for index in range(0, int(len(x.data["LOW-RANKED"]))):
                     lowtemp = str(x.data["LOW-RANKED"][index])
                     x.log("lowpeers", lowtemp)
                 print >>sys.stderr, "LPEERS:", x.data["lowpeers"]
@@ -384,9 +386,15 @@ def mjcompute_criterion(ds, mjpeers):
             counter = 0
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
+<<<<<<< HEAD
                 #x.update("HELPED", True)
                 mjmin_needed(ds)
                 #getHelp(x.data["highpeers"], x.data["lowpeers"])
+=======
+                x.update("HELPED", True)
+                mjmin_needed(ds)
+                getHelp(x.data["highpeers"], x.data["lowpeers"])
+>>>>>>> c5d5facd4c003a1f4c9ddcb82e7b013811fb2d8b
 
 def mjmin_needed(ds):
     if(x.is_existing("MIN-NEEDED")):
@@ -667,7 +675,7 @@ def getHelp(highpeers, lowpeers):
         helpingSwarmIP = dialog.GetValue()
     '''
     
-    helpingSwarmIP = "10.40.81.146"
+    helpingSwarmIP = "192.168.1.40"
     # After some time
     print >>sys.stderr,"Helping swarm found. Initiating connection." 
     x.update("HELPED",True);
