@@ -99,6 +99,14 @@ def state_callback(ds):
     #MojoCommunicationClient(MJ_LISTENPORT,'[ULOL-CUBAO]', "192.168.1.40")
 
     # START        
+    print >>dataFile, "##\t##"
+    print >>dataFile2, "##\t##\t##"
+    print >>dataFile3, "##\t##"
+
+    print >>dataFile, "Time\tLatency"
+    print >>dataFile2, "Time\tBandUtilUp\tBandUtilDown"
+    print >>dataFile3, "Time\tCIRI/MCIRI"
+
     print >>sys.stderr, "MJPEERS", len(mjpeers)
     if(len(mjpeers) == 1 and flag):
         for mjpeer in mjpeers:
@@ -670,10 +678,10 @@ def getHelp(highpeers, lowpeers):
     # After some time
     print >>sys.stderr,"Helping swarm found. Initiating connection." 
     x.update("HELPED",True);
-    print >>dataFile,"===============================[SWARM HELPED]===============================" 
-    print >>dataFile2,"===============================[SWARM HELPED]===============================" 
-    print >>dataFile3,"===============================[SWARM HELPED]===============================" 
-    print >>dataFile4,"===============================[SWARM HELPED]===============================" 
+    print >>dataFile,"@===============================[SWARM HELPED]===============================" 
+    print >>dataFile2,"@===============================[SWARM HELPED]===============================" 
+    print >>dataFile3,"@===============================[SWARM HELPED]===============================" 
+    print >>dataFile4,"@===============================[SWARM HELPED]===============================" 
     #print >>sys.stderr,"orig tdef " + pickle.dumps(origTdef)
     MojoCommunicationClient(MJ_LISTENPORT,'[HELP]XxX+XxX' + pickle.dumps(origTdef) + 'XxX+XxX' + pickle.dumps(highpeers) + 'XxX+XxX' + pickle.dumps(lowpeers), helpingSwarmIP)
     
