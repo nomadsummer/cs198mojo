@@ -25,6 +25,9 @@ class MJLogger(object):
         # self.data['Main'].append((1000010, 'Samplex Majority', 'In the Index'))
         # self.data['Main'].append((1000020, 'Majora\s Mask', 'The Library'))
     
+    def init(self, logname):
+        self.data[logname] = []
+
     def log(self, logname, data):
         if logname in self.data:
             self.data[logname].append(data)

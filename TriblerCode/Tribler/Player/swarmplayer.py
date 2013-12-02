@@ -75,6 +75,12 @@ x.log("ORIGDOWN", 0.0)
 x.log("HELPEDUP", 0.0)
 x.log("HELPEDDOWN", 0.0)
 
+##################
+x.log("CURRUL", 0)
+x.log("CURRDL", 0)
+x.log("ULLOG", 0)
+x.log("DLLOG", 0)
+
 origDownload = None
 
 class PlayerFrame(VideoFrame):
@@ -496,35 +502,13 @@ class PlayerApp(wx.App):
 
         if msg.startswith('[setip]'):
            self.d.set_server_ip(addr[0])
-
-        """
-        if msg.startswith('[stats1]'):
-            temp = msg.split("][")
-            x.update("ORIGUP", temp[1])
-            x.update("ORIGDOWN", temp[2])
-
-        if msg.startswith('[stats2]'):
-            temp = msg.split("][")
-            x.update("HELPEDUP", temp[1])
-            x.update("HELPEDDOWN", temp[2])
-            
-        if msg.startswith('[getcriterion]'):
-            strs = msg.split("][")
-            self.mojoReply(strs[1])
-
-    def mojoReply(self, ipAddr):
-        print >>sys.stderr,"Sending Latency... ", ipAddr
-        for mjpeer in x.data["PEERS"]:
-            toSend = '[criterionrep]['+mjpeer+']['+str(x.data["ACUP-"+str(mjpeer)][0])+']['+str(x.data["ACDOWN-"+str(mjpeer)][0])
-            print >>sys.stderr, "HAHAHA: ",toSend
-            MojoCommunicationClient(MJ_LISTENPORT,toSend,ipAddr)
-
-    def mojoReply(self, ipAddr):
-        # do what you want to do to the recieved message in the main thread. hekhek
-        print >>sys.stderr,"Testing Latency... ", ipAddr
-        MojoCommunicationClient(MJ_LISTENPORT,'[latencyrep]',ipAddr)
-
-    """
+        #####################
+        if msg.startswith('[uldl]'):
+            reply = '[uldl]['+pickle.dumps(x.data["CURRUL"][0])+']['+pickle.dumps(x.data["CURRDL"][0])
+            MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
+        if msg.startswith('[aac]'):
+            reply = '[aac]['+pickle.dumps(x.averageData("ULLOG"))+']['+pickle.dumps(x.averageData("DLLOG"))
+            MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
     
     def remote_start_download(self,torrentfilename):
         """ Called by GUI thread """
@@ -721,25 +705,15 @@ class PlayerApp(wx.App):
             # MENMA EX
             mjtime = datetime.datetime.now().time()
             mjpeers = ds.get_peerlist()
+            ######################
+            x.update("CURRUL", totalspeed[UPLOAD])
+            x.update("CURRDL", totalspeed[DOWNLOAD])
+            x.log("ULLOG", totalspeed[UPLOAD])
+            x.log("DLLOG", totalspeed[DOWNLOAD])
+
             #print >>sys.stderr, "[MJ-MAXSPEED]\t%s\t%s" % (x.data["MAXDOWN"][0], x.data["MAXUP"][0])
             #self.mjlog_data(ds)
 
-            """
-            print >>sys.stderr,"[MJ-ClientStats]\t%s\tmain: Stats: DL:\t%s\t%.1f%%\t%s\tdl\t%.1f\tul\t%.1f\tn\t%d\n" % (mjtime,dlstatus_strings[ds.get_status()],100.0*ds.get_progress(),ds.get_error(),ds.get_current_speed(DOWNLOAD),ds.get_current_speed(UPLOAD),ds.get_num_peers())
-            if mjpeers is not None :
-                # ip, uprate, downrate, utotal, dtotal, speed
-                for mjpeer in mjpeers:
-                    print >>sys.stderr,"[MJ-PL-spd]\t%s\t%s\t%s " % (mjtime, mjpeer['ip'], mjpeer['speed']/1024.0)
-                    print >>sys.stderr,"[MJ-PL-drur]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['downrate']/1024.0, mjpeer['uprate']/1024.0)
-                    print >>sys.stderr,"[MJ-PL-dtut]\t%s\t%s\t%s\t%s" % (mjtime, mjpeer['ip'], mjpeer['dtotal']/1024.0, mjpeer['utotal']/1024.0)
-            mjvstats = ds.get_vod_stats()
-            if mjvstats is not None :
-                # played, dropped, late, stall, prebuf
-                print >>sys.stderr,"[MJ-VS-pbf]\t%s\t%s " % (mjtime, mjvstats['prebuf'])
-                print >>sys.stderr,"[MJ-VS-plydrp]\t%s\t%s\t%s" % (mjtime, mjvstats['played'], mjvstats['dropped'])
-                print >>sys.stderr,"[MJ-VS-ltst]\t%s\t%s\t%s" % (mjtime, mjvstats['late'], mjvstats['stall'])
-            # TODO print >>sys.stderr, "[MJ-Report]\tStats:\t%s" % (self.reporter.report_stat(ds).stats)
-            """
         # If we're done playing we can now restart any previous downloads to 
         # seed them.
         if playermode != DLSTATUS_SEEDING and ds.get_status() == DLSTATUS_SEEDING:
@@ -759,54 +733,7 @@ class PlayerApp(wx.App):
             return
         else:
             self.display_stats_in_videoframe(ds,totalhelping,totalspeed)
-    """
-    def mjlog_data(self, ds):
-        mjpeers = ds.get_peerlist()
-        if len(mjpeers) > 0:
-            if(x.is_existing("PEERS")):
-                x.delete("PEERS")
-
-            #averageUp = 0.0
-            #totalUpload = ds.get_current_speed(UPLOAD)
-            #totalDownload = ds.get_current_speed(DOWNLOAD)
-
-            for mjpeer in mjpeers:
-                if(x.is_existing("PEERS")):
-                    if(mjpeer['ip'] not in x.data["PEERS"]):
-                        x.log("PEERS", mjpeer['ip'])
-                else:
-                    x.log("PEERS", mjpeer['ip'])
-
-                #totalUpload = totalUpload + mjpeer['uprate']/1024.0
-                #totalDownload = totalDownload + mjpeer['downrate']/1024.0
-
-                #averageUp = averageUp + mjpeer['uprate']/1024.0
-
-                x.log("UP-"+str(mjpeer['ip']), mjpeer['uprate']/1024.0)
-                x.log("DOWN-"+str(mjpeer['ip']), mjpeer['downrate']/1024.0)
-
-                if(x.is_existing("ACUP-"+str(mjpeer['ip']))):
-                    x.update("ACUP-"+str(mjpeer['ip']), x.averageData("UP-"+str(mjpeer['ip'])))
-                else:
-                    x.log("ACUP-"+str(mjpeer['ip']), x.averageData("UP-"+str(mjpeer['ip'])))
-
-                if(x.is_existing("ACDOWN-"+str(mjpeer['ip']))):
-                    x.update("ACDOWN-"+str(mjpeer['ip']), x.averageData("DOWN-"+str(mjpeer['ip'])))
-                else:
-                    x.log("ACDOWN-"+str(mjpeer['ip']), x.averageData("DOWN-"+str(mjpeer['ip'])))
-
-                print >>sys.stderr, "[MJ-ACUP-%s]\t%s" % (mjpeer['ip'], x.data["ACUP-"+str(mjpeer['ip'])])
-                print >>sys.stderr, "[MJ-ACDOWN-%s]\t%s" % (mjpeer['ip'], x.data["ACDOWN-"+str(mjpeer['ip'])])
-
-            #x.update("AvgUp", averageUp/len(x.data["PEERS"]))
-            #x.update("BANDUTIL", (totalUpload - totalDownload)/x.data["BANDCOUNT"][0])
-            #x.update("BANDCOUNT", x.data["BANDCOUNT"][0] + 1)
-
-            #print >>sys.stderr, "[MJ-Base-BandUtil]\t%s" % (x.data["BANDUTIL"][0])
-
-            if(x.is_existing("PEERS")):
-                print >>sys.stderr, "[MJ-Log-Peers]\t%s" % (x.data["PEERS"])
-    """
+    
     def display_stats_in_videoframe(self,ds,totalhelping,totalspeed):
         # Display stats for currently playing Download
         
