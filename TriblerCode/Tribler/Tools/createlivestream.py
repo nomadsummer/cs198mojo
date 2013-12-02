@@ -70,6 +70,7 @@ x.log("CCHECK", 0)
 x.log("CLEN", 0)
 x.log("CFLAG", True)
 x.log("BFLAG", True)
+x.log("LFLAG", True)
 x.log("SUL", 0.0)
 x.log("SDL", 0.0)
 x.log("BRATE", 0.0)
@@ -140,7 +141,9 @@ def state_callback(ds):
         if(x.data["PFLAG"][0]):
             mjcompute_rankings(ds)
 
-        get_latency()
+        if(x.data["LFLAG"][0] and x.data["PFLAG"][0]):
+            get_latency()
+            x.update("LFLAG", False)
     ####################
 
     """
@@ -164,10 +167,7 @@ def get_latency():
         x.update("LATCHECK", 0)
         x.update("AVGLATENCY", 0.0)
         for mjpeer in x.data["PEERS"]:
-            if(x.is_existing(mjpeer)):
-                x.update("LATENCY-" + str(mjpeer), time.time())
-            else:
-                x.log("LATENCY-" + str(mjpeer), time.time())
+            x.update("LATENCY-"+str(mjpeer), time.time())
             mojoLatencyTest(mjpeer)
     """
     #PACKET LOSS
@@ -222,6 +222,7 @@ def mjcompute_ciri():
                 totalUpload = totalUpload + float(x.data["UL-"+str(mjpeer)][0])
 
             x.update("CIRI", totalUpload/(peercount*float(x.data["BRATE"][0])))
+            print >>sys.stderr,"[totalUpload]\t%s\n[peercount]\t%s\n[bitRate]\t%s\n[CIRI]\t%s" % (totalUpload, peercount, x.data["BRATE"][0], x.data["CIRI"][0])
             print >>dataFile3,"%f\t%f" % (time.time(), x.data["CIRI"][0])    
 
 def mjcompute_rankings(ds):
@@ -236,6 +237,7 @@ def mjcompute_rankings(ds):
                 AvgDL += x.data["ACDL-"+str(mjpeer)][0]
             x.update("AvgUL", AvgUL/float(len(x.data["PEERS"][0])))
             x.update("AvgDL", AvgDL/float(len(x.data["PEERS"][0])))
+            print >>sys.stderr,"[AvgULDL]\t%s\t%s" % (x.data["AvgUL"][0], x.data["AvgDL"][0])
 
         if(x.is_existing("AC-RANKED")):
             x.delete("AC-RANKED")
@@ -263,7 +265,7 @@ def mjcompute_rankings(ds):
         for mjpeer in peerrank:
             x.log("AC-RANKED", mjpeer)
 
-        #print >>sys.stderr, "[MJ-AAC-RANKED]\t%s" % (x.data["AAC-RANKED"])
+        print >>sys.stderr, "AC-RANKED\t%s" % (x.data["AC-RANKED"])
 
         for index in range(0, int(round(len(x.data["AC-RANKED"])/5 + .5))):
             x.log("HIGH-RANKED", x.data["AC-RANKED"][index])
@@ -285,17 +287,15 @@ def mjcompute_rankings(ds):
                 for index in range(0, int(len(x.data["HIGH-RANKED"]))):
                     hightemp = str(x.data["HIGH-RANKED"][index])
                     x.log("highpeers", hightemp)
-                print >>sys.stderr, "HPEERS:", x.data["highpeers"]
 
             if(x.is_existing("LOW-RANKED") and len(x.data["LOW-RANKED"]) > 0):
                 for index in range(0, int(len(x.data["LOW-RANKED"]))):
                     lowtemp = str(x.data["LOW-RANKED"][index])
                     x.log("lowpeers", lowtemp)
-                print >>sys.stderr, "LPEERS:", x.data["lowpeers"]
 
             print >>sys.stderr,"SWARM NEEDS HELP"
-            print >>sys.stderr,"HIGHEST AC:\t%s" % (x.data["highpeers"])
-            print >>sys.stderr,"LOWEST AC:\t%s" % (x.data["lowpeers"])
+            print >>sys.stderr,"[HIGHEST AC]\t%s" % (x.data["highpeers"])
+            print >>sys.stderr,"[LOWEST AC]\t%s" % (x.data["lowpeers"])
 
             print >>dataFile4,"[HIGHPEERS]\t%s" % (x.data["highpeers"])
             print >>dataFile4,"[LOWPEERS]\t%s" % (x.data["lowpeers"])
@@ -333,7 +333,7 @@ def mjbandwidth_allocation(mjpeer):
     x.update("BA-"+str(mjpeer), Alpha*preTotal)
     #print >>sys.stderr, "[MJ-AVGUP]\t%f" % (float(x.data["AvgUp"][0]))
     #print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
-    print >>sys.stderr, "[MJ-BA-%s]\t%f" % (mjpeer, float(x.data["BA-"+str(mjpeer)][0]))
+    print >>sys.stderr, "[BA-%s]\t%f" % (mjpeer, float(x.data["BA-"+str(mjpeer)][0]))
     print >>dataFile4, "[BA-%s]\t%f" % (mjpeer, float(x.data["BA-"+str(mjpeer)][0]))
 
 def vod_ready_callback(d,mimetype,stream,filename):
@@ -380,15 +380,18 @@ def mjcallback(addr, msg):
         MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]XxX+XxX' + pickle.dumps(x.data["highpeers"]) + 'XxX+XxX' + pickle.dumps(x.data["lowpeers"]), addr[0])
 
     elif msg.startswith('[latencyrep]'):
-        x.update("LATENCY-" + addr[0], time.time() - float(x.data["LATENCY-" + addr[0]][0]))
-        x.update("AVGLATENCY", float(x.data["AVGLATENCY"][0]) + float(x.data["LATENCY-" + addr[0]][0]))
+        x.update("LATENCY-"+str(addr[0]), time.time() - float(x.data["LATENCY-"+str(addr[0])][0]))
+        x.update("AVGLATENCY", float(x.data["AVGLATENCY"][0]) + float(x.data["LATENCY-"+str(addr[0])][0]))
         x.update("LATCHECK", float(x.data["LATCHECK"][0]) + 1)
+        print >>sys.stderr,"[Lat-%s]\t%s" % (addr[0], x.data["LATENCY"][0])
+        print >>sys.stderr,"[AvgLat]\t%s" % (x.data["AVGLATENCY"][0])
 
         if(float(x.data["LATCHECK"][0]) == float(x.data["LATCOUNT"][0])):
             x.update("AVGLATENCY", x.data["AVGLATENCY"][0]/x.data["LATCOUNT"][0])
             print >>dataFile, "%f\t%f" % (time.time(), x.data["AVGLATENCY"][0])
             x.update("LATCOUNT", 0)
             x.update("LATCHECK", 0)
+            x.update("LFLAG", True)
 
     elif msg.startswith('[maxspeed]'):
         temp = msg.split("][")
@@ -431,6 +434,7 @@ def mjcallback(addr, msg):
         x.update("UL-"+str(addr[0]), peerul)
         x.update("DL-"+str(addr[0]), peerdl)
         x.update("CCHECK", float(x.data["CCHECK"][0]) + 1)
+        print >>sys.stderr, "[ULDL-%s]\t%s\t%s" % (addr[0], x.data["UL-"+str(addr[0])][0], x.data["DL-"+str(addr[0])][0])
         if(x.data["CCHECK"][0] == x.data["CLEN"][0]):
             mjcompute_ciri()
             get_bandutil()
@@ -444,6 +448,7 @@ def mjcallback(addr, msg):
         x.update("ACUL-"+str(addr[0]), peerul)
         x.update("ACDL-"+str(addr[0]), peerdl)
         x.update("PCHECK", float(x.data["PCHECK"][0]) + 1)
+        print >>sys.stderr, "[ACULDL-%s]\t%s\t%s" % (addr[0], x.data["ACUL-"+str(addr[0])][0], x.data["ACDL-"+str(addr[0])][0])
         if(x.data["PCHECK"][0] == x.data["PLEN"][0]):
             x.update("PLEN", 0)
             x.update("PFLAG", True)
