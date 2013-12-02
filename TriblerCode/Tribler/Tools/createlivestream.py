@@ -39,7 +39,7 @@ argsdef = [('name', '', 'name of the stream'),
 
 x = MJLogger()
 x.log("TIME", time.time())
-x.log("STARTTIME", float(x.data["TIME"][0]))
+#x.log("STARTTIME", float(x.data["TIME"][0]))
 x.log("HELPED", False)
 x.log("HELPING", False)
 twin = 15.0
@@ -48,7 +48,7 @@ flag = True
 firstTime = True
 checktime = False
 
-x.log("PACKETLOSS", 0.0)
+#x.log("PACKETLOSS", 0.0)
 x.log("BUUP", 0.0)
 x.log("BUDOWN", 0.0)
 x.log("BUCOUNT", 0)
@@ -112,12 +112,15 @@ def state_callback(ds):
     mjpeers = ds.get_peerlist()
 
     # START        
-    if(x.data["PFLAG"][0]):
+    if(x.data["CFLAG"][0] and x.data["BFLAG"][0] and x.data["LFLAG"][0]):
         for mjpeer in mjpeers:
-            x.log("PEERS", mjpeer['ip'])
+            if(mjpeer['ip'] not in x.data["PEERS"]):
+                x.log("PEERS", mjpeer['ip'])
+
+    print >>sys.stderr, "[PEERS]\t%s" % (x.data["PEERS"])
 
     graceInt += 1
-    if(len(x.data["PEERS"]) > 0 and graceInt >= 10):
+    if(len(x.data["PEERS"]) > 0 and graceInt >= 5):
         if(x.data["CFLAG"][0] and x.data["BFLAG"][0]):
             for peerip in x.data["PEERS"]:
                 MojoCommunicationClient(MJ_LISTENPORT,'[uldl]', peerip)
@@ -131,6 +134,10 @@ def state_callback(ds):
             x.update("CFLAG", False)
             x.update("BFLAG", False)
 
+            if(x.data["LFLAG"][0]):
+                get_latency()
+                x.update("LFLAG", False)
+
         if(time.time() - float(x.data["TIME"][0]) >= twin and x.data["PFLAG"][0]):
             for peerip in x.data["PEERS"]:
                 MojoCommunicationClient(MJ_LISTENPORT,'[aac]', peerip)
@@ -138,12 +145,6 @@ def state_callback(ds):
             x.update("PCHECK", 0)
             x.update("PFLAG", False)
 
-        if(x.data["PFLAG"][0]):
-            mjcompute_rankings(ds)
-
-        if(x.data["LFLAG"][0] and x.data["PFLAG"][0]):
-            get_latency()
-            x.update("LFLAG", False)
     ####################
 
     """
@@ -180,7 +181,9 @@ def get_bandutil():
     if(len(x.data["PEERS"]) > 0 and float(x.data["BUCOUNT"][0]) == 0):
         x.update("BUCOUNT", len(x.data["PEERS"]))
         x.update("BUCHECK", 0)
-        for mjpeer in x.data["PEERS"]:    
+        for mjpeer in x.data["PEERS"]:  
+            x.update("BUUP", 0.0)
+            x.update("BUDOWN", 0.0)
             mojoBUSend(mjpeer)
 
 def mjcompute_ciri():
@@ -222,10 +225,10 @@ def mjcompute_ciri():
                 totalUpload = totalUpload + float(x.data["UL-"+str(mjpeer)][0])
 
             x.update("CIRI", totalUpload/(peercount*float(x.data["BRATE"][0])))
-            print >>sys.stderr,"[totalUpload]\t%s\n[peercount]\t%s\n[bitRate]\t%s\n[CIRI]\t%s" % (totalUpload, peercount, x.data["BRATE"][0], x.data["CIRI"][0])
+            #print >>sys.stderr,"[totalUpload]\t%s\n[peercount]\t%s\n[bitRate]\t%s\n[CIRI]\t%s" % (totalUpload, peercount, x.data["BRATE"][0], x.data["CIRI"][0])
             print >>dataFile3,"%f\t%f" % (time.time(), x.data["CIRI"][0])    
 
-def mjcompute_rankings(ds):
+def mjcompute_rankings():
     global checktime
 
     if(x.is_existing("PEERS") and len(x.data["PEERS"]) > 0):
@@ -237,7 +240,7 @@ def mjcompute_rankings(ds):
                 AvgDL += x.data["ACDL-"+str(mjpeer)][0]
             x.update("AvgUL", AvgUL/float(len(x.data["PEERS"][0])))
             x.update("AvgDL", AvgDL/float(len(x.data["PEERS"][0])))
-            print >>sys.stderr,"[AvgULDL]\t%s\t%s" % (x.data["AvgUL"][0], x.data["AvgDL"][0])
+            #print >>sys.stderr,"[AvgULDL]\t%s\t%s" % (x.data["AvgUL"][0], x.data["AvgDL"][0])
 
         if(x.is_existing("AC-RANKED")):
             x.delete("AC-RANKED")
@@ -265,7 +268,7 @@ def mjcompute_rankings(ds):
         for mjpeer in peerrank:
             x.log("AC-RANKED", mjpeer)
 
-        print >>sys.stderr, "AC-RANKED\t%s" % (x.data["AC-RANKED"])
+        print >>sys.stderr, "[AC-RANKED]\t%s" % (x.data["AC-RANKED"])
 
         for index in range(0, int(round(len(x.data["AC-RANKED"])/5 + .5))):
             x.log("HIGH-RANKED", x.data["AC-RANKED"][index])
@@ -277,7 +280,7 @@ def mjcompute_rankings(ds):
         counter = counter + 1
         print >>sys.stderr,"help counter", counter
         #if(x.data["CIRI"][0] < 1):
-        if counter == 20 and not x.data["HELPING"][0]:
+        if counter == 5 and not x.data["HELPING"][0]:
             if(x.is_existing("highpeers")):
                 x.delete("highpeers")   
             if(x.is_existing("lowpeers")):
@@ -293,9 +296,9 @@ def mjcompute_rankings(ds):
                     lowtemp = str(x.data["LOW-RANKED"][index])
                     x.log("lowpeers", lowtemp)
 
-            print >>sys.stderr,"SWARM NEEDS HELP"
-            print >>sys.stderr,"[HIGHEST AC]\t%s" % (x.data["highpeers"])
-            print >>sys.stderr,"[LOWEST AC]\t%s" % (x.data["lowpeers"])
+            #print >>sys.stderr,"SWARM NEEDS HELP"
+            #print >>sys.stderr,"[HIGHEST AC]\t%s" % (x.data["highpeers"])
+            #print >>sys.stderr,"[LOWEST AC]\t%s" % (x.data["lowpeers"])
 
             print >>dataFile4,"[HIGHPEERS]\t%s" % (x.data["highpeers"])
             print >>dataFile4,"[LOWPEERS]\t%s" % (x.data["lowpeers"])
@@ -304,10 +307,10 @@ def mjcompute_rankings(ds):
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
                 x.update("HELPED", True)
-                mjmin_needed(ds)
+                mjmin_needed()
                 getHelp(x.data["highpeers"], x.data["lowpeers"])
 
-def mjmin_needed(ds):
+def mjmin_needed():
     if(x.is_existing("MIN-NEEDED")):
         x.delete("MIN-NEEDED")
 
@@ -333,7 +336,7 @@ def mjbandwidth_allocation(mjpeer):
     x.update("BA-"+str(mjpeer), Alpha*preTotal)
     #print >>sys.stderr, "[MJ-AVGUP]\t%f" % (float(x.data["AvgUp"][0]))
     #print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
-    print >>sys.stderr, "[BA-%s]\t%f" % (mjpeer, float(x.data["BA-"+str(mjpeer)][0]))
+    #print >>sys.stderr, "[BA-%s]\t%f" % (mjpeer, float(x.data["BA-"+str(mjpeer)][0]))
     print >>dataFile4, "[BA-%s]\t%f" % (mjpeer, float(x.data["BA-"+str(mjpeer)][0]))
 
 def vod_ready_callback(d,mimetype,stream,filename):
@@ -356,7 +359,7 @@ def mjcallback(addr, msg):
            by calling the function sendMojoTstream(ipAddr)
     [X] 4. Acknowledge and reply to the swarm that needs help with your peerlist
     '''
-    print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg    
+    #print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg    
     global checktime
 
     if msg.startswith('[HELP]'):
@@ -383,8 +386,8 @@ def mjcallback(addr, msg):
         x.update("LATENCY-"+str(addr[0]), time.time() - float(x.data["LATENCY-"+str(addr[0])][0]))
         x.update("AVGLATENCY", float(x.data["AVGLATENCY"][0]) + float(x.data["LATENCY-"+str(addr[0])][0]))
         x.update("LATCHECK", float(x.data["LATCHECK"][0]) + 1)
-        print >>sys.stderr,"[Lat-%s]\t%s" % (addr[0], x.data["LATENCY"][0])
-        print >>sys.stderr,"[AvgLat]\t%s" % (x.data["AVGLATENCY"][0])
+        #print >>sys.stderr,"[Lat-%s]\t%s" % (addr[0], x.data["LATENCY-"+str(addr[0])][0])
+        #print >>sys.stderr,"[AvgLat]\t%s" % (x.data["AVGLATENCY"][0])
 
         if(float(x.data["LATCHECK"][0]) == float(x.data["LATCOUNT"][0])):
             x.update("AVGLATENCY", x.data["AVGLATENCY"][0]/x.data["LATCOUNT"][0])
@@ -403,14 +406,17 @@ def mjcallback(addr, msg):
 
         if(float(x.data["BUCHECK"][0]) == float(x.data["BUCOUNT"][0])):
             totalUpload = x.data["SUL"][0]
-            totalDownload = x.data["SUL"][0]
+            totalDownload = x.data["SDL"][0]
+            #print >>sys.stderr, "[SULDL]\t%s\t%s" % (totalUpload, totalDownload)
             for mjpeer in x.data["PEERS"]:
-                totalUpload += x.data["DL-"+str(mjpeer)][0]
-                totalDownload += x.data["UL-"+str(mjpeer)][0]    
+                totalUpload += x.data["UL-"+str(mjpeer)][0]
+                totalDownload += x.data["DL-"+str(mjpeer)][0]    
+            #print >>sys.stderr, "[TULDL]\t%s\t%s" % (totalUpload, totalDownload)
+            #print >>sys.stderr, "[BULDL]\t%s\t%s" % (x.data["BUUP"][0], x.data["BUDOWN"][0])
             buUp = totalUpload / float(x.data["BUUP"][0])
             buDown = totalDownload / float(x.data["BUDOWN"][0])
-            #print >>dataFile2, "%f\t%f\t%f" % (time.time(), buUp, buDown)
-            print >>dataFile2, "%f\t%f" % (time.time(), buUp)
+            print >>dataFile2, "%f\t%f\t%f" % (time.time(), buUp, buDown)
+            #print >>dataFile2, "%f\t%f" % (time.time(), buUp)
             x.update("BUCOUNT", 0)
             x.update("BUCHECK", 0)
             x.update("BFLAG", True)
@@ -434,7 +440,7 @@ def mjcallback(addr, msg):
         x.update("UL-"+str(addr[0]), peerul)
         x.update("DL-"+str(addr[0]), peerdl)
         x.update("CCHECK", float(x.data["CCHECK"][0]) + 1)
-        print >>sys.stderr, "[ULDL-%s]\t%s\t%s" % (addr[0], x.data["UL-"+str(addr[0])][0], x.data["DL-"+str(addr[0])][0])
+        #print >>sys.stderr, "[ULDL-%s]\t%s\t%s" % (addr[0], x.data["UL-"+str(addr[0])][0], x.data["DL-"+str(addr[0])][0])
         if(x.data["CCHECK"][0] == x.data["CLEN"][0]):
             mjcompute_ciri()
             get_bandutil()
@@ -448,8 +454,9 @@ def mjcallback(addr, msg):
         x.update("ACUL-"+str(addr[0]), peerul)
         x.update("ACDL-"+str(addr[0]), peerdl)
         x.update("PCHECK", float(x.data["PCHECK"][0]) + 1)
-        print >>sys.stderr, "[ACULDL-%s]\t%s\t%s" % (addr[0], x.data["ACUL-"+str(addr[0])][0], x.data["ACDL-"+str(addr[0])][0])
+        #print >>sys.stderr, "[ACULDL-%s]\t%s\t%s" % (addr[0], x.data["ACUL-"+str(addr[0])][0], x.data["ACDL-"+str(addr[0])][0])
         if(x.data["PCHECK"][0] == x.data["PLEN"][0]):
+            mjcompute_rankings()
             x.update("PLEN", 0)
             x.update("PFLAG", True)
             x.update("TIME", time.time())
