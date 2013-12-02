@@ -748,7 +748,21 @@ class Connecter:
 
     # MOJO WAS HERE
     def kick_peers(self, highpeers, lowpeers):
-        #print_stack()
+        '''
+        print >>sys.stderr, "KICK PEERS"
+        print >>sys.stderr, "KICK PEERS"
+        print >>sys.stderr, "KICK PEERS"
+        print >>sys.stderr, "KICK PEERS"
+        print >>sys.stderr, "KICK PEERS"
+        print >>sys.stderr, "KICK PEERS"
+        print >>sys.stderr, "KICK PEERS"
+        print >>sys.stderr, "KICK PEERS"
+        print >>sys.stderr, "KICK PEERS"
+        print >>sys.stderr, "KICK PEERS"
+        print >>sys.stderr, "KICK PEERS"
+        print >>sys.stderr, "KICK PEERS"
+        print >>sys.stderr, "KICK PEERS"
+        '''
         peerlist = highpeers + lowpeers
         print >>sys.stderr, "[Helpedpeerlist]:\t", peerlist
         global helping
