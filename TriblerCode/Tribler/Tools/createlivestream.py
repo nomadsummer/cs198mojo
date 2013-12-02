@@ -18,6 +18,7 @@ from threading import Condition
 from Tribler.Core.API import *
 import Tribler.Core.BitTornado.parseargs as parseargs
 
+from Tribler.serverframe import *
 from Tribler.mjlogger import *
 from Tribler.Utilities.MojoCommunication import *
 
@@ -142,13 +143,13 @@ def state_callback(ds):
         get_latency()
     ####################
 
-"""
+    """
     print >>sys.stderr, "MJPEERS", len(mjpeers)
     if(len(mjpeers) == 1 and flag):
         for mjpeer in mjpeers:
             MojoCommunicationClient(MJ_LISTENPORT,'[setip]', mjpeer['ip'])
         flag = False
-"""
+    """
 
     dataFile.flush()
     dataFile2.flush()
