@@ -3,7 +3,7 @@ import sys
 
 class ServerFrame(wx.Frame):
     def __init__(self, title):
-        wx.Frame.__init__(self, None, title=title, pos=(150,150), size=(350,200))
+        wx.Frame.__init__(self, None, title=title, pos=(150,150), size=(500,400))
         # self.Bind(wx.EVT_CLOSE, self.OnClose)
 
         # menuBar = wx.MenuBar()
@@ -19,7 +19,7 @@ class ServerFrame(wx.Frame):
         box = wx.BoxSizer(wx.VERTICAL)
 
         self.status = wx.StaticText(panel, -1, "Hello World!")
-        self.status.SetFont(wx.Font(14, wx.SWISS, wx.NORMAL, wx.BOLD))
+        # self.status.SetFont(wx.Font(14, wx.SWISS, wx.NORMAL, wx.BOLD))
         self.status.SetSize(self.status.GetBestSize())
         box.Add(self.status, 0, wx.ALL, 10)
 
