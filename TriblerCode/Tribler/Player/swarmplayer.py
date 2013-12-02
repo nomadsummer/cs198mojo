@@ -65,6 +65,9 @@ MJ_LISTENPORT = 6969
 PLAYER_LISTENPORT = 8620
 VIDEOHTTP_LISTENPORT = 6879
 
+MOJOMAX_UPLOAD = 300
+MOJOMAX_DOWNLOAD = 500
+
 x = MJLogger()
 x.log("HELPING", False)
 x.log("STILLH", False)
@@ -76,6 +79,7 @@ x.log("HELPEDUP", 0.0)
 x.log("HELPEDDOWN", 0.0)
 
 origDownload = None
+totalSpeedAll = {}
 
 class PlayerFrame(VideoFrame):
 
@@ -349,8 +353,8 @@ class PlayerApp(wx.App):
         dcfg.set_video_events([VODEVENT_START,VODEVENT_PAUSE,VODEVENT_RESUME])
         dcfg.set_dest_dir(destdir)
         # MENMA EX
-        dcfg.set_max_speed(UPLOAD, 100)
-        dcfg.set_max_speed(DOWNLOAD, 300000)
+        dcfg.set_max_speed(UPLOAD, MOJOMAX_UPLOAD)
+        dcfg.set_max_speed(DOWNLOAD, MOJOMAX_DOWNLOAD)
 
         x.update("MAXUP", dcfg.get_max_speed(UPLOAD))
         x.update("MAXDOWN", dcfg.get_max_speed(DOWNLOAD))
@@ -687,6 +691,8 @@ class PlayerApp(wx.App):
             
         # Calc total dl/ul speed and find DownloadState for current Download
         ds = None
+        i = 0
+        #print >>sys.stderr, "Download List Length: ", len(dslist)
         for ds2 in dslist:
             if ds2.get_download() == d:
                 ds = ds2
@@ -696,6 +702,12 @@ class PlayerApp(wx.App):
             for dir in [UPLOAD,DOWNLOAD]:
                 totalspeed[dir] += ds2.get_current_speed(dir)
             totalhelping += ds2.get_num_peers()
+            
+            global totalSpeedAll
+            totalSpeedAll[i] = {}
+            totalSpeedAll[i][UPLOAD] = ds2.get_current_speed(UPLOAD)
+            totalSpeedAll[i][DOWNLOAD] = ds2.get_current_speed(DOWNLOAD)
+            i += 1
         
         # Report statistics on all downloads to research server, every 10 secs
         '''
@@ -913,14 +925,23 @@ class PlayerApp(wx.App):
             
         global ONSCREENDEBUG
         if msg == '' and ONSCREENDEBUG:
-            uptxt = "up %.1f" % (totalspeed[UPLOAD])
-            downtxt = " down %.1f" % (totalspeed[DOWNLOAD])
-            peertxt = " peer %d" % (totalhelping)
+            maxuptxt = "maxUpload %.1f\n" % (self.d.get_max_desired_speed(UPLOAD))
+            uptxt = "actualUpload %.1f\n" % (totalSpeedAll[0][UPLOAD])
+            maxdowntxt = "maxDownload %.1f\n" % (self.d.get_max_desired_speed(DOWNLOAD))
+            downtxt = "actualDownload %.1f\n" % (totalSpeedAll[0][DOWNLOAD])
+            peertxt = "peer %d" % (totalhelping)
             extra = ''
             if(x.data["STILLH"][0]):
-                extra = '\norigUp' + str(origDownload.get_max_desired_speed(UPLOAD)) + '\norigDown' + str(origDownload.get_max_desired_speed(DOWNLOAD)) + '\nhelpedUp' + str(self.d.get_max_desired_speed(UPLOAD)) + '\nhelpedDown' + str(self.d.get_max_desired_speed(DOWNLOAD))
-            
-            msg = uptxt + downtxt + peertxt + extra + '\n--------'
+                extra = ('\n----NEW COLLAB STATS----\nmaxUpload ' + 
+                        str(origDownload.get_max_desired_speed(UPLOAD)) 
+                        + '\nactualUpload ' + str(totalSpeedAll[0][UPLOAD]) 
+                        + '\nmaxDownload ' + str(origDownload.get_max_desired_speed(DOWNLOAD)) 
+                        + '\nactualUpload ' + str(totalSpeedAll[0][DOWNLOAD]) 
+                        + '\nhelpedMaxUpload ' + str(self.d.get_max_desired_speed(UPLOAD))
+                        + '\nhelpedActualUpload ' + str(totalSpeedAll[1][UPLOAD]) 
+                        + '\nhelpedMaxDownload ' + str(self.d.get_max_desired_speed(DOWNLOAD))
+                        + '\nhelpedActualDownload ' + str(totalSpeedAll[1][DOWNLOAD]) )
+            msg = maxuptxt + uptxt + maxdowntxt + downtxt + peertxt + extra + '\n--------'
 
         if msg is not None:    
             self.videoFrame.set_player_status(msg)
