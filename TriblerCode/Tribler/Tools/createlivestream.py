@@ -19,6 +19,8 @@ from Tribler.Core.API import *
 import Tribler.Core.BitTornado.parseargs as parseargs
 
 from Tribler.mjlogger import *
+from Tribler.serverapp import *
+from Tribler.serverframe import *
 from Tribler.Utilities.MojoCommunication import *
 
 MJ_LISTENPORT = 6969
@@ -86,6 +88,8 @@ def state_callback(ds):
     #if sendTstream == 30:
     #    for peer in MOJOpeerlist:
     #        sendMojoTstream(peer['ip'])
+    
+    top.set_player_status("Your mother was alive.")
     
     # MENMA EX
     mjtime = time.time()
@@ -380,9 +384,12 @@ def mjcompute_criterion(ds, mjpeers):
             #print >>sys.stderr, "[MJ-LOW-RANKED]\t%s" % (x.data["LOW-RANKED"]) 
         global counter
         counter = counter + 1
+        
         print >>sys.stderr,"help counter", counter
         #if(x.data["CIRI"][0] < 1):
         if counter == 20 and not x.data["HELPING"][0]:
+            top.set_player_status("Hello Im Josh!")
+        
             if(x.is_existing("highpeers")):
                 x.delete("highpeers")   
             if(x.is_existing("lowpeers")):
@@ -901,6 +908,13 @@ if __name__ == "__main__":
     d = s.start_download(tdef,dscfg)
     d.set_state_callback(state_callback,getpeerlist=True)
    
+    # Start UI
+    app = wx.App(redirect=False)
+    top = ServerFrame("Tribler Server Monitor")
+    top.set_player_status("Server")
+    top.Show()
+    app.MainLoop()
+    
     '''
     MOJO Server TODO, X => DONE
     [X] 1. Compute for the CIRI periodically
