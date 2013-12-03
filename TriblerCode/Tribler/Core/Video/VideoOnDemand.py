@@ -464,6 +464,11 @@ class MovieOnDemandTransporter(MovieTransport):
         global SERVER_IP
         SERVER_IP = ipAddr
 
+    def get_server_ip(self):
+        global SERVER_IP
+
+        return SERVER_IP
+
     def update_prebuffering(self,received_piece=None):
         """ Update prebuffering process. 'received_piece' is a hint that we just received this piece;
             keep at 'None' for an update in general. """

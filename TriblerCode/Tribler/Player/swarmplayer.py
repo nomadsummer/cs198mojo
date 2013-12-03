@@ -504,8 +504,6 @@ class PlayerApp(wx.App):
             reply = '[maxspeed]['+pickle.dumps(x.data["MAXUP"][0])+']['+pickle.dumps(x.data["MAXDOWN"][0])
             MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
 
-        if msg.startswith('[setip]'):
-           self.d.set_server_ip(addr[0])
         #####################
         if msg.startswith('[uldl]'):
             reply = '[uldl]['+pickle.dumps(x.data["CURRUL"][0])+']['+pickle.dumps(x.data["CURRDL"][0])
@@ -513,6 +511,12 @@ class PlayerApp(wx.App):
         if msg.startswith('[aac]'):
             reply = '[aac]['+pickle.dumps(x.averageData("ULLOG"))+']['+pickle.dumps(x.averageData("DLLOG"))
             MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
+        if msg.startswith('[checksu]'):
+            if self.d.get_server_ip() == addr[0]
+                reply = '[sudelay][finished'
+                MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
+            else:
+                self.d.set_server_ip(addr[0])
     
     def remote_start_download(self,torrentfilename):
         """ Called by GUI thread """

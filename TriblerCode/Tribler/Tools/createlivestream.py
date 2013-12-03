@@ -61,6 +61,7 @@ dataFile = open("C:\\Temp\\Latency.txt", "w+")
 dataFile2 = open("C:\\Temp\\BandUtil.txt", "w+")
 dataFile3 = open("C:\\Temp\\CIRI.txt", "w+")
 dataFile4 = open("C:\\Temp\\Extra.txt", "w+")
+dataFile5 = open("C:\\Temp\\SUDelay.txt", "w+")
 
 #########
 x.log("PCHECK", 0)
@@ -85,6 +86,7 @@ def state_callback(ds):
     global dataFile2
     global dataFile3
     global dataFile4
+    global dataFile5
 
     d = ds.get_download()
 
@@ -93,16 +95,19 @@ def state_callback(ds):
         #print >>dataFile2, "##\t##\t##"
         print >>dataFile2, "##\t##"
         print >>dataFile3, "##\t##"
+        print >>dataFile5, "##\t##"
 
         print >>dataFile, "Time\tLatency"
         #print >>dataFile2, "Time\tBandUtilUp\tBandUtilDown"
         print >>dataFile2, "Time\tBandUtilUp"
         print >>dataFile3, "Time\tCIRI/MCIRI"
+        print >>dataFile5, "Time\tSUDelay"
 
         dataFile = open("C:\\Temp\\Latency.txt", "a+")
         dataFile2 = open("C:\\Temp\\BandUtil.txt", "a+")
         dataFile3 = open("C:\\Temp\\CIRI.txt", "a+")
         dataFile4 = open("C:\\Temp\\Extra.txt", "a+")
+        dataFile5 = open("C:\\Temp\\SUDelay.txt", "a+")
 
         firstTime = False
     
@@ -114,6 +119,7 @@ def state_callback(ds):
     # START        
     if(x.data["CFLAG"][0] and x.data["BFLAG"][0] and x.data["LFLAG"][0]):
         for mjpeer in mjpeers:
+            MojoCommunicationClient(MJ_LISTENPORT,'[checksu]', mjpeer['ip'])
             if(mjpeer['ip'] not in x.data["PEERS"]):
                 x.log("PEERS", mjpeer['ip'])
 
@@ -147,18 +153,11 @@ def state_callback(ds):
 
     ####################
 
-    """
-    print >>sys.stderr, "MJPEERS", len(mjpeers)
-    if(len(mjpeers) == 1 and flag):
-        for mjpeer in mjpeers:
-            MojoCommunicationClient(MJ_LISTENPORT,'[setip]', mjpeer['ip'])
-        flag = False
-    """
-
     dataFile.flush()
     dataFile2.flush()
     dataFile3.flush()
     dataFile4.flush()
+    dataFile5.flush()
 
     return (1.0,False)
 
@@ -423,9 +422,10 @@ def mjcallback(addr, msg):
 
     elif msg.startswith('[sudelay]'):
         temp = msg.split("][")
-        sudelay = pickle.loads(temp[1])
-        x.update("SU-"+str(addr[0]), sudelay)
-        #print >>dataFile, "[SUDELAY]\t%s" % (sudelay)
+        if(temp[1] != "finished"):
+            sudelay = pickle.loads(temp[1])
+            x.update("SU-"+str(addr[0]), sudelay)
+            print >>dataFile5, "[SU-%s]\t%s" % (addr[0], sudelay)
 
     elif msg.startswith('[ACK-HELP]'):
         temp = msg.split("XxX+XxX")

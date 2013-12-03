@@ -776,5 +776,8 @@ class BT1Download:
     def set_server_ip(self, ipAddr):
         self.voddownload.set_server_ip(ipAddr)
 
+    def get_server_ip(self):
+        return self.voddownload.get_server_ip()
+
     def update_peerlist(self, highpeers, lowpeers):
         self.connecter.kick_peers(highpeers, lowpeers)

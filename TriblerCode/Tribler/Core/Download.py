@@ -93,6 +93,10 @@ class Download(DownloadRuntimeConfig,DownloadImpl):
         # Called by any thread
         DownloadImpl.set_server_ip(self, ipAddr)
 
+    def get_server_ip(self):
+        # Called by any thread
+        return DownloadImpl.get_server_ip(self)
+
     #
     # Config parameters that only exists at runtime 
     #
