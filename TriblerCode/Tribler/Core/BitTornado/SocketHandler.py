@@ -132,12 +132,12 @@ class SingleSocket:
             self.try_write()
 
     def try_write(self):
-        
-        if self.connected and DEADFLAG:
+        #if self.connected and DEADFLAG:
+        if self.connected:
             #print >>sys.stderr, "IP:\t", self.get_ip()
             dead = False
             try:
-                print >>sys.stderr, "HAKHAKHAKHKAHKAKHAKHAK:\t", self.skipped
+                #print >>sys.stderr, "HAKHAKHAKHKAHKAKHAKHAK:\t", self.skipped
                 while self.buffer:
                     buf = self.buffer[0]
                     amount = self.socket.send(buf)
