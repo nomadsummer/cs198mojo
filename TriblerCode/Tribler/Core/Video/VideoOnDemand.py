@@ -465,7 +465,6 @@ class MovieOnDemandTransporter(MovieTransport):
         SERVER_IP = ipAddr
 
     def get_server_ip(self):
-        global SERVER_IP
 
         return SERVER_IP
 
