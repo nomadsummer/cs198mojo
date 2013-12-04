@@ -39,10 +39,11 @@ argsdef = [('name', '', 'name of the stream'),
 
 x = MJLogger()
 x.log("TIME", time.time())
-#x.log("STARTTIME", float(x.data["TIME"][0]))
+x.log("STARTTIME", float(x.data["TIME"][0]))
 x.log("HELPED", False)
 x.log("HELPING", False)
 twin = 15.0
+timeout = 5.0
 graceInt = 0
 flag = True
 firstTime = True
@@ -117,13 +118,15 @@ def state_callback(ds):
     mjpeers = ds.get_peerlist()
 
     # START        
-    if(x.data["CFLAG"][0] and x.data["BFLAG"][0] and x.data["LFLAG"][0]):
+    if(x.data["CFLAG"][0] and x.data["BFLAG"][0] and x.data["LFLAG"][0] or (time.time() - x.data["STARTTIME"][0]) > timeout):
         x.delete("PEERS")
 
         for mjpeer in mjpeers:
             MojoCommunicationClient(MJ_LISTENPORT,'[checksu]', mjpeer['ip'])
             if(mjpeer['ip'] not in x.data["PEERS"]):
                 x.log("PEERS", mjpeer['ip'])
+
+        x.update("STARTTIME", time.time())
 
     print >>sys.stderr, "[PEERS]\t%s" % (x.data["PEERS"])
 
@@ -146,12 +149,16 @@ def state_callback(ds):
                 get_latency()
                 x.update("LFLAG", False)
 
+            x.update("STARTTIME", time.time())
+
         if(time.time() - float(x.data["TIME"][0]) >= twin and x.data["PFLAG"][0]):
             for peerip in x.data["PEERS"]:
                 MojoCommunicationClient(MJ_LISTENPORT,'[aac]', peerip)
             x.update("PLEN", len(x.data["PEERS"]))
             x.update("PCHECK", 0)
             x.update("PFLAG", False)
+
+            x.update("STARTTIME", time.time())
 
     ####################
 
@@ -423,11 +430,12 @@ def mjcallback(addr, msg):
             x.update("BFLAG", True)
 
     elif msg.startswith('[sudelay]'):
+        print >>sys.stderr, "HOY\t", msg
         temp = msg.split("][")
         if(temp[1] != "finished"):
             sudelay = pickle.loads(temp[1])
             x.update("SU-"+str(addr[0]), sudelay)
-            print >>dataFile5, "[SU-%s]\t%s" % (addr[0], sudelay)
+            print >>dataFile5, "[SU-%s]\t%s" % (addr[0], x.data["SU-"+str(addr[0])][0])
 
     elif msg.startswith('[ACK-HELP]'):
         temp = msg.split("XxX+XxX")
