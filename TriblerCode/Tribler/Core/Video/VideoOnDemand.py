@@ -505,7 +505,7 @@ class MovieOnDemandTransporter(MovieTransport):
             if not x.is_existing("SUDELAY"):
                 x.log("SUDELAY", time.time() - x.data["TIME"][0])
                 sudelay = '[sudelay]['+ pickle.dumps(x.data["SUDELAY"][0])
-                MojoCommunicationClient(MJ_LISTENPORT,sudelay, SERVER_IP)
+                MojoCommunicationClient(MJ_LISTENPORT, sudelay, SERVER_IP)
                 #print >>sys.stderr,"[MJ-Base-Sudelay]\t%s" % (x.data["SUDELAY"][0])
 
 
