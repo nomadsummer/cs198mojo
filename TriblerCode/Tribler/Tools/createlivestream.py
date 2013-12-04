@@ -26,7 +26,7 @@ MJ_LISTENPORT = 6969
 sendTstream = 0
 tdef = None
 counter = 0
-dGlobal = None
+#dGlobal = None
 
 argsdef = [('name', '', 'name of the stream'),
            ('source', '-', 'source to stream (url, file or "-" to indicate stdin)'),

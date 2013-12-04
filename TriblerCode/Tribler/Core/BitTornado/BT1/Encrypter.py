@@ -310,7 +310,7 @@ class Connection:
         return 0
     """
     def get_flag(self, ipAddr):
-        self.connection.get_flag(ipAddr)
+        self.connecter.get_flag(ipAddr)
 
     def sever(self,closeall=False):
         self.closed = True

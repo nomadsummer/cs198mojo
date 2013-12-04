@@ -132,7 +132,6 @@ class SingleSocket:
             self.try_write()
 
     def try_write(self):
-        #if self.connected and DEADFLAG:
         if self.connected:
             #print >>sys.stderr, "IP:\t", self.get_ip()
             dead = False
@@ -170,8 +169,10 @@ class SingleSocket:
                 #print >>sys.stderr, "HOKHOKHOKHKOHKOKHOKHOK:\t", self.skipped
                 dead = True
             #dead = True
-            print >>sys.stderr, "FLAGFLAGFLAG:\t", self.handler.get_flag(self.get_ip())
-            if dead and self.handler.get_flag(self.get_ip()):
+            #print >>sys.stderr, "FLAGFLAGFLAG:\t", self.handler.get_flag(self.get_ip())
+            #if dead and self.handler.get_flag(self.get_ip()):
+            if dead:
+                print_stack()
                 self.socket_handler.dead_from_write.append(self)
                 return
         if self.buffer:
