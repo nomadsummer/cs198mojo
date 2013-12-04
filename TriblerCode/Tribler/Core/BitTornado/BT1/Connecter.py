@@ -787,7 +787,7 @@ class Connecter:
         for co in self.connections.values():
             #print >>sys.stderr, "[KOKO]\t%s" % (co.get_ip())
             if helping and co.get_ip() in helpedhighpeers:
-                return
+                continue
             co.send_have(i)
             counter = counter + 1
             if counter == maxBroadcast:
