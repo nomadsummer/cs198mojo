@@ -496,6 +496,7 @@ class MovieOnDemandTransporter(MovieTransport):
         self.prebufprogress = float(self.max_prebuf_packets-len(missing_pieces))/float(self.max_prebuf_packets)
         
         # MENMA EX
+        """
         # START UP DELAY
         if not gotall:
             #print >>sys.stderr, "[SERVER]", self.rawserver.get_stats()
@@ -509,7 +510,7 @@ class MovieOnDemandTransporter(MovieTransport):
                 print >>sys.stderr, sudelay
                 #MojoCommunicationClient(MJ_LISTENPORT, sudelay, SERVER_IP)
                 #print >>sys.stderr,"[MJ-Base-Sudelay]\t%s" % (x.data["SUDELAY"][0])
-
+        """
 
         #mjtime = datetime.datetime.now().time() 
         #print >>sys.stderr,"[MJ-sudelay]\t%s\tvod: trans: Max:\t%.1f\tMPCount:\t%.1f\tPercentage:\t%.1f\t" % (mjtime, self.max_prebuf_packets, len(missing_pieces), self.prebufprogress)

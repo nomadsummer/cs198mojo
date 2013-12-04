@@ -85,6 +85,7 @@ x.log("ULLOG", 0)
 x.log("DLLOG", 0)
 
 origDownload = None
+dsGlobal = None
 totalSpeedAll = {}
 
 class PlayerFrame(VideoFrame):
@@ -514,12 +515,15 @@ class PlayerApp(wx.App):
             x.delete("ULLOG")
             x.delete("DLLOG")
         if msg.startswith('[checksu]'):
-            #print >>sys.stderr, "PUTAKA\t%s\t%s" % (self.d.get_server_ip(), addr[0])
+            if dsGlobal.get_vod_prebuffering_progress() >= 1:
+                MojoCommunicationClient(MJ_LISTENPORT,"[sudelay]",addr[0])
+            """
             if self.d.get_server_ip() == addr[0]:
                 reply = '[sudelay][finished'
                 MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
             else:
                 self.d.set_server_ip(addr[0])
+            """
     
     def remote_start_download(self,torrentfilename):
         """ Called by GUI thread """
@@ -647,6 +651,7 @@ class PlayerApp(wx.App):
         """ Called by *GUI* thread.
         CAUTION: As this method is called by the GUI thread don't to any 
         time-consuming stuff here! """
+        global dsGlobal
         
         #print >>sys.stderr,"main: Stats:"
         if self.shuttingdown:
@@ -685,8 +690,10 @@ class PlayerApp(wx.App):
         i = 0
         #print >>sys.stderr, "Download List Length: ", len(dslist)
         for ds2 in dslist:
+            dsGlobal = ds2
             if ds2.get_download() == d:
                 ds = ds2
+
             elif playermode == DLSTATUS_DOWNLOADING:
                 print >>sys.stderr,"main: Stats: Waiting: %s %.1f%% %s" % (dlstatus_strings[ds2.get_status()],100.0*ds2.get_progress(),ds2.get_error())
             

@@ -116,15 +116,16 @@ def state_callback(ds):
     # MENMA EX
     mjtime = time.time()
     mjpeers = ds.get_peerlist()
-    print >>sys.stderr, "PREBUF\t", ds.get_vod_prebuffering_progress()
+    #print >>sys.stderr, "PREBUF\t", ds.get_vod_prebuffering_progress()
 
     # START        
     if(x.data["CFLAG"][0] and x.data["BFLAG"][0] and x.data["LFLAG"][0] or (time.time() - x.data["STARTTIME"][0]) > timeout):
         x.delete("PEERS")
 
         for mjpeer in mjpeers:
-            #if(not x.is_existing("SU-"+mjpeer['ip'])):
-                #MojoCommunicationClient(MJ_LISTENPORT,'[checksu]', mjpeer['ip'])
+            if(not x.is_existing("SU-"+mjpeer['ip'])):
+                x.update("SU-"+mjpeer['ip'], time.time())
+                MojoCommunicationClient(MJ_LISTENPORT,'[checksu]', mjpeer['ip'])
             if(mjpeer['ip'] not in x.data["PEERS"]):
                 x.log("PEERS", mjpeer['ip'])
 
@@ -434,12 +435,15 @@ def mjcallback(addr, msg):
 
     elif msg.startswith('[sudelay]'):
         print >>sys.stderr, "HOY\t", msg
+        x.update("SU-"+str(addr[0]), time.time() - x.data["SU-"+str(addr[0])][0])
+        print >>dataFile5, "[SU-%s]\t%s" % (addr[0], x.data["SU-"+str(addr[0])][0])
+        """
         temp = msg.split("][")
         if(temp[1] != "finished"):
             sudelay = pickle.loads(temp[1])
             x.update("SU-"+str(addr[0]), sudelay)
             print >>dataFile5, "[SU-%s]\t%s" % (addr[0], x.data["SU-"+str(addr[0])][0])
-
+        """
     elif msg.startswith('[ACK-HELP]'):
         temp = msg.split("XxX+XxX")
         helpingPeers = pickle.loads(temp[1])
