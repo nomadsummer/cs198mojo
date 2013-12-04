@@ -502,10 +502,12 @@ class MovieOnDemandTransporter(MovieTransport):
             if not x.is_existing("TIME"):
                 x.log("TIME", time.time())
         else:
+            print >>sys.stderr, "YEAH"
             if not x.is_existing("SUDELAY"):
                 x.log("SUDELAY", time.time() - x.data["TIME"][0])
                 sudelay = '[sudelay]['+ pickle.dumps(x.data["SUDELAY"][0])
-                MojoCommunicationClient(MJ_LISTENPORT,sudelay, SERVER_IP)
+                print >>sys.stderr, sudelay
+                MojoCommunicationClient(MJ_LISTENPORT, sudelay, SERVER_IP)
                 #print >>sys.stderr,"[MJ-Base-Sudelay]\t%s" % (x.data["SUDELAY"][0])
 
 
@@ -593,7 +595,7 @@ class MovieOnDemandTransporter(MovieTransport):
 
                 self.start(force=True)
         """
-
+    
     def mjcallback(self, addr, msg):
         '''
         MOJO Server TODO, X => DONE
@@ -606,7 +608,7 @@ class MovieOnDemandTransporter(MovieTransport):
         [X] 4. Acknowledge and reply to the swarm that needs help with your peerlist
         '''
         print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg
-
+    
     def complete(self,piece,downloaded=True):
         """ Called when a movie piece has been downloaded or was available from the start (disk). """
 
@@ -821,6 +823,7 @@ class MovieOnDemandTransporter(MovieTransport):
         global mojoServer
         mojoServer = MojoCommunicationServer(MJ_LISTENPORT,self.mjcallback) 
         mojoServer.start()
+
         vs = self.videostatus
 
         if vs.playing and not force:

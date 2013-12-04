@@ -514,6 +514,7 @@ class PlayerApp(wx.App):
             x.delete("ULLOG")
             x.delete("DLLOG")
         if msg.startswith('[checksu]'):
+            #print >>sys.stderr, "PUTAKA\t%s\t%s" % (self.d.get_server_ip(), addr[0])
             if self.d.get_server_ip() == addr[0]:
                 reply = '[sudelay][finished'
                 MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
