@@ -78,6 +78,8 @@ x.log("SDL", 0.0)
 x.log("BRATE", 0.0)
 x.init("PEERS")
 
+MOJOMAXUPLOAD = 6900
+
 def state_callback(ds):
     global sendTstream
     global graceInt
@@ -90,7 +92,37 @@ def state_callback(ds):
     global dataFile5
 
     d = ds.get_download()
-
+    
+    msg = 'Server Statistics Sex\n\n'
+    
+    #maximum server upload
+    msg += 'Server Upload:\t' + str(d.get_max_desired_speed(UPLOAD)) + ' kbps\n'
+    msg += 'Video Bitrate:\t' + str(x.data["BRATE"][0]) + '\n'
+    status = "Normal"
+    if(x.data["HELPED"][0]):
+        status = "Helped"
+    if(x.data["HELPING"][0]):
+        status = "Helping"
+    msg += 'Server Status:\t' + status + '\n\n'
+    #add something about actual server upload if there is such a thing....
+    ciri = ""
+    mciri = ""
+    if(x.is_existing("CIRI")):
+        ciri = x.data["CIRI"][0]
+    if(x.is_existing("MCIRI")):
+        ciri = x.data["MCIRI"][0]
+    msg += 'CIRI:\t' + ciri + '\n'
+    msg += 'MCIRI:\t' + mciri + '\n'   
+    msg += 'BandwidthUtil \tUp: ' + str(x.data["BUUP"][0]) + " Down: " + str(x.data["BUDOWN"][0]) + "\n"
+    msg += 'AvgLatency\t' + str(x.data["AVGLATENCY"][0]) + "\n"
+    msg += '\nPEERLIST WITH AC RANKINGS\n-------------------------'
+    count = 1
+    if(x.is_existing("AC-RANKED")):
+        for mjpeer in x.data["AC-RANKED"]:
+            msg += str(count) + ". " + str(mjpeer) + '\tAC: ' + str(x.data["AC-"+str(mjpeer)][0]) + '\tUp: ' + str(x.data["UL-"+str(mjpeer)][0]) + '\tDown: ' + str(x.data["DL-"+str(mjpeer)][0]) 
+            count += 1
+    top.set_player_status(msg)
+    
     if(firstTime):
         print >>dataFile, "##\t##"
         #print >>dataFile2, "##\t##\t##"
@@ -691,7 +723,7 @@ if __name__ == "__main__":
     dscfg.set_max_uploads(config['nuploads'])
     # MENMA EX
 
-    dscfg.set_max_speed(UPLOAD, 1000)
+    dscfg.set_max_speed(UPLOAD, MOJOMAXUPLOAD)
     
     # limit the # of connections to the server to only ONE peer so that other peers will connect to each other and not to server only
     # change this later so that number of connected peers  = totalServerUpload/bitrate
@@ -706,7 +738,6 @@ if __name__ == "__main__":
     # Start UI
     app = wx.App(redirect=False)
     top = ServerFrame("Tribler Server Monitor")
-    top.set_player_status("Server")
     top.Show()
     app.MainLoop()
    
