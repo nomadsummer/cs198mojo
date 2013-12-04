@@ -148,19 +148,21 @@ def state_callback(ds):
     # MENMA EX
     mjtime = time.time()
     mjpeers = ds.get_peerlist()
+    print >>sys.stderr, "PREBUF\t", ds.get_vod_prebuffering_progress()
 
     # START        
     if(x.data["CFLAG"][0] and x.data["BFLAG"][0] and x.data["LFLAG"][0] or (time.time() - x.data["STARTTIME"][0]) > timeout):
         x.delete("PEERS")
 
         for mjpeer in mjpeers:
-            MojoCommunicationClient(MJ_LISTENPORT,'[checksu]', mjpeer['ip'])
+            #if(not x.is_existing("SU-"+mjpeer['ip'])):
+                #MojoCommunicationClient(MJ_LISTENPORT,'[checksu]', mjpeer['ip'])
             if(mjpeer['ip'] not in x.data["PEERS"]):
                 x.log("PEERS", mjpeer['ip'])
 
         x.update("STARTTIME", time.time())
 
-        print >>sys.stderr, "[PEERS]\t%s" % (x.data["PEERS"])
+        #print >>sys.stderr, "[PEERS]\t%s" % (x.data["PEERS"])
 
     graceInt += 1
     if(len(x.data["PEERS"]) > 0 and graceInt >= 5):
@@ -183,7 +185,7 @@ def state_callback(ds):
 
             x.update("STARTTIME", time.time())
 
-        print >>sys.stderr, "TIME\t", (time.time() - float(x.data["TIME"][0]))
+        #print >>sys.stderr, "TIME\t", (time.time() - float(x.data["TIME"][0]))
         if(time.time() - float(x.data["TIME"][0]) >= twin and x.data["PFLAG"][0]):
             for peerip in x.data["PEERS"]:
                 MojoCommunicationClient(MJ_LISTENPORT,'[aac]', peerip)
@@ -400,7 +402,7 @@ def mjcallback(addr, msg):
            by calling the function sendMojoTstream(ipAddr)
     [X] 4. Acknowledge and reply to the swarm that needs help with your peerlist
     '''
-    print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg    
+    #print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg    
     global checktime
 
     if msg.startswith('[HELP]'):

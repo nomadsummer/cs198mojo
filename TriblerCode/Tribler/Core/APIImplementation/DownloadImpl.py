@@ -352,6 +352,9 @@ class DownloadImpl:
 
     def get_server_ip(self):
         return self.sd.get_bt1download().get_server_ip()
+
+    #def set_flag(self):
+    #    return self.sd.get_bt1download().set_flag()
         
     def update_peerlist(self, highpeers, lowpeers):
         self.sd.get_bt1download().update_peerlist(highpeers, lowpeers)

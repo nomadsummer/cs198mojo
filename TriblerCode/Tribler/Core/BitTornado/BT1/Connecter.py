@@ -793,6 +793,10 @@ class Connecter:
             if counter == maxBroadcast:
                 break
 
+    # MENMA EX
+    #def set_flag(self):
+    #    return 0
+
     def our_extend_msg_id_to_name(self,ext_id):
         """ find the name for the given message id (byte) """
         for key,val in self.EXTEND_HANDSHAKE_M_DICT.iteritems():
@@ -855,7 +859,6 @@ class Connecter:
         except:
             print_exc()
 
-    # MENMA EX
     def got_message(self, connection, message):
         # connection: Encrypter.Connection; c: Connecter.Connection
         c = self.connections[connection]    

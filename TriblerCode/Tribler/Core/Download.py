@@ -97,6 +97,8 @@ class Download(DownloadRuntimeConfig,DownloadImpl):
         # Called by any thread
         return DownloadImpl.get_server_ip(self)
 
+    #def set_flag(self):
+    #    return DownloadImpl.set_flag(self)
     #
     # Config parameters that only exists at runtime 
     #
