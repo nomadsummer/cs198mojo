@@ -511,8 +511,10 @@ class PlayerApp(wx.App):
         if msg.startswith('[aac]'):
             reply = '[aac]['+pickle.dumps(x.averageData("ULLOG"))+']['+pickle.dumps(x.averageData("DLLOG"))
             MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
+            x.delete("ULLOG")
+            x.delete("DLLOG")
         if msg.startswith('[checksu]'):
-            if self.d.get_server_ip() == addr[0]
+            if self.d.get_server_ip() == addr[0]:
                 reply = '[sudelay][finished'
                 MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
             else:

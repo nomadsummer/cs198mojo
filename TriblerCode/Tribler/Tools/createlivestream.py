@@ -118,6 +118,8 @@ def state_callback(ds):
 
     # START        
     if(x.data["CFLAG"][0] and x.data["BFLAG"][0] and x.data["LFLAG"][0]):
+        x.delete("PEERS")
+
         for mjpeer in mjpeers:
             MojoCommunicationClient(MJ_LISTENPORT,'[checksu]', mjpeer['ip'])
             if(mjpeer['ip'] not in x.data["PEERS"]):
