@@ -303,7 +303,14 @@ class Connection:
         if not self.closed:
             self.connection.close()
             self.sever(closeall=closeall)
-            
+
+    # MENMA EX
+    """
+    def set_flag(self, ipAddr):
+        return 0
+    """
+    def get_flag(self, ipAddr):
+        self.connection.get_flag(ipAddr)
 
     def sever(self,closeall=False):
         self.closed = True
@@ -356,6 +363,7 @@ class Connection:
     def connection_lost(self, connection):
         if self.Encoder.connections.has_key(connection):
             self.sever()
+
 # 2fastbt_
     def is_coordinator_con(self):
         #if DEBUG:

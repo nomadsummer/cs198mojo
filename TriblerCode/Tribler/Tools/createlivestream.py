@@ -26,6 +26,7 @@ MJ_LISTENPORT = 6969
 sendTstream = 0
 tdef = None
 counter = 0
+dGlobal = None
 
 argsdef = [('name', '', 'name of the stream'),
            ('source', '-', 'source to stream (url, file or "-" to indicate stdin)'),
@@ -111,8 +112,8 @@ def state_callback(ds):
         ciri = x.data["CIRI"][0]
     if(x.is_existing("MCIRI")):
         ciri = x.data["MCIRI"][0]
-    msg += 'CIRI:\t' + ciri + '\n'
-    msg += 'MCIRI:\t' + mciri + '\n'   
+    msg += 'CIRI:\t' + str(ciri) + '\n'
+    msg += 'MCIRI:\t' + str(mciri) + '\n'   
     msg += 'BandwidthUtil \tUp: ' + str(x.data["BUUP"][0]) + " Down: " + str(x.data["BUDOWN"][0]) + "\n"
     msg += 'AvgLatency\t' + str(x.data["AVGLATENCY"][0]) + "\n"
     msg += '\nPEERLIST WITH AC RANKINGS\n-------------------------'
@@ -163,7 +164,7 @@ def state_callback(ds):
 
         x.update("STARTTIME", time.time())
 
-        #print >>sys.stderr, "[PEERS]\t%s" % (x.data["PEERS"])
+        print >>sys.stderr, "[PEERS]\t%s" % (x.data["PEERS"])
 
     graceInt += 1
     if(len(x.data["PEERS"]) > 0 and graceInt >= 5):
@@ -466,9 +467,10 @@ def mjcallback(addr, msg):
             x.update("BFLAG", True)
 
     elif msg.startswith('[sudelay]'):
-        print >>sys.stderr, "HOY\t", msg
+        #print >>sys.stderr, "HOY\t", msg
         x.update("SU-"+str(addr[0]), time.time() - x.data["SU-"+str(addr[0])][0])
         print >>dataFile5, "[SU-%s]\t%s" % (addr[0], x.data["SU-"+str(addr[0])][0])
+        dGlobal.set_flag(addr[0])
         """
         temp = msg.split("][")
         if(temp[1] != "finished"):
@@ -622,6 +624,7 @@ class PlayerApp(wx.App):
 '''        
 if __name__ == "__main__":
     global origTdef
+    global dGlobal
     # mjl = MJLogger()
     # mjl.log("Main", (1000, 12345))
     # mjl.log("Main", (2000, 4421, "Who?"))
@@ -734,6 +737,7 @@ if __name__ == "__main__":
 
     d = s.start_download(tdef,dscfg)
     d.set_state_callback(state_callback,getpeerlist=True)
+    dGlobal = d
 
     # Start UI
     app = wx.App(redirect=False)

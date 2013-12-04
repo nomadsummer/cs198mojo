@@ -83,9 +83,11 @@ x.log("CURRUL", 0)
 x.log("CURRDL", 0)
 x.log("ULLOG", 0)
 x.log("DLLOG", 0)
+x.log("SFLAG", True)
+
+SERVER_IP = None
 
 origDownload = None
-dsGlobal = None
 totalSpeedAll = {}
 
 class PlayerFrame(VideoFrame):
@@ -472,6 +474,8 @@ class PlayerApp(wx.App):
     
     def mjcallback(self, addr, msg):
         """ Called by MojoCommunication thread """
+        global SERVER_IP
+
         # do what you want to do to the recieved message in the main thread. hekhek
         #print >>sys.stderr,"[MJ-Notif-Peer] Callback function in main received: ", msg
         if(msg == "[MOJO] disconnect"):
@@ -514,10 +518,14 @@ class PlayerApp(wx.App):
             MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
             x.delete("ULLOG")
             x.delete("DLLOG")
+
         if msg.startswith('[checksu]'):
+            SERVER_IP = addr[0]
+            """
+            print >>sys.stderr, "[TEST]\t%s\t%s" % (msg, dsGlobal.get_vod_prebuffering_progress())
             if dsGlobal.get_vod_prebuffering_progress() >= 1:
                 MojoCommunicationClient(MJ_LISTENPORT,"[sudelay]",addr[0])
-            """
+                        
             if self.d.get_server_ip() == addr[0]:
                 reply = '[sudelay][finished'
                 MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
@@ -651,7 +659,6 @@ class PlayerApp(wx.App):
         """ Called by *GUI* thread.
         CAUTION: As this method is called by the GUI thread don't to any 
         time-consuming stuff here! """
-        global dsGlobal
         
         #print >>sys.stderr,"main: Stats:"
         if self.shuttingdown:
@@ -690,7 +697,10 @@ class PlayerApp(wx.App):
         i = 0
         #print >>sys.stderr, "Download List Length: ", len(dslist)
         for ds2 in dslist:
-            dsGlobal = ds2
+            if ds2.get_vod_prebuffering_progress() >= 1 and SERVER_IP is not None and x.data["SFLAG"][0]:
+                MojoCommunicationClient(MJ_LISTENPORT,"[sudelay]",SERVER_IP)
+                x.update("SFLAG", False)
+
             if ds2.get_download() == d:
                 ds = ds2
 

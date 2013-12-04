@@ -30,11 +30,13 @@ from Tribler.Core.BitTornado.CurrentRateMeasure import Measure
 
 # MOJO
 from Tribler.Utilities.MojoCommunication import *
+from Tribler.mjlogger import *
 
 MJ_LISTENPORT = 6969
 helping = False
 helpedhighpeers = []
 helpedlowpeers = []
+x = MJLogger()
 
 try:
     True
@@ -730,7 +732,7 @@ class Connecter:
 
 
         print >>sys.stderr,"Connecter: live: del1: deleting",connection.get_ip(),c.get_ip()
-        #print_stack()
+        print_stack()
         if c.get_ip() == self.tracker_ip:
             print >>sys.stderr,"connecter: connection_lost: live: WAAH2 closing SOURCE"
             #print_stack()
@@ -794,8 +796,11 @@ class Connecter:
                 break
 
     # MENMA EX
-    #def set_flag(self):
-    #    return 0
+    def set_flag(self, ipAddr):
+        x.update(ipAddr, 1)
+    
+    def get_flag(self, ipAddr):
+        return x.is_existing(ipAddr)
 
     def our_extend_msg_id_to_name(self,ext_id):
         """ find the name for the given message id (byte) """

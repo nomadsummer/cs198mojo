@@ -11,6 +11,7 @@ from threading import Event, RLock
 from clock import clock
 import sys
 import time
+from traceback import print_exc,print_stack
 
 try:
     True
@@ -120,6 +121,7 @@ class RawServer:
         self.lock.release()
 
     def listen_forever(self, handler):
+        print_stack()
         if DEBUG:
             print >>sys.stderr,"rawserver: listen forever()"
         # handler=btlanuchmany: MultiHandler, btdownloadheadless: Encoder

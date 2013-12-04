@@ -29,7 +29,7 @@ except:
     False = 0
 
 DEBUG = False
-DEADFLAG = False
+x = MJLogger()
 
 all = POLLIN | POLLOUT
 
@@ -169,7 +169,8 @@ class SingleSocket:
             if self.skipped >= 5:
                 #print >>sys.stderr, "HOKHOKHOKHKOHKOKHOKHOK:\t", self.skipped
                 dead = True
-            if dead:
+            #dead = True
+            if dead and self.handler.get_flag(self.get_ip()):
                 self.socket_handler.dead_from_write.append(self)
                 return
         if self.buffer:
@@ -498,9 +499,10 @@ class SocketHandler:
                         s.handler.connection_flushed(s)
 
     def close_dead(self):
+        #print_stack()
         while self.dead_from_write:
             old = self.dead_from_write
-            print >>sys.stderr, "[OLD]\t", old
+            #print >>sys.stderr, "[OLD]\t", old
             self.dead_from_write = []
             for s in old:
                 if s.socket:
