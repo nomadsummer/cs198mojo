@@ -43,7 +43,7 @@ x.log("STARTTIME", float(x.data["TIME"][0]))
 x.log("HELPED", False)
 x.log("HELPING", False)
 twin = 15.0
-timeout = 5.0
+timeout = 10.0
 graceInt = 0
 flag = True
 firstTime = True
@@ -151,6 +151,7 @@ def state_callback(ds):
 
             x.update("STARTTIME", time.time())
 
+        print >>sys.stderr, "TIME\t", (time.time() - float(x.data["TIME"][0]))
         if(time.time() - float(x.data["TIME"][0]) >= twin and x.data["PFLAG"][0]):
             for peerip in x.data["PEERS"]:
                 MojoCommunicationClient(MJ_LISTENPORT,'[aac]', peerip)
