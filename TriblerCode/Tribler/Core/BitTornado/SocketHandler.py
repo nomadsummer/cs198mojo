@@ -170,6 +170,7 @@ class SingleSocket:
                 #print >>sys.stderr, "HOKHOKHOKHKOHKOKHOKHOK:\t", self.skipped
                 dead = True
             #dead = True
+            print >>sys.stderr, "FLAGFLAGFLAG:\t", self.handler.get_flag(self.get_ip())
             if dead and self.handler.get_flag(self.get_ip()):
                 self.socket_handler.dead_from_write.append(self)
                 return

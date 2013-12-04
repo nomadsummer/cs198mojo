@@ -120,7 +120,7 @@ def state_callback(ds):
     count = 1
     if(x.is_existing("AC-RANKED")):
         for mjpeer in x.data["AC-RANKED"]:
-            msg += str(count) + ". " + str(mjpeer) + '\tAC: ' + str(x.data["AC-"+str(mjpeer)][0]) + '\tUp: ' + str(x.data["UL-"+str(mjpeer)][0]) + '\tDown: ' + str(x.data["DL-"+str(mjpeer)][0]) 
+            msg += str(count) + ". " + str(mjpeer) + '\tAC: ' + str(x.data["ACUL-"+str(mjpeer)][0]) + '\tUp: ' + str(x.data["UL-"+str(mjpeer)][0]) + '\tDown: ' + str(x.data["DL-"+str(mjpeer)][0]) 
             count += 1
     top.set_player_status(msg)
     
