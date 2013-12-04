@@ -732,7 +732,7 @@ class Connecter:
 
 
         print >>sys.stderr,"Connecter: live: del1: deleting",connection.get_ip(),c.get_ip()
-        print_stack()
+        #print_stack()
         if c.get_ip() == self.tracker_ip:
             print >>sys.stderr,"connecter: connection_lost: live: WAAH2 closing SOURCE"
             #print_stack()
@@ -750,7 +750,7 @@ class Connecter:
 
     # MOJO WAS HERE
     def kick_peers(self, highpeers, lowpeers):
-        
+        """
         print >>sys.stderr, "KICK PEERS"
         print >>sys.stderr, "KICK PEERS"
         print >>sys.stderr, "KICK PEERS"
@@ -764,7 +764,7 @@ class Connecter:
         print >>sys.stderr, "KICK PEERS"
         print >>sys.stderr, "KICK PEERS"
         print >>sys.stderr, "KICK PEERS"
-        
+        """
         peerlist = highpeers + lowpeers
         print >>sys.stderr, "[Helpedpeerlist]:\t", peerlist
         global helping

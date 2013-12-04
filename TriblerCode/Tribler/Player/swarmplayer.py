@@ -521,17 +521,6 @@ class PlayerApp(wx.App):
 
         if msg.startswith('[checksu]'):
             SERVER_IP = addr[0]
-            """
-            print >>sys.stderr, "[TEST]\t%s\t%s" % (msg, dsGlobal.get_vod_prebuffering_progress())
-            if dsGlobal.get_vod_prebuffering_progress() >= 1:
-                MojoCommunicationClient(MJ_LISTENPORT,"[sudelay]",addr[0])
-                        
-            if self.d.get_server_ip() == addr[0]:
-                reply = '[sudelay][finished'
-                MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
-            else:
-                self.d.set_server_ip(addr[0])
-            """
     
     def remote_start_download(self,torrentfilename):
         """ Called by GUI thread """

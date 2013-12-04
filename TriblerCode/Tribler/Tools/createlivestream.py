@@ -471,13 +471,7 @@ def mjcallback(addr, msg):
         x.update("SU-"+str(addr[0]), time.time() - x.data["SU-"+str(addr[0])][0])
         print >>dataFile5, "[SU-%s]\t%s" % (addr[0], x.data["SU-"+str(addr[0])][0])
         dGlobal.set_flag(addr[0])
-        """
-        temp = msg.split("][")
-        if(temp[1] != "finished"):
-            sudelay = pickle.loads(temp[1])
-            x.update("SU-"+str(addr[0]), sudelay)
-            print >>dataFile5, "[SU-%s]\t%s" % (addr[0], x.data["SU-"+str(addr[0])][0])
-        """
+        
     elif msg.startswith('[ACK-HELP]'):
         temp = msg.split("XxX+XxX")
         helpingPeers = pickle.loads(temp[1])

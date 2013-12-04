@@ -114,6 +114,10 @@ class NewSocketHandler:     # hand a new socket off where it belongs
             self.connection.close()
             self.closed = True
 
+    # MENMA EX
+    def get_flag(self, ipAddr):
+        return False
+
 #   header format:
 #        connection.write(chr(len(protocol_name)) + protocol_name + 
 #            (chr(0) * 8) + self.encrypter.download_id + self.encrypter.my_id)

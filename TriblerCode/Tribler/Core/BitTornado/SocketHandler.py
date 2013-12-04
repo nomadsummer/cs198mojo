@@ -164,15 +164,11 @@ class SingleSocket:
                     dead = True
                 if not blocked:
                     self.skipped += 1
-            #if self.skipped >= 100 and False:
             if self.skipped >= 5:
                 #print >>sys.stderr, "HOKHOKHOKHKOHKOKHOKHOK:\t", self.skipped
-                dead = True
-            #dead = True
-            #print >>sys.stderr, "FLAGFLAGFLAG:\t", self.handler.get_flag(self.get_ip())
-            #if dead and self.handler.get_flag(self.get_ip()):
-            if dead:
-                print_stack()
+                dead = True 
+            if dead and self.handler.get_flag(self.get_ip()):
+                #print_stack()
                 self.socket_handler.dead_from_write.append(self)
                 return
         if self.buffer:
