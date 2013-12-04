@@ -699,6 +699,10 @@ class PlayerApp(wx.App):
             totalSpeedAll[i][UPLOAD] = ds2.get_current_speed(UPLOAD)
             totalSpeedAll[i][DOWNLOAD] = ds2.get_current_speed(DOWNLOAD)
             i += 1
+
+            #if ds.get_vod_prebuffering_progress() >= 1:
+            #    self.d.set_flag()
+
         
         # Report statistics on all downloads to research server, every 10 secs
         '''

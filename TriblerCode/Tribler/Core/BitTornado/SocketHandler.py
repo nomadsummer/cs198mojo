@@ -18,6 +18,8 @@ from traceback import print_exc
 from threading import currentThread
 from Tribler.Core.NATFirewall.DialbackMsgHandler import DialbackMsgHandler
 
+from Tribler.mjlogger import *
+
 # from BT1.StreamCheck import StreamCheck
 # import inspect
 try:
@@ -27,6 +29,7 @@ except:
     False = 0
 
 DEBUG = False
+DEADFLAG = False
 
 all = POLLIN | POLLOUT
 
@@ -130,9 +133,11 @@ class SingleSocket:
 
     def try_write(self):
         
-        if self.connected:
+        if self.connected and DEADFLAG:
+            #print >>sys.stderr, "IP:\t", self.get_ip()
             dead = False
             try:
+                print >>sys.stderr, "HAKHAKHAKHKAHKAKHAKHAK:\t", self.skipped
                 while self.buffer:
                     buf = self.buffer[0]
                     amount = self.socket.send(buf)
@@ -147,15 +152,22 @@ class SingleSocket:
             except socket.error, e:
                 #if DEBUG:
                 #    print_exc(file=sys.stderr)
+                #print >>sys.stderr, "HEKHEKHEKHKEHKEKHEKHEK:\t", self.skipped
                 blocked=False
                 try:
+                    #blocked = (e[0] == SOCKET_BLOCK_ERRORCODE or e[0] == 10053) 
                     blocked = (e[0] == SOCKET_BLOCK_ERRORCODE) 
+                    #print >>sys.stderr, "HEKHEKHEKHKEHKEKHEKHEK:\t", self.skipped
+                    #print >>sys.stderr, "BLOCKED:\t%s\t%s\t%s" % (e[0], SOCKET_BLOCK_ERRORCODE, blocked)
                     dead = not blocked
                 except:
+                    #print >>sys.stderr, "HAKHAKHAKHKAHKAKHAKHAK:\t", self.skipped
                     dead = True
                 if not blocked:
                     self.skipped += 1
+            #if self.skipped >= 100 and False:
             if self.skipped >= 5:
+                #print >>sys.stderr, "HOKHOKHOKHKOHKOKHOKHOK:\t", self.skipped
                 dead = True
             if dead:
                 self.socket_handler.dead_from_write.append(self)
@@ -488,6 +500,7 @@ class SocketHandler:
     def close_dead(self):
         while self.dead_from_write:
             old = self.dead_from_write
+            print >>sys.stderr, "[OLD]\t", old
             self.dead_from_write = []
             for s in old:
                 if s.socket:
