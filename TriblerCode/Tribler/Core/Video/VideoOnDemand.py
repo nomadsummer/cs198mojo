@@ -36,6 +36,7 @@ FAKEPLAYBACK = False
 
 DEBUG = False
 DEBUGPP = False
+SERVER_IP = None
 
 x = MJLogger()
 mojoServer = None
@@ -103,8 +104,6 @@ class MovieOnDemandTransporter(MovieTransport):
 
     # maximum delay between pops before we force a restart (seconds)
     MAX_POP_TIME = 60
-
-    SERVER_IP = None
 
     def __init__(self,bt1download,videostatus,videoinfo,videoanalyserpath,vodeventfunc):
         self.videoinfo = videoinfo
@@ -465,7 +464,9 @@ class MovieOnDemandTransporter(MovieTransport):
         SERVER_IP = ipAddr
 
     def get_server_ip(self):
-
+        if SERVER_IP is None:
+            return -1
+        
         return SERVER_IP
 
     def update_prebuffering(self,received_piece=None):
