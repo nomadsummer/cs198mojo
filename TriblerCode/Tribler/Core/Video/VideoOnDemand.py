@@ -39,7 +39,7 @@ DEBUGPP = False
 SERVER_IP = None
 
 x = MJLogger()
-#mojoServer = None
+mojoServer = None
 
 class PieceStats:
     """ Keeps track of statistics for each piece as it flows through the system. """
@@ -498,7 +498,6 @@ class MovieOnDemandTransporter(MovieTransport):
         # MENMA EX
         # START UP DELAY
         if not gotall:
-            print >>sys.stderr, "FUCK"
             #print >>sys.stderr, "[SERVER]", self.rawserver.get_stats()
             if not x.is_existing("TIME"):
                 x.log("TIME", time.time())
@@ -596,7 +595,7 @@ class MovieOnDemandTransporter(MovieTransport):
 
                 self.start(force=True)
         """
-    """
+    
     def mjcallback(self, addr, msg):
         '''
         MOJO Server TODO, X => DONE
@@ -609,7 +608,7 @@ class MovieOnDemandTransporter(MovieTransport):
         [X] 4. Acknowledge and reply to the swarm that needs help with your peerlist
         '''
         print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg
-    """
+    
     def complete(self,piece,downloaded=True):
         """ Called when a movie piece has been downloaded or was available from the start (disk). """
 
@@ -821,9 +820,9 @@ class MovieOnDemandTransporter(MovieTransport):
 
     def start( self, bytepos = 0, force = False ):
         """ Initialise to start playing at position `bytepos'. """
-        #global mojoServer
-        #mojoServer = MojoCommunicationServer(MJ_LISTENPORT,self.mjcallback) 
-        #mojoServer.start()
+        global mojoServer
+        mojoServer = MojoCommunicationServer(MJ_LISTENPORT,self.mjcallback) 
+        mojoServer.start()
 
         vs = self.videostatus
 

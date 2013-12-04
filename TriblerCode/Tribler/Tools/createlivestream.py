@@ -128,7 +128,7 @@ def state_callback(ds):
 
         x.update("STARTTIME", time.time())
 
-    print >>sys.stderr, "[PEERS]\t%s" % (x.data["PEERS"])
+        print >>sys.stderr, "[PEERS]\t%s" % (x.data["PEERS"])
 
     graceInt += 1
     if(len(x.data["PEERS"]) > 0 and graceInt >= 5):
@@ -368,7 +368,7 @@ def mjcallback(addr, msg):
            by calling the function sendMojoTstream(ipAddr)
     [X] 4. Acknowledge and reply to the swarm that needs help with your peerlist
     '''
-    #print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg    
+    print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg    
     global checktime
 
     if msg.startswith('[HELP]'):
