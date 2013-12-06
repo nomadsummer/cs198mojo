@@ -331,7 +331,7 @@ def mjcompute_rankings():
         counter = counter + 1
         print >>sys.stderr,"help counter", counter
         #if(x.data["CIRI"][0] < 1):
-        if counter == 5 and not x.data["HELPING"][0]:
+        if counter == 3 and not x.data["HELPING"][0]:
             if(x.is_existing("highpeers")):
                 x.delete("highpeers")   
             if(x.is_existing("lowpeers")):
