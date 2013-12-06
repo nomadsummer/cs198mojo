@@ -55,7 +55,7 @@ from Tribler.mjlogger import *
 
 DEBUG = False
 ONSCREENDEBUG = True
-ALLOW_MULTIPLE = False
+ALLOW_MULTIPLE = True
 RATELIMITADSL = False
 
 DISKSPACE_LIMIT = 5L * 1024L * 1024L * 1024L  # 5 GB
