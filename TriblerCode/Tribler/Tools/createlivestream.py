@@ -168,7 +168,7 @@ def state_callback(ds):
 
         x.update("STARTTIME", time.time())
 
-        #print >>sys.stderr, "[PEERS]\t%s" % (x.data["PEERS"])
+        print >>sys.stderr, "[PEERS]\t%s" % (x.data["PEERS"])
 
     graceInt += 1
     if(len(x.data["PEERS"]) > 0 and graceInt >= 5):
@@ -192,7 +192,7 @@ def state_callback(ds):
 
             x.update("STARTTIME", time.time())
 
-        print >>sys.stderr, "TIME\t", (time.time() - float(x.data["TIME"][0]))
+        #print >>sys.stderr, "TIME\t", (time.time() - float(x.data["TIME"][0]))
         if((time.time() - float(x.data["TIME"][0]) >= twin and x.data["PFLAG"][0]) or time.time() - float(x.data["ACTIME"][0]) >= timeout):
             x.update("PLEN", len(x.data["PEERS"]))
             x.update("PCHECK", 0)
@@ -246,13 +246,13 @@ def mjcompute_ciri():
 
         x.update("NetUpCon", 0.0)
 
-        print >>sys.stderr, "HELPERS:", x.data["HELPERS"]
+        #print >>sys.stderr, "HELPERS:", x.data["HELPERS"]
         for mjpeer in x.data["HELPERS"]:
             if(checkac):
                 print >>sys.stderr, "THISHELPAC"
                 x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data["ACUL-"+str(mjpeer)][0] - x.data["ACDL-"+str(mjpeer)][0]))
             else:
-                if(x.is_existing(str(mjpeer))):
+                if(str(mjpeer) in x.data["PEERS"]):
                     print >>sys.stderr, "THISHELPNO1"
                     x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data["UL-"+str(mjpeer)][0] - x.data["DL-"+str(mjpeer)][0]))
                 else:
