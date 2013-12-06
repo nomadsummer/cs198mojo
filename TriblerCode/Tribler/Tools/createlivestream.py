@@ -48,6 +48,7 @@ graceInt = 0
 flag = True
 firstTime = True
 checktime = False
+checkac = True
 
 #x.log("PACKETLOSS", 0.0)
 x.log("BUUP", 0.0)
@@ -239,8 +240,6 @@ def get_bandutil():
             mojoBUSend(mjpeer)
 
 def mjcompute_ciri():
-    global checktime
-
     if(x.data['HELPED'][0] and x.is_existing("HELPERS")):
         if(x.is_existing("MCIRI")):
             x.update("MCIRI", 0.0)
@@ -249,7 +248,7 @@ def mjcompute_ciri():
 
         print >>sys.stderr, "HELPERS:", x.data["HELPERS"]
         for mjpeer in x.data["HELPERS"]:
-            if(checktime):
+            if(checkac):
                 x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data["ACUL-"+str(mjpeer)][0] - x.data["ACDL-"+str(mjpeer)][0]))
             else:
                 if(x.is_existing(str(mjpeer))):
@@ -281,8 +280,6 @@ def mjcompute_ciri():
             print >>dataFile3,"%f\t%f" % (time.time(), x.data["CIRI"][0])    
 
 def mjcompute_rankings():
-    global checktime
-
     if(x.is_existing("PEERS") and len(x.data["PEERS"]) > 0):
         if(checktime):
             AvgUL = 0.0
@@ -332,7 +329,7 @@ def mjcompute_rankings():
         counter = counter + 1
         print >>sys.stderr,"help counter", counter
         #if(x.data["CIRI"][0] < 1):
-        if counter == 30 and not x.data["HELPING"][0]:
+        if counter == 5 and not x.data["HELPING"][0]:
             if(x.is_existing("highpeers")):
                 x.delete("highpeers")   
             if(x.is_existing("lowpeers")):
@@ -358,9 +355,9 @@ def mjcompute_rankings():
             counter = 0
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
-                #x.update("HELPED", True)
+                x.update("HELPED", True)
                 mjmin_needed()
-                #getHelp(x.data["highpeers"], x.data["lowpeers"])
+                getHelp(x.data["highpeers"], x.data["lowpeers"])
 
 def mjmin_needed():
     if(x.is_existing("MIN-NEEDED")):
@@ -413,6 +410,7 @@ def mjcallback(addr, msg):
     '''
     #print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg    
     global checktime
+    global checkac
 
     if msg.startswith('[HELP]'):
         temp = msg.split("XxX+XxX")
@@ -494,7 +492,11 @@ def mjcallback(addr, msg):
         x.update("CCHECK", float(x.data["CCHECK"][0]) + 1)
         #print >>sys.stderr, "[ULDL-%s]\t%s\t%s" % (addr[0], x.data["UL-"+str(addr[0])][0], x.data["DL-"+str(addr[0])][0])
         if(x.data["CCHECK"][0] == x.data["CLEN"][0]):
+            for mjpeer in x.data["PEERS"]:
+                if(x.is_existing("ACUL-"+str(mjpeer))):
+                    checkac = False
             mjcompute_ciri()
+            checkac = True
             get_bandutil()
             x.update("CLEN", 0)
             x.update("CFLAG", True)
@@ -510,10 +512,10 @@ def mjcallback(addr, msg):
         #print >>sys.stderr, "[ACULDL-%s]\t%s\t%s" % (addr[0], x.data["ACUL-"+str(addr[0])][0], x.data["ACDL-"+str(addr[0])][0])
         #print >>sys.stderr, "[CHECKCHECK2]\t", x.data["PCHECK"][0]
         if(x.data["PCHECK"][0] >= x.data["PLEN"][0]):
+            checktime = True
             mjcompute_rankings()
             x.update("PLEN", 0)
             x.update("PFLAG", True)
-            checktime = True
 
 def getHelp(highpeers, lowpeers):    
     '''
