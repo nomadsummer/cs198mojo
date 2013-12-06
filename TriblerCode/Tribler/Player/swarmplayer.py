@@ -875,7 +875,7 @@ class PlayerApp(wx.App):
             downtxt = "actualDownload %.1f\n" % (totalSpeedAll[0][DOWNLOAD])
             peertxt = "peer %d" % (totalhelping)
             extra = ''
-            if(x.data["STILLH"][0]):
+            if(x.data["STILLH"][0] and len(totalSpeedAll) > 1):
                 extra = ('\n----NEW COLLAB STATS----\nmaxUpload ' + 
                         str(origDownload.get_max_desired_speed(UPLOAD)) 
                         + '\nactualUpload ' + str(totalSpeedAll[0][UPLOAD]) 
