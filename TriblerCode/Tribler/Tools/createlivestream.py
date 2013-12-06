@@ -527,7 +527,7 @@ def getHelp(highpeers, lowpeers):
         helpingSwarmIP = dialog.GetValue()
     '''
     
-    helpingSwarmIP = "192.168.1.40"
+    helpingSwarmIP = "192.168.1.40" #get from tracker
     # After some time
     print >>sys.stderr,"Helping swarm found. Initiating connection." 
     x.update("HELPED",True);
