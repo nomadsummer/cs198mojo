@@ -58,6 +58,7 @@ x.log("LATCOUNT", 0)
 x.log("LATCHECK", 0)
 x.log("AVGLATENCY", 0.0)
 x.log("LATTIME", float(x.data["TIME"][0]))
+x.log("ACTIME", float(x.data["TIME"][0]))
 latInt = 15.0 #Do not make less than 15
 timeout = latInt
 
@@ -118,11 +119,11 @@ def state_callback(ds):
     msg += 'MCIRI:\t' + str(mciri) + '\n'   
     msg += 'BandwidthUtil \tUp: ' + str(x.data["BUUP"][0]) + " Down: " + str(x.data["BUDOWN"][0]) + "\n"
     msg += 'AvgLatency\t' + str(x.data["AVGLATENCY"][0]) + "\n"
-    msg += '\nPEERLIST WITH AC RANKINGS\n-------------------------'
+    msg += '\nPEERLIST WITH AC RANKINGS\n-------------------------\n'
     count = 1
     if(x.is_existing("AC-RANKED")):
         for mjpeer in x.data["AC-RANKED"]:
-            msg += str(count) + ". " + str(mjpeer) + '\tAC: ' + str(x.data["ACUL-"+str(mjpeer)][0]) + '\tUp: ' + str(x.data["UL-"+str(mjpeer)][0]) + '\tDown: ' + str(x.data["DL-"+str(mjpeer)][0]) 
+            msg += str(count) + ". " + str(mjpeer) + '\tAC: ' + str(x.data["ACUL-"+str(mjpeer)][0]) + '\tUp: ' + str(x.data["UL-"+str(mjpeer)][0]) + '\tDown: ' + str(x.data["DL-"+str(mjpeer)][0]) + '\n'
             count += 1
     top.set_player_status(msg)
     
@@ -166,13 +167,11 @@ def state_callback(ds):
 
         x.update("STARTTIME", time.time())
 
-        print >>sys.stderr, "[PEERS]\t%s" % (x.data["PEERS"])
+        #print >>sys.stderr, "[PEERS]\t%s" % (x.data["PEERS"])
 
     graceInt += 1
     if(len(x.data["PEERS"]) > 0 and graceInt >= 5):
         if(x.data["CFLAG"][0] and x.data["BFLAG"][0]):
-            for peerip in x.data["PEERS"]:
-                MojoCommunicationClient(MJ_LISTENPORT,'[uldl]', peerip)
             toParse = ds.get_videoinfo()
             bitRate = (toParse['bitrate']/1024.0)*8
             x.update("SUL", ds.get_current_speed(UPLOAD))
@@ -182,6 +181,8 @@ def state_callback(ds):
             x.update("CCHECK", 0)
             x.update("CFLAG", False)
             x.update("BFLAG", False)
+            for peerip in x.data["PEERS"]:
+                MojoCommunicationClient(MJ_LISTENPORT,'[uldl]', peerip)
 
             if(x.data["LFLAG"][0] and (time.time() - x.data["LATTIME"][0]) >= latInt):
                 get_latency()
@@ -190,13 +191,16 @@ def state_callback(ds):
 
             x.update("STARTTIME", time.time())
 
-        #print >>sys.stderr, "TIME\t", (time.time() - float(x.data["TIME"][0]))
-        if(time.time() - float(x.data["TIME"][0]) >= twin and x.data["PFLAG"][0]):
-            for peerip in x.data["PEERS"]:
-                MojoCommunicationClient(MJ_LISTENPORT,'[aac]', peerip)
+        print >>sys.stderr, "TIME\t", (time.time() - float(x.data["TIME"][0]))
+        if((time.time() - float(x.data["TIME"][0]) >= twin and x.data["PFLAG"][0]) or time.time() - float(x.data["ACTIME"][0]) >= timeout):
             x.update("PLEN", len(x.data["PEERS"]))
             x.update("PCHECK", 0)
             x.update("PFLAG", False)
+            x.update("TIME", time.time())
+            x.update("ACTIME", time.time())
+            print >>sys.stderr, "[PEERS]\t", x.data["PEERS"]
+            for peerip in x.data["PEERS"]:
+                MojoCommunicationClient(MJ_LISTENPORT,'[aac]', peerip)
 
             x.update("STARTTIME", time.time())
 
@@ -328,7 +332,7 @@ def mjcompute_rankings():
         counter = counter + 1
         print >>sys.stderr,"help counter", counter
         #if(x.data["CIRI"][0] < 1):
-        if counter == 5 and not x.data["HELPING"][0]:
+        if counter == 30 and not x.data["HELPING"][0]:
             if(x.is_existing("highpeers")):
                 x.delete("highpeers")   
             if(x.is_existing("lowpeers")):
@@ -501,13 +505,14 @@ def mjcallback(addr, msg):
         peerdl = pickle.loads(temp[2])
         x.update("ACUL-"+str(addr[0]), peerul)
         x.update("ACDL-"+str(addr[0]), peerdl)
+        print >>sys.stderr, "[CHECKCHECK1]\t", x.data["PCHECK"][0]
         x.update("PCHECK", float(x.data["PCHECK"][0]) + 1)
-        #print >>sys.stderr, "[ACULDL-%s]\t%s\t%s" % (addr[0], x.data["ACUL-"+str(addr[0])][0], x.data["ACDL-"+str(addr[0])][0])
-        if(x.data["PCHECK"][0] == x.data["PLEN"][0]):
+        print >>sys.stderr, "[ACULDL-%s]\t%s\t%s" % (addr[0], x.data["ACUL-"+str(addr[0])][0], x.data["ACDL-"+str(addr[0])][0])
+        print >>sys.stderr, "[CHECKCHECK2]\t", x.data["PCHECK"][0]
+        if(x.data["PCHECK"][0] >= x.data["PLEN"][0]):
             mjcompute_rankings()
             x.update("PLEN", 0)
             x.update("PFLAG", True)
-            x.update("TIME", time.time())
             checktime = True
 
 def getHelp(highpeers, lowpeers):    
@@ -530,7 +535,8 @@ def getHelp(highpeers, lowpeers):
         helpingSwarmIP = dialog.GetValue()
     '''
     
-    helpingSwarmIP = "192.168.1.40" #get from tracker
+    #helpingSwarmIP = "192.168.1.40" #get from tracker
+    helpingSwarmIP = "10.40.81.183" #get from tracker
     # After some time
     print >>sys.stderr,"Helping swarm found. Initiating connection." 
     x.update("HELPED",True);
