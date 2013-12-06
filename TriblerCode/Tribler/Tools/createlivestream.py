@@ -252,10 +252,11 @@ def mjcompute_ciri():
                 print >>sys.stderr, "THISHELPAC"
                 x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data["ACUL-"+str(mjpeer)][0] - x.data["ACDL-"+str(mjpeer)][0]))
             else:
-                print >>sys.stderr, "THISHELPNO"
                 if(x.is_existing(str(mjpeer))):
+                    print >>sys.stderr, "THISHELPNO1"
                     x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data["UL-"+str(mjpeer)][0] - x.data["DL-"+str(mjpeer)][0]))
                 else:
+                    print >>sys.stderr, "THISHELPNO2"
                     x.update("NetUpCon", (x.data["NetUpCon"][0] + 0.0))
 
         totalUpload = float(x.data["SUL"][0])
@@ -331,7 +332,7 @@ def mjcompute_rankings():
         counter = counter + 1
         print >>sys.stderr,"help counter", counter
         #if(x.data["CIRI"][0] < 1):
-        if counter == 5 and not x.data["HELPING"][0]:
+        if counter == 3 and not x.data["HELPING"][0]:
             if(x.is_existing("highpeers")):
                 x.delete("highpeers")   
             if(x.is_existing("lowpeers")):
