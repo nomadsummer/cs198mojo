@@ -246,11 +246,13 @@ def mjcompute_ciri():
 
         x.update("NetUpCon", 0.0)
 
-        #print >>sys.stderr, "HELPERS:", x.data["HELPERS"]
+        print >>sys.stderr, "HELPERS:", x.data["HELPERS"]
         for mjpeer in x.data["HELPERS"]:
             if(checkac):
+                print >>sys.stderr, "THISHELPAC"
                 x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data["ACUL-"+str(mjpeer)][0] - x.data["ACDL-"+str(mjpeer)][0]))
             else:
+                print >>sys.stderr, "THISHELPNO"
                 if(x.is_existing(str(mjpeer))):
                     x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data["UL-"+str(mjpeer)][0] - x.data["DL-"+str(mjpeer)][0]))
                 else:
