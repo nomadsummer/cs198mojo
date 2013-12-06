@@ -44,7 +44,6 @@ x.log("STARTTIME", float(x.data["TIME"][0]))
 x.log("HELPED", False)
 x.log("HELPING", False)
 twin = 15.0
-timeout = 10.0
 graceInt = 0
 flag = True
 firstTime = True
@@ -58,6 +57,9 @@ x.log("BUCHECK", 0)
 x.log("LATCOUNT", 0)
 x.log("LATCHECK", 0)
 x.log("AVGLATENCY", 0.0)
+x.log("LATTIME", float(x.data["TIME"][0]))
+latInt = 15.0 #Do not make less than 15
+timeout = latInt
 
 dataFile = open("C:\\Temp\\Latency.txt", "w+")
 dataFile2 = open("C:\\Temp\\BandUtil.txt", "w+")
@@ -181,9 +183,10 @@ def state_callback(ds):
             x.update("CFLAG", False)
             x.update("BFLAG", False)
 
-            if(x.data["LFLAG"][0]):
+            if(x.data["LFLAG"][0] and (time.time() - x.data["LATTIME"][0]) >= latInt):
                 get_latency()
                 x.update("LFLAG", False)
+                x.update("LATTIME", time.time())
 
             x.update("STARTTIME", time.time())
 
@@ -499,7 +502,7 @@ def mjcallback(addr, msg):
         x.update("ACUL-"+str(addr[0]), peerul)
         x.update("ACDL-"+str(addr[0]), peerdl)
         x.update("PCHECK", float(x.data["PCHECK"][0]) + 1)
-        print >>sys.stderr, "[ACULDL-%s]\t%s\t%s" % (addr[0], x.data["ACUL-"+str(addr[0])][0], x.data["ACDL-"+str(addr[0])][0])
+        #print >>sys.stderr, "[ACULDL-%s]\t%s\t%s" % (addr[0], x.data["ACUL-"+str(addr[0])][0], x.data["ACDL-"+str(addr[0])][0])
         if(x.data["PCHECK"][0] == x.data["PLEN"][0]):
             mjcompute_rankings()
             x.update("PLEN", 0)
