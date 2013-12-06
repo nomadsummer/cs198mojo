@@ -123,11 +123,7 @@ def state_callback(ds):
     count = 1
     if(x.is_existing("AC-RANKED")):
         for mjpeer in x.data["AC-RANKED"]:
-<<<<<<< HEAD
             msg += str(count) + ") " + str(mjpeer) + ' AC: ' + str(x.data["ACUL-"+str(mjpeer)][0]) + ' Up: ' + str(x.data["UL-"+str(mjpeer)][0]) + ' Down: ' + str(x.data["DL-"+str(mjpeer)][0]) + '\n'
-=======
-            msg += str(count) + ". " + str(mjpeer) + '\tAC: ' + str(x.data["ACUL-"+str(mjpeer)][0]) + '\tUp: ' + str(x.data["UL-"+str(mjpeer)][0]) + '\tDown: ' + str(x.data["DL-"+str(mjpeer)][0]) + '\n'
->>>>>>> 1b5378d6f0e0fc4f17689defb29a496367fe0bba
             count += 1
     top.set_player_status(msg)
     
@@ -202,7 +198,7 @@ def state_callback(ds):
             x.update("PFLAG", False)
             x.update("TIME", time.time())
             x.update("ACTIME", time.time())
-            print >>sys.stderr, "[PEERS]\t", x.data["PEERS"]
+            #print >>sys.stderr, "[PEERS]\t", x.data["PEERS"]
             for peerip in x.data["PEERS"]:
                 MojoCommunicationClient(MJ_LISTENPORT,'[aac]', peerip)
 
@@ -509,10 +505,10 @@ def mjcallback(addr, msg):
         peerdl = pickle.loads(temp[2])
         x.update("ACUL-"+str(addr[0]), peerul)
         x.update("ACDL-"+str(addr[0]), peerdl)
-        print >>sys.stderr, "[CHECKCHECK1]\t", x.data["PCHECK"][0]
+        #print >>sys.stderr, "[CHECKCHECK1]\t", x.data["PCHECK"][0]
         x.update("PCHECK", float(x.data["PCHECK"][0]) + 1)
-        print >>sys.stderr, "[ACULDL-%s]\t%s\t%s" % (addr[0], x.data["ACUL-"+str(addr[0])][0], x.data["ACDL-"+str(addr[0])][0])
-        print >>sys.stderr, "[CHECKCHECK2]\t", x.data["PCHECK"][0]
+        #print >>sys.stderr, "[ACULDL-%s]\t%s\t%s" % (addr[0], x.data["ACUL-"+str(addr[0])][0], x.data["ACDL-"+str(addr[0])][0])
+        #print >>sys.stderr, "[CHECKCHECK2]\t", x.data["PCHECK"][0]
         if(x.data["PCHECK"][0] >= x.data["PLEN"][0]):
             mjcompute_rankings()
             x.update("PLEN", 0)
