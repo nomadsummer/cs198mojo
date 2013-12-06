@@ -240,7 +240,7 @@ def get_bandutil():
             mojoBUSend(mjpeer)
 
 def mjcompute_ciri():
-    if(x.data['HELPED'][0] and x.is_existing("HELPERS")):
+    if(x.data["HELPED"][0] and x.is_existing("HELPERS") and not x.data["HELPING"][0]):
         if(x.is_existing("MCIRI")):
             x.update("MCIRI", 0.0)
 
