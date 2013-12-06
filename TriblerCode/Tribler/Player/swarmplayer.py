@@ -881,6 +881,7 @@ class PlayerApp(wx.App):
                         + '\nactualUpload ' + str(totalSpeedAll[0][UPLOAD]) 
                         + '\nmaxDownload ' + str(origDownload.get_max_desired_speed(DOWNLOAD)) 
                         + '\nactualUpload ' + str(totalSpeedAll[0][DOWNLOAD]) 
+                        + '\n BANDWIDTHALLOWRECEIVED ' + str(x.data["HELPEDUP"][0])
                         + '\nhelpedMaxUpload ' + str(self.d.get_max_desired_speed(UPLOAD))
                         + '\nhelpedActualUpload ' + str(totalSpeedAll[1][UPLOAD]) 
                         + '\nhelpedMaxDownload ' + str(self.d.get_max_desired_speed(DOWNLOAD))
