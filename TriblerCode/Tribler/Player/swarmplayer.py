@@ -663,7 +663,7 @@ class PlayerApp(wx.App):
             x.update("STILLH", True)
             d.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
             d.set_max_desired_speed(self, UPLOAD,x.data["HELPEDUP"][0])
-            adjust = origDownload.get_max_desired_speed(UPLOAD) - d.get_max_desired_speed(UPLOAD)
+            adjust = origDownload.get_max_desired_speed(UPLOAD) - x.data["HELPEDUP"][0]
             origDownload.set_max_desired_speed(self, UPLOAD, adjust)
             
         #if(x.data["STILLH"][0]):
@@ -882,9 +882,9 @@ class PlayerApp(wx.App):
                         + '\nmaxDownload ' + str(origDownload.get_max_desired_speed(DOWNLOAD)) 
                         + '\nactualUpload ' + str(totalSpeedAll[0][DOWNLOAD]) 
                         + '\n BANDWIDTHALLOWRECEIVED ' + str(x.data["HELPEDUP"][0])
-                        + '\nhelpedMaxUpload ' + str(self.d.get_max_desired_speed(UPLOAD))
+                        + '\nhelpedMaxUpload ' + str(d.get_max_desired_speed(UPLOAD))
                         + '\nhelpedActualUpload ' + str(totalSpeedAll[1][UPLOAD]) 
-                        + '\nhelpedMaxDownload ' + str(self.d.get_max_desired_speed(DOWNLOAD))
+                        + '\nhelpedMaxDownload ' + str(d.get_max_desired_speed(DOWNLOAD))
                         + '\nhelpedActualDownload ' + str(totalSpeedAll[1][DOWNLOAD]) )
             msg = maxuptxt + uptxt + maxdowntxt + downtxt + peertxt + extra + '\n--------'
 
