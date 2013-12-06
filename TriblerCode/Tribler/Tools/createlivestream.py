@@ -130,14 +130,14 @@ def state_callback(ds):
     
     if(firstTime):
         print >>dataFile, "##\t##"
-        #print >>dataFile2, "##\t##\t##"
-        print >>dataFile2, "##\t##"
+        print >>dataFile2, "##\t##\t##"
+        #print >>dataFile2, "##\t##"
         print >>dataFile3, "##\t##"
         print >>dataFile5, "##\t##"
 
         print >>dataFile, "Time\tLatency"
-        #print >>dataFile2, "Time\tBandUtilUp\tBandUtilDown"
-        print >>dataFile2, "Time\tBandUtilUp"
+        print >>dataFile2, "Time\tBandUtilUp\tBandUtilDown"
+        #print >>dataFile2, "Time\tBandUtilUp"
         print >>dataFile3, "Time\tCIRI/MCIRI"
         print >>dataFile5, "Time\tSUDelay"
 

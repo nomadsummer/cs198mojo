@@ -735,10 +735,10 @@ class PlayerApp(wx.App):
             mjtime = datetime.datetime.now().time()
             mjpeers = ds.get_peerlist()
             ######################
-            x.update("CURRUL", totalspeed[UPLOAD])
-            x.update("CURRDL", totalspeed[DOWNLOAD])
-            x.log("ULLOG", totalspeed[UPLOAD])
-            x.log("DLLOG", totalspeed[DOWNLOAD])
+            x.update("CURRUL", totalSpeedAll[0][UPLOAD])
+            x.update("CURRDL", totalSpeedAll[0][DOWNLOAD])
+            x.log("ULLOG", totalSpeedAll[0][UPLOAD])
+            x.log("DLLOG", totalSpeedAll[0][DOWNLOAD])
 
             #print >>sys.stderr, "[MJ-MAXSPEED]\t%s\t%s" % (x.data["MAXDOWN"][0], x.data["MAXUP"][0])
             #self.mjlog_data(ds)
