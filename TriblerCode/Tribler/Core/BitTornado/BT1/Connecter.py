@@ -779,7 +779,7 @@ class Connecter:
         for co in self.connections.values():  
             print >>sys.stderr, "[COIP]:\t", co.get_ip()
             if(co.get_ip() not in peerlist):
-                co.downloader.try_kick()
+                co.downloader.try_kick(co.download)
 
     # add isServer indicator, peers to send
     def got_piece(self, i):
