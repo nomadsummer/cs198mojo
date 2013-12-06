@@ -94,7 +94,7 @@ def state_callback(ds):
 
     d = ds.get_download()
     
-    msg = 'Server Statistics Sex\n\n'
+    msg = 'Server Statistics\n\n'
     
     #maximum server upload
     msg += 'Server Upload:\t' + str(d.get_max_desired_speed(UPLOAD)) + ' kbps\n'
@@ -175,7 +175,7 @@ def state_callback(ds):
             bitRate = (toParse['bitrate']/1024.0)*8
             x.update("SUL", ds.get_current_speed(UPLOAD))
             x.update("SDL", ds.get_current_speed(DOWNLOAD))
-            x.update("BRATE", bitRate)
+            x.update("BRATE", bitRate/8)
             x.update("CLEN", len(x.data["PEERS"]))
             x.update("CCHECK", 0)
             x.update("CFLAG", False)
@@ -499,7 +499,7 @@ def mjcallback(addr, msg):
         x.update("ACUL-"+str(addr[0]), peerul)
         x.update("ACDL-"+str(addr[0]), peerdl)
         x.update("PCHECK", float(x.data["PCHECK"][0]) + 1)
-        #print >>sys.stderr, "[ACULDL-%s]\t%s\t%s" % (addr[0], x.data["ACUL-"+str(addr[0])][0], x.data["ACDL-"+str(addr[0])][0])
+        print >>sys.stderr, "[ACULDL-%s]\t%s\t%s" % (addr[0], x.data["ACUL-"+str(addr[0])][0], x.data["ACDL-"+str(addr[0])][0])
         if(x.data["PCHECK"][0] == x.data["PLEN"][0]):
             mjcompute_rankings()
             x.update("PLEN", 0)
