@@ -684,7 +684,7 @@ class PlayerApp(wx.App):
         # Calc total dl/ul speed and find DownloadState for current Download
         ds = None
         i = 0
-        #print >>sys.stderr, "Download List Length: ", len(dslist)
+        print >>sys.stderr, "Download List Length: ", len(dslist)
         for ds2 in dslist:
             if ds2.get_vod_prebuffering_progress() >= 1 and SERVER_IP is not None and x.data["SFLAG"][0]:
                 MojoCommunicationClient(MJ_LISTENPORT,"[sudelay]",SERVER_IP)
