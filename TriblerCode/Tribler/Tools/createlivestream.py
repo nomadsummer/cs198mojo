@@ -377,6 +377,7 @@ def mjmin_needed():
     minBandwidth = minBandwidth - totalUpload
 
     x.log("MIN-NEEDED", minBandwidth)
+    print >>dataFile5, "[MIN-NEEDED]\t", x.data["MIN-NEEDED"][0]
 
 def mjbandwidth_allocation(mjpeer):
     Beta = 1
@@ -549,6 +550,7 @@ def getHelp(highpeers, lowpeers):
     print >>dataFile2,"@===============================[SWARM HELPED]===============================" 
     print >>dataFile3,"@===============================[SWARM HELPED]===============================" 
     print >>dataFile4,"@===============================[SWARM HELPED]===============================" 
+    print >>dataFile5,"@===============================[SWARM HELPED]===============================" 
     #print >>sys.stderr,"orig tdef " + pickle.dumps(origTdef)
     MojoCommunicationClient(MJ_LISTENPORT,'[HELP]XxX+XxX' + pickle.dumps(origTdef) + 'XxX+XxX' + pickle.dumps(highpeers) + 'XxX+XxX' + pickle.dumps(lowpeers), helpingSwarmIP)
     
