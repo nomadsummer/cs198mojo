@@ -90,6 +90,7 @@ SERVER_IP = None
 origDownload = None
 helpedDownload = None
 totalSpeedAll = {}
+kickcount = 0
 
 class PlayerFrame(VideoFrame):
 
@@ -670,13 +671,15 @@ class PlayerApp(wx.App):
         playermode = self.playermode
         d = self.d
         # print >>sys.stderr,"Orig Download! upload:", origDownload.get_max_desired_speed(UPLOAD)
-        if(x.data["HELPING"][0]) :
+        global kickcount
+        kickcount += 1
+        if(x.data["HELPING"][0] and kickcount > 3) :
             x.update("HELPING", False)
             x.update("STILLH", True)
-            d.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
-            d.set_max_desired_speed(UPLOAD,x.data["HELPEDUP"][0])
-            adjust = origDownload.get_max_desired_speed(UPLOAD) - x.data["HELPEDUP"][0]
+            helpedDownload.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
+            helpedDownload.set_max_desired_speed(self, UPLOAD,x.data["HELPEDUP"][0])
             print >>sys.stderr, "HELPED SWARM MAX UPLOAD", helpedDownload.get_max_desired_speed(UPLOAD)
+            adjust = origDownload.get_max_desired_speed(UPLOAD) - helpedDownload.get_max_desired_speed(UPLOAD)
             origDownload.set_max_desired_speed(self, UPLOAD, adjust)
             print >>sys.stderr, "NEW ORIG SWARM MAX UPLOAD",origDownload.get_max_desired_speed(UPLOAD)
             
