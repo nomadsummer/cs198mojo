@@ -181,7 +181,7 @@ def state_callback(ds):
             x.update("CFLAG", False)
             x.update("BFLAG", False)
             for peerip in x.data["PEERS"]:
-                if(peerip in x.data["HELPERS"]):
+                if(x.is_existing("HELPERS") or peerip in x.data["HELPERS"]):
                     MojoCommunicationClient(MJ_LISTENPORT,'[uldl][1', peerip)
                 else:
                     MojoCommunicationClient(MJ_LISTENPORT,'[uldl][0', peerip)
@@ -203,7 +203,7 @@ def state_callback(ds):
             x.update("ACTIME", time.time())
             #print >>sys.stderr, "[PEERS]\t", x.data["PEERS"]
             for peerip in x.data["PEERS"]:
-                if(peerip in x.data["HELPERS"]):
+                if(x.is_existing("HELPERS") or peerip in x.data["HELPERS"]):
                     MojoCommunicationClient(MJ_LISTENPORT,'[aac][1', peerip)
                 else:
                     MojoCommunicationClient(MJ_LISTENPORT,'[aac][0', peerip)
