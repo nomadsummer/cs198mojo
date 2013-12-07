@@ -496,7 +496,7 @@ def mjcallback(addr, msg):
         #print >>sys.stderr, "[ULDL-%s]\t%s\t%s" % (addr[0], x.data["UL-"+str(addr[0])][0], x.data["DL-"+str(addr[0])][0])
         if(x.data["CCHECK"][0] == x.data["CLEN"][0]):
             for mjpeer in x.data["PEERS"]:
-                if(x.is_existing("ACUL-"+str(mjpeer))):
+                if(not x.is_existing("ACUL-"+str(mjpeer))):
                     checkac = False
             mjcompute_ciri()
             checkac = True
