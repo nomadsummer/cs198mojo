@@ -672,7 +672,8 @@ class PlayerApp(wx.App):
         d = self.d
         # print >>sys.stderr,"Orig Download! upload:", origDownload.get_max_desired_speed(UPLOAD)
         global kickcount
-        kickcount += 1
+        if(x.data["HELPING"][0]):    
+            kickcount += 1
         if(x.data["HELPING"][0] and kickcount > 10) :
             x.update("HELPING", False)
             x.update("STILLH", True)
