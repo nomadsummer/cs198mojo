@@ -515,10 +515,18 @@ class PlayerApp(wx.App):
 
         #####################
         if msg.startswith('[uldl]'):
-            reply = '[uldl]['+pickle.dumps(x.data["CURRUL"][0])+']['+pickle.dumps(x.data["CURRDL"][0])
+            temp = msg.split('][')
+            if(int(temp[1]) == 1 and x.data["STILLH"][0]):
+                reply = '[uldl]['+pickle.dumps(x.data["CURRUL1"][0])+']['+pickle.dumps(x.data["CURRDL1"][0])
+            else:
+                reply = '[uldl]['+pickle.dumps(x.data["CURRUL"][0])+']['+pickle.dumps(x.data["CURRDL"][0])
             MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
         if msg.startswith('[aac]'):
-            reply = '[aac]['+pickle.dumps(x.averageData("ULLOG"))+']['+pickle.dumps(x.averageData("DLLOG"))
+            temp = msg.split('][')
+            if(int(temp[1]) == 1 and x.data["STILLH"][0]):
+                reply = '[aac]['+pickle.dumps(x.averageData("ULLOG1"))+']['+pickle.dumps(x.averageData("DLLOG1"))
+            else:
+                reply = '[aac]['+pickle.dumps(x.averageData("ULLOG"))+']['+pickle.dumps(x.averageData("DLLOG"))
             MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
             x.delete("ULLOG")
             x.delete("DLLOG")
@@ -746,6 +754,12 @@ class PlayerApp(wx.App):
             mjtime = datetime.datetime.now().time()
             mjpeers = ds.get_peerlist()
             ######################
+            if(x.data["STILLH"][0]):
+                x.update("CURRUL1", totalSpeedAll[1][UPLOAD])
+                x.update("CURRDL1", totalSpeedAll[1][DOWNLOAD])
+                x.log("ULLOG1", totalSpeedAll[1][UPLOAD])
+                x.log("DLLOG1", totalSpeedAll[1][DOWNLOAD])    
+
             x.update("CURRUL", totalSpeedAll[0][UPLOAD])
             x.update("CURRDL", totalSpeedAll[0][DOWNLOAD])
             x.log("ULLOG", totalSpeedAll[0][UPLOAD])
