@@ -21,6 +21,8 @@ dlstatus_strings = ['DLSTATUS_ALLOCATING_DISKSPACE',
 
 UPLOAD = 'up'
 DOWNLOAD = 'down'
+MAXUPLOAD = 'maxup'
+MAXDOWNLOAD = 'maxdown'
 
 DLMODE_NORMAL = 0
 DLMODE_VOD = 1
