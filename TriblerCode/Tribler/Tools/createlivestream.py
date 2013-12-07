@@ -168,8 +168,6 @@ def state_callback(ds):
 
         x.update("STARTTIME", time.time())
 
-        print >>sys.stderr, "[PEERS]\t%s" % (x.data["PEERS"])
-
     graceInt += 1
     if(len(x.data["PEERS"]) > 0 and graceInt >= 5):
         if(x.data["CFLAG"][0] and x.data["BFLAG"][0]):
@@ -192,7 +190,8 @@ def state_callback(ds):
 
             x.update("STARTTIME", time.time())
 
-        #print >>sys.stderr, "TIME\t", (time.time() - float(x.data["TIME"][0]))
+        print >>sys.stderr, "[PEERS]\t%s" % (x.data["PEERS"])
+        print >>sys.stderr, "TIME\t", (time.time() - float(x.data["TIME"][0]))
         if((time.time() - float(x.data["TIME"][0]) >= twin and x.data["PFLAG"][0]) or time.time() - float(x.data["ACTIME"][0]) >= timeout):
             x.update("PLEN", len(x.data["PEERS"]))
             x.update("PCHECK", 0)
@@ -498,9 +497,10 @@ def mjcallback(addr, msg):
         x.update("CCHECK", float(x.data["CCHECK"][0]) + 1)
         #print >>sys.stderr, "[ULDL-%s]\t%s\t%s" % (addr[0], x.data["UL-"+str(addr[0])][0], x.data["DL-"+str(addr[0])][0])
         if(x.data["CCHECK"][0] == x.data["CLEN"][0]):
-            for mjpeer in x.data["PEERS"]:
-                if(not x.is_existing("ACUL-"+str(mjpeer))):
-                    checkac = False
+            if(x.is_existing("HELPERS")):
+                for mjpeer in x.data["HELPERS"]:
+                    if(not x.is_existing("ACUL-"+str(mjpeer))):
+                        checkac = False
             mjcompute_ciri()
             checkac = True
             get_bandutil()
@@ -544,7 +544,7 @@ def getHelp(highpeers, lowpeers):
     '''
     
     #helpingSwarmIP = "192.168.1.40" #get from tracker
-    helpingSwarmIP = "10.40.81.183" #get from tracker
+    helpingSwarmIP = "10.40.70.193" #get from tracker
     # After some time
     print >>sys.stderr,"Helping swarm found. Initiating connection." 
     x.update("HELPED",True);
