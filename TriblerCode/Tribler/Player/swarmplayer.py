@@ -674,7 +674,7 @@ class PlayerApp(wx.App):
         global kickcount
         if(x.data["HELPING"][0]):    
             kickcount += 1
-        if(x.data["HELPING"][0] and kickcount > 10) :
+        if(x.data["HELPING"][0] and kickcount > 1) :
             x.update("HELPING", False)
             x.update("STILLH", True)
             helpedDownload.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
