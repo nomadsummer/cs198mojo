@@ -707,7 +707,7 @@ class PlayerApp(wx.App):
             global totalSpeedAll
             if(origDownload == ds2.get_download()):
                 i = 0
-            else if (helpedDownload == ds2.get_download()):
+            elif (helpedDownload == ds2.get_download()):
                 i = 1
             totalSpeedAll[i] = {}
             totalSpeedAll[i][UPLOAD] = ds2.get_current_speed(UPLOAD)
