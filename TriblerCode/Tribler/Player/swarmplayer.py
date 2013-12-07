@@ -674,7 +674,7 @@ class PlayerApp(wx.App):
             x.update("HELPING", False)
             x.update("STILLH", True)
             d.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
-            d.set_max_desired_speed(self, UPLOAD,x.data["HELPEDUP"][0])
+            d.set_max_desired_speed(UPLOAD,x.data["HELPEDUP"][0])
             adjust = origDownload.get_max_desired_speed(UPLOAD) - x.data["HELPEDUP"][0]
             print >>sys.stderr, "HELPED SWARM MAX UPLOAD", helpedDownload.get_max_desired_speed(UPLOAD)
             origDownload.set_max_desired_speed(self, UPLOAD, adjust)
