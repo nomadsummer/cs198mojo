@@ -673,7 +673,7 @@ class PlayerApp(wx.App):
         if(x.data["HELPING"][0]) :
             x.update("HELPING", False)
             x.update("STILLH", True)
-            helpedDownload.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
+            helpedDownload.update_peerlist(self, x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
             helpedDownload.set_max_desired_speed(self, UPLOAD,x.data["HELPEDUP"][0])
             print >>sys.stderr, "HELPED SWARM MAX UPLOAD", helpedDownload.get_max_desired_speed(UPLOAD)
             adjust = origDownload.get_max_desired_speed(UPLOAD) - helpedDownload.get_max_desired_speed(UPLOAD)
@@ -902,15 +902,15 @@ class PlayerApp(wx.App):
             extra = ''
             if(x.data["STILLH"][0] and len(totalSpeedAll) > 1):
                 extra = ('\n----NEW COLLAB STATS----'
-                        + '\nmaxUpload ' + str(totalSpeedAll[1][MAXUPLOAD]) 
-                        + '\nactualUpload ' + str(totalSpeedAll[1][UPLOAD]) 
-                        + '\nmaxDownload ' + str(totalSpeedAll[1][MAXDOWNLOAD]) 
-                        + '\nactualDownload ' + str(totalSpeedAll[1][DOWNLOAD]) 
+                        + '\nmaxUpload ' + str(totalSpeedAll[0][MAXUPLOAD]) 
+                        + '\nactualUpload ' + str(totalSpeedAll[0][UPLOAD]) 
+                        + '\nmaxDownload ' + str(totalSpeedAll[0][MAXDOWNLOAD]) 
+                        + '\nactualDownload ' + str(totalSpeedAll[0][DOWNLOAD]) 
                         + '\n BANDWIDTHALLOWRECEIVED ' + str(x.data["HELPEDUP"][0])
-                        + '\nhelpedMaxUpload ' + str(totalSpeedAll[0][MAXUPLOAD])
-                        + '\nhelpedActualUpload ' + str(totalSpeedAll[0][UPLOAD]) 
-                        + '\nhelpedMaxDownload ' + str(totalSpeedAll[0][MAXDOWNLOAD])
-                        + '\nhelpedActualDownload ' + str(totalSpeedAll[0][DOWNLOAD]) )
+                        + '\nhelpedMaxUpload ' + str(totalSpeedAll[1][MAXUPLOAD])
+                        + '\nhelpedActualUpload ' + str(totalSpeedAll[1][UPLOAD]) 
+                        + '\nhelpedMaxDownload ' + str(totalSpeedAll[1][MAXDOWNLOAD])
+                        + '\nhelpedActualDownload ' + str(totalSpeedAll[1][DOWNLOAD]) )
             msg = maxuptxt + uptxt + maxdowntxt + downtxt + peertxt + extra + '\n--------'
 
         if msg is not None:    
