@@ -516,14 +516,14 @@ class PlayerApp(wx.App):
         #####################
         if msg.startswith('[uldl]'):
             temp = msg.split('][')
-            if(int(temp[1]) == 1 and x.data["STILLH"][0]):
+            if(int(temp[1]) == 1 and x.data["STILLH"][0] and x.is_existing("CURRUL1")):
                 reply = '[uldl]['+pickle.dumps(x.data["CURRUL1"][0])+']['+pickle.dumps(x.data["CURRDL1"][0])
             else:
                 reply = '[uldl]['+pickle.dumps(x.data["CURRUL"][0])+']['+pickle.dumps(x.data["CURRDL"][0])
             MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
         if msg.startswith('[aac]'):
             temp = msg.split('][')
-            if(int(temp[1]) == 1 and x.data["STILLH"][0]):
+            if(int(temp[1]) == 1 and x.data["STILLH"][0] and x.is_existing("ULLOG1")):
                 reply = '[aac]['+pickle.dumps(x.averageData("ULLOG1"))+']['+pickle.dumps(x.averageData("DLLOG1"))
             else:
                 reply = '[aac]['+pickle.dumps(x.averageData("ULLOG"))+']['+pickle.dumps(x.averageData("DLLOG"))
@@ -754,7 +754,7 @@ class PlayerApp(wx.App):
             mjtime = datetime.datetime.now().time()
             mjpeers = ds.get_peerlist()
             ######################
-            if(x.data["STILLH"][0]):
+            if(x.data["STILLH"][0] and len(totalSpeedAll) > 1):
                 x.update("CURRUL1", totalSpeedAll[1][UPLOAD])
                 x.update("CURRDL1", totalSpeedAll[1][DOWNLOAD])
                 x.log("ULLOG1", totalSpeedAll[1][UPLOAD])
