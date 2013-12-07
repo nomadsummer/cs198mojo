@@ -687,7 +687,7 @@ class PlayerApp(wx.App):
             
         # Calc total dl/ul speed and find DownloadState for current Download
         ds = None
-        i = 0
+        i = -1
         print >>sys.stderr, "Download List Length: ", len(dslist)
         for ds2 in dslist:
             if ds2.get_vod_prebuffering_progress() >= 1 and SERVER_IP is not None and x.data["SFLAG"][0]:
@@ -705,13 +705,16 @@ class PlayerApp(wx.App):
             totalhelping += ds2.get_num_peers()
             
             global totalSpeedAll
+            if(origDownload == ds2.get_download()):
+                i = 0
+            else if (helpedDownload == ds2.get_download()):
+                i = 1
             totalSpeedAll[i] = {}
             totalSpeedAll[i][UPLOAD] = ds2.get_current_speed(UPLOAD)
             totalSpeedAll[i][MAXUPLOAD] = ds2.get_download().get_max_desired_speed(UPLOAD)
             totalSpeedAll[i][DOWNLOAD] = ds2.get_current_speed(DOWNLOAD)
             totalSpeedAll[i][MAXDOWNLOAD] = ds2.get_download().get_max_desired_speed(DOWNLOAD)
-            i += 1
-
+    
             #if ds.get_vod_prebuffering_progress() >= 1:
             #    self.d.set_flag()
 
