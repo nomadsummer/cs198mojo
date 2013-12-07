@@ -703,7 +703,9 @@ class PlayerApp(wx.App):
             global totalSpeedAll
             totalSpeedAll[i] = {}
             totalSpeedAll[i][UPLOAD] = ds2.get_current_speed(UPLOAD)
+            totalSpeedAll[i][MAXUPLOAD] = ds2.get_download().get_max_desired_speed(UPLOAD)
             totalSpeedAll[i][DOWNLOAD] = ds2.get_current_speed(DOWNLOAD)
+            totalSpeedAll[i][MAXDOWNLOAD] = ds2.get_download().get_max_desired_speed(DOWNLOAD)
             i += 1
 
             #if ds.get_vod_prebuffering_progress() >= 1:
@@ -876,15 +878,15 @@ class PlayerApp(wx.App):
             peertxt = "peer %d" % (totalhelping)
             extra = ''
             if(x.data["STILLH"][0] and len(totalSpeedAll) > 1):
-                extra = ('\n----NEW COLLAB STATS----\nmaxUpload ' + 
-                        str(origDownload.get_max_desired_speed(UPLOAD)) 
+                extra = ('\n----NEW COLLAB STATS----'
+                        + '\nmaxUpload ' + str(totalSpeedAll[0][MAXUPLOAD]) 
                         + '\nactualUpload ' + str(totalSpeedAll[0][UPLOAD]) 
-                        + '\nmaxDownload ' + str(origDownload.get_max_desired_speed(DOWNLOAD)) 
+                        + '\nmaxDownload ' + str(totalSpeedAll[0][MAXDOWNLOAD]) 
                         + '\nactualUpload ' + str(totalSpeedAll[0][DOWNLOAD]) 
                         + '\n BANDWIDTHALLOWRECEIVED ' + str(x.data["HELPEDUP"][0])
-                        + '\nhelpedMaxUpload ' + str(d.get_max_desired_speed(UPLOAD))
+                        + '\nhelpedMaxUpload ' + str(totalSpeedAll[1][MAXUPLOAD])
                         + '\nhelpedActualUpload ' + str(totalSpeedAll[1][UPLOAD]) 
-                        + '\nhelpedMaxDownload ' + str(d.get_max_desired_speed(DOWNLOAD))
+                        + '\nhelpedMaxDownload ' + str(totalSpeedAll[1][MAXDOWNLOAD])
                         + '\nhelpedActualDownload ' + str(totalSpeedAll[1][DOWNLOAD]) )
             msg = maxuptxt + uptxt + maxdowntxt + downtxt + peertxt + extra + '\n--------'
 
