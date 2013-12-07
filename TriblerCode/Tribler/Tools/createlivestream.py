@@ -247,20 +247,21 @@ def mjcompute_ciri():
         x.update("NetUpCon", 0.0)
 
         #print >>sys.stderr, "HELPERS:", x.data["HELPERS"]
+        peercount = len(x.data["PEERS"])
         for mjpeer in x.data["HELPERS"]:
             if(checkac):
-                print >>sys.stderr, "THISHELPAC"
                 x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data["ACUL-"+str(mjpeer)][0] - x.data["ACDL-"+str(mjpeer)][0]))
             else:
                 if(str(mjpeer) in x.data["PEERS"]):
-                    print >>sys.stderr, "THISHELPNO1"
                     x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data["UL-"+str(mjpeer)][0] - x.data["DL-"+str(mjpeer)][0]))
+                    
                 else:
-                    print >>sys.stderr, "THISHELPNO2"
                     x.update("NetUpCon", (x.data["NetUpCon"][0] + 0.0))
 
         totalUpload = float(x.data["SUL"][0])
-        peercount = len(x.data["PEERS"]) - len(x.data["HELPERS"])
+        if(peercount >= len(x.data["HELPERS"]) + x.data["OLDPC"][0]):
+            peercount = peercount - len(x.data["HELPERS"])
+
         if(peercount > 0):
             for mjpeer in x.data["PEERS"]:
                 if(mjpeer not in x.data["HELPERS"]):
@@ -358,9 +359,9 @@ def mjcompute_rankings():
             counter = 0
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
-                #x.update("HELPED", True)
+                x.update("HELPED", True)
                 mjmin_needed()
-                #getHelp(x.data["highpeers"], x.data["lowpeers"])
+                getHelp(x.data["highpeers"], x.data["lowpeers"])
 
 def mjmin_needed():
     if(x.is_existing("MIN-NEEDED")):
@@ -485,6 +486,7 @@ def mjcallback(addr, msg):
         temp = msg.split("XxX+XxX")
         helpingPeers = pickle.loads(temp[1])
         x.equate("HELPERS", helpingPeers)
+        x.update("OLDPC", len(x.data["PEERS"]))
 
     ####################
     elif msg.startswith('[uldl]'):
