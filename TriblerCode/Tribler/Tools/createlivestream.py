@@ -181,7 +181,10 @@ def state_callback(ds):
             x.update("CFLAG", False)
             x.update("BFLAG", False)
             for peerip in x.data["PEERS"]:
-                MojoCommunicationClient(MJ_LISTENPORT,'[uldl]', peerip)
+                if(peerip in x.data["HELPERS"]):
+                    MojoCommunicationClient(MJ_LISTENPORT,'[uldl][1', peerip)
+                else:
+                    MojoCommunicationClient(MJ_LISTENPORT,'[uldl][0', peerip)
 
             if(x.data["LFLAG"][0] and (time.time() - x.data["LATTIME"][0]) >= latInt):
                 get_latency()
@@ -200,7 +203,10 @@ def state_callback(ds):
             x.update("ACTIME", time.time())
             #print >>sys.stderr, "[PEERS]\t", x.data["PEERS"]
             for peerip in x.data["PEERS"]:
-                MojoCommunicationClient(MJ_LISTENPORT,'[aac]', peerip)
+                if(peerip in x.data["HELPERS"]):
+                    MojoCommunicationClient(MJ_LISTENPORT,'[aac][1', peerip)
+                else:
+                    MojoCommunicationClient(MJ_LISTENPORT,'[aac][0', peerip)
 
             x.update("STARTTIME", time.time())
 
@@ -358,9 +364,9 @@ def mjcompute_rankings():
             counter = 0
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
-                #x.update("HELPED", True)
+                x.update("HELPED", True)
                 mjmin_needed()
-                #getHelp(x.data["highpeers"], x.data["lowpeers"])
+                getHelp(x.data["highpeers"], x.data["lowpeers"])
 
 def mjmin_needed():
     if(x.is_existing("MIN-NEEDED")):
