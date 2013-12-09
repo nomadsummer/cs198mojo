@@ -121,11 +121,10 @@ def state_callback(ds):
     msg += 'BandwidthUtil \tUp: ' + str(x.data["BUUP"][0]) + " Down: " + str(x.data["BUDOWN"][0]) + "\n"
     msg += 'AvgLatency\t' + str(x.data["AVGLATENCY"][0]) + "\n"
     msg += '\nPEERLIST WITH AC RANKINGS\n-------------------------\n'
-    count = 1
+    count = 1 
     if(x.is_existing("AC-RANKED")):
         for mjpeer in x.data["AC-RANKED"]:
             if(x.is_existing("UL-"+str(mjpeer)) and x.is_existing("ACUL-"+str(mjpeer))):
-                # TODO
                 msg += str(count) + ") " + str(mjpeer) + ' AC: ' + str(x.data["ACUL-"+str(mjpeer)][0]) + ' Up: ' + str(x.data["UL-"+str(mjpeer)][0]) + ' Down: ' + str(x.data["DL-"+str(mjpeer)][0]) + '\n'
             count += 1
     top.set_player_status(msg)
@@ -552,7 +551,7 @@ def getHelp(highpeers, lowpeers):
     '''
     
     #helpingSwarmIP = "192.168.1.40" #get from tracker
-    helpingSwarmIP = "10.40.70.193" #get from tracker
+    helpingSwarmIP = "10.40.70.190" #get from tracker
     # After some time
     print >>sys.stderr,"Helping swarm found. Initiating connection." 
     x.update("HELPED",True);

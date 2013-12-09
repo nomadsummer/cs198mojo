@@ -90,7 +90,6 @@ SERVER_IP = None
 origDownload = None
 helpedDownload = None
 totalSpeedAll = {}
-kickcount = 0
 
 class PlayerFrame(VideoFrame):
 
@@ -671,10 +670,7 @@ class PlayerApp(wx.App):
         playermode = self.playermode
         d = self.d
         # print >>sys.stderr,"Orig Download! upload:", origDownload.get_max_desired_speed(UPLOAD)
-        global kickcount
-        if(x.data["HELPING"][0]):    
-            kickcount += 1
-        if(x.data["HELPING"][0] and kickcount > 1) :
+        if(x.data["HELPING"][0]) :
             x.update("HELPING", False)
             x.update("STILLH", True)
             helpedDownload.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
