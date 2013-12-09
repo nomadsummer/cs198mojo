@@ -821,9 +821,9 @@ class MovieOnDemandTransporter(MovieTransport):
 
     def start( self, bytepos = 0, force = False ):
         """ Initialise to start playing at position `bytepos'. """
-        global mojoServer
-        mojoServer = MojoCommunicationServer(MJ_LISTENPORT,self.mjcallback) 
-        mojoServer.start()
+        #global mojoServer
+        #mojoServer = MojoCommunicationServer(MJ_LISTENPORT,self.mjcallback) 
+        #mojoServer.start()
 
         vs = self.videostatus
 
