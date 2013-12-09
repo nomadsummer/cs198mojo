@@ -652,7 +652,7 @@ class Connecter:
         
         
         #MojoCommunicationClient(MJ_LISTENPORT,'[download-tstream] testing...',c.get_ip())
-        
+        print_stack()
         print >>sys.stderr,"Connecter: live: setting",connection.get_ip(),c.get_ip()
         """
         print >>sys.stderr,"MOJO"
