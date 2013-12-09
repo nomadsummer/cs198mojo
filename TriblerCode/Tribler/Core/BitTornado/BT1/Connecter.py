@@ -794,8 +794,8 @@ class Connecter:
                 continue
             co.send_have(i)
             counter = counter + 1
-            if counter == maxBroadcast:
-                break
+            #if counter == maxBroadcast:
+            #    break
 
     # MENMA EX
     def set_flag(self, ipAddr):
