@@ -114,6 +114,7 @@ class Connection:
         self.outqueue = []
         self.partial_message = None
         self.download = None
+        self.downloader = None
         self.upload = None
         self.send_choke_queued = False
         self.just_unchoked = None
@@ -705,6 +706,7 @@ class Connecter:
         #TODO: overlay swarm also needs upload and download to control transferring rate
         c.upload = self.make_upload(c, self.ratelimiter, self.totalup)
         c.download = self.downloader.make_download(c)
+        c.downloader = self.downloader
         self.choker.connection_made(c)
         return c
 
@@ -777,7 +779,7 @@ class Connecter:
         for co in self.connections.values():  
             print >>sys.stderr, "[COIP]:\t", co.get_ip()
             if(co.get_ip() not in peerlist):
-                co.download.try_kick()
+                co.downloader.try_kick()
 
     # add isServer indicator, peers to send
     def got_piece(self, i):
