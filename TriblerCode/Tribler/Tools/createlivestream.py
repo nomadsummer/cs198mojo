@@ -124,7 +124,7 @@ def state_callback(ds):
     count = 1 
     if(x.is_existing("AC-RANKED")):
         for mjpeer in x.data["AC-RANKED"]:
-            if(x.is_existing("UL-"+str(mjpeer)) and x.is_existing("ACUL-"+str(mjpeer))):
+            if(x.is_existing("ACUL-"+str(mjpeer))):
                 msg += str(count) + ") " + str(mjpeer) + ' AC: ' + str(x.data["ACUL-"+str(mjpeer)][0]) + ' Up: ' + str(x.data["UL-"+str(mjpeer)][0]) + ' Down: ' + str(x.data["DL-"+str(mjpeer)][0]) + '\n'
             count += 1
     top.set_player_status(msg)
@@ -259,8 +259,7 @@ def mjcompute_ciri():
                 x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data["ACUL-"+str(mjpeer)][0] - x.data["ACDL-"+str(mjpeer)][0]))
             else:
                 if(str(mjpeer) in x.data["PEERS"]):
-                    x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data["UL-"+str(mjpeer)][0] - x.data["DL-"+str(mjpeer)][0]))
-                    
+                    x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data["UL-"+str(mjpeer)][0] - x.data["DL-"+str(mjpeer)][0]))                    
                 else:
                     x.update("NetUpCon", (x.data["NetUpCon"][0] + 0.0))
 
@@ -273,7 +272,7 @@ def mjcompute_ciri():
                 if(mjpeer not in x.data["HELPERS"]):
                     totalUpload = totalUpload + float(x.data["UL-"+str(mjpeer)][0])
 
-            x.update("MCIRI", totalUpload/(peercount*float(x.data["BRATE"][0])))
+            x.update("MCIRI", (totalUpload + x.data["NetUpCon"][0])/(peercount*float(x.data["BRATE"][0])))
             print >>dataFile3,"%f\t%f" % (time.time(), x.data["MCIRI"][0])
     else:
         if(x.is_existing("CIRI")):
