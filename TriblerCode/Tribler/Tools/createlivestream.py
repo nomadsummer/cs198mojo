@@ -364,9 +364,9 @@ def mjcompute_rankings():
             counter = 0
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
-                #x.update("HELPED", True)
+                x.update("HELPED", True)
                 mjmin_needed()
-                #getHelp(x.data["highpeers"], x.data["lowpeers"])
+                getHelp(x.data["highpeers"], x.data["lowpeers"], x.data[MIN-NEEDED][0])
 
 def mjmin_needed():
     if(x.is_existing("MIN-NEEDED")):
@@ -385,12 +385,17 @@ def mjmin_needed():
     x.log("MIN-NEEDED", minBandwidth)
     print >>dataFile5, "[MIN-NEEDED]\t", x.data["MIN-NEEDED"][0]
 
-def mjbandwidth_allocation(mjpeer):
-    Beta = 1
+def mjbandwidth_allocation(mjpeer, minNeeded, numPeers):
+    excessBandwidth = float(x.data["ACUL-"+str(mjpeer)][0]) - x.data["AvgUL"][0] 
+    usedBandwidth = float(x.data["ACUL-"+str(mjpeer)][0])
+    Beta = excessBandwidth/usedBandwidth
     Alpha = 1
-    leftSide = Beta*(float(x.data["ACUL-"+str(mjpeer)][0]) - x.data["AvgUL"][0])
-    rightSide = (1 - Beta)*(float(x.data["ACUL-"+str(mjpeer)][0]))
+    leftSide = Beta*(excessBandwidth)
+    rightSide = (1 - Beta)*(usedBandwidth)
     preTotal = leftSide + rightSide
+
+    if(preTotal < minNeeded/numPeers):
+        Alpha += (preTotal/(minNeeded/numPeers))
 
     x.update("BA-"+str(mjpeer), Alpha*preTotal)
     #print >>sys.stderr, "[MJ-AVGUP]\t%f" % (float(x.data["AvgUp"][0]))
@@ -428,13 +433,14 @@ def mjcallback(addr, msg):
         helpedTorrentDef = pickle.loads(temp[1])
         helpedhighpeers = pickle.loads(temp[2])
         helpedlowpeers = pickle.loads(temp[3])
+        minNeeded = pickle.loads(temp[4])
         # Get the peers with lowest absCon
         
         # For each helping peers, call the function sendMojoTstream with their IP address as arguments
         # sendMojoTstream(ipAddr)
         if x.is_existing("highpeers"):
             for mjpeer in  x.data["highpeers"]:
-                mjbandwidth_allocation(mjpeer)
+                mjbandwidth_allocation(mjpeer, minNeeded, len(x.data["highpeers"]))
                 sendMojoTstream(mjpeer, helpedTorrentDef, helpedhighpeers + [addr[0]], helpedlowpeers, x.data["BA-"+str(mjpeer)][0])
         
         # Reply to the helped swarm with your peer list
@@ -529,7 +535,7 @@ def mjcallback(addr, msg):
             x.update("PLEN", 0)
             x.update("PFLAG", True)
 
-def getHelp(highpeers, lowpeers):    
+def getHelp(highpeers, lowpeers, minNeeded):    
     '''
     MOJO Server TODO, X => DONE
     [ ] 1. Mechanism for finding the helping swarm. For now, helping swarm is prompted
@@ -560,7 +566,7 @@ def getHelp(highpeers, lowpeers):
     print >>dataFile4,"@===============================[SWARM HELPED]===============================" 
     print >>dataFile5,"@===============================[SWARM HELPED]===============================" 
     #print >>sys.stderr,"orig tdef " + pickle.dumps(origTdef)
-    MojoCommunicationClient(MJ_LISTENPORT,'[HELP]XxX+XxX' + pickle.dumps(origTdef) + 'XxX+XxX' + pickle.dumps(highpeers) + 'XxX+XxX' + pickle.dumps(lowpeers), helpingSwarmIP)
+    MojoCommunicationClient(MJ_LISTENPORT,'[HELP]XxX+XxX' + pickle.dumps(origTdef) + 'XxX+XxX' + pickle.dumps(highpeers) + 'XxX+XxX' + pickle.dumps(lowpeers) + 'XxX+XxX' + pickle.dumps(minNeeded), helpingSwarmIP)
     
 def sendMojoTstream(ipAddr, torrentdef, highpeers, lowpeers, bandwidthAlloc):
     """ Called by MojoCommunication thread """
