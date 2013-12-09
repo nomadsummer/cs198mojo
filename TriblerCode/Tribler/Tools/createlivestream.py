@@ -338,7 +338,7 @@ def mjcompute_rankings():
         counter = counter + 1
         print >>sys.stderr,"help counter", counter
         #if(x.data["CIRI"][0] < 1):
-        if counter == 12 and not x.data["HELPING"][0]:
+        if counter == 3 and not x.data["HELPING"][0]:
             if(x.is_existing("highpeers")):
                 x.delete("highpeers")   
             if(x.is_existing("lowpeers")):
@@ -364,9 +364,9 @@ def mjcompute_rankings():
             counter = 0
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
-                x.update("HELPED", True)
+                #x.update("HELPED", True)
                 mjmin_needed()
-                getHelp(x.data["highpeers"], x.data["lowpeers"])
+                #getHelp(x.data["highpeers"], x.data["lowpeers"])
 
 def mjmin_needed():
     if(x.is_existing("MIN-NEEDED")):
