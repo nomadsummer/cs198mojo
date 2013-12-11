@@ -111,13 +111,17 @@ def state_callback(ds):
     msg += 'Server Status:\t' + status + '\n\n'
     #add something about actual server upload if there is such a thing....
     ciri = ""
-    mciri = ""
+    #mciri = ""
+    netup = ""
     if(x.is_existing("CIRI")):
         ciri = x.data["CIRI"][0]
     if(x.is_existing("MCIRI")):
         ciri = x.data["MCIRI"][0]
+    if(x.is_existing("NetUpCon")):
+        netup = x.data["NetUpCon"][0]
     msg += 'CIRI:\t' + str(ciri) + '\n'
-    msg += 'MCIRI:\t' + str(mciri) + '\n'   
+    #msg += 'MCIRI:\t' + str(mciri) + '\n'   
+    msg += 'NetUpCon:\t' + str(netup) + '\n'
     msg += 'BandwidthUtil \tUp: ' + str(x.data["BUUP"][0]) + " Down: " + str(x.data["BUDOWN"][0]) + "\n"
     msg += 'AvgLatency\t' + str(x.data["AVGLATENCY"][0]) + "\n"
     msg += '\nPEERLIST WITH AC RANKINGS\n-------------------------\n'
@@ -386,22 +390,54 @@ def mjmin_needed():
     print >>dataFile5, "[MIN-NEEDED]\t", x.data["MIN-NEEDED"][0]
 
 def mjbandwidth_allocation(mjpeer, minNeeded, numPeers):
-    excessBandwidth = float(x.data["ACUL-"+str(mjpeer)][0]) - x.data["AvgUL"][0] 
-    usedBandwidth = float(x.data["ACUL-"+str(mjpeer)][0])
-    Beta = excessBandwidth/usedBandwidth
-    Alpha = 1
-    leftSide = Beta*(excessBandwidth)
-    rightSide = (1 - Beta)*(usedBandwidth)
-    preTotal = leftSide + rightSide
+    minPerPeer = minNeeded/numPeers
+    AlphaUL = 1
+    AlphaDL = 1
 
-    if(preTotal < minNeeded/numPeers):
-        Alpha += (preTotal/(minNeeded/numPeers))
+    if(float(x.data["ACDL-"+str(mjpeer)][0]) > x.data["AvgDL"][0]):
+        excessDL = float(x.data["ACDL-"+str(mjpeer)][0]) - x.data["AvgDL"][0] 
+    else:
+        excessDL = x.data["AvgDL"][0] - float(x.data["ACDL-"+str(mjpeer)][0])
+    """
+    usedDL = float(x.data["ACDL-"+str(mjpeer)][0])
+    BetaDL = excessDL/usedDL
+    leftSide = BetaDL*(excessDL)
+    rightSide = (1 - BetaDL)*(usedDL)
+    preTotalDL = leftSide + rightSide
+    """
+    preTotalDL = excessDL
 
-    x.update("BA-"+str(mjpeer), Alpha*preTotal)
+    excessUL = float(x.data["ACUL-"+str(mjpeer)][0]) - x.data["AvgUL"][0] 
+    usedUL = float(x.data["ACUL-"+str(mjpeer)][0])
+    BetaUL = excessUL/usedUL
+    leftSide = BetaUL*(excessUL)
+    rightSide = (1 - BetaUL)*(usedUL)
+    preTotalUL = leftSide + rightSide
+
+    while(preTotalDL > preTotalUL):
+        AlphaDL = AlphaDL - .2
+        preTotalDL = preTotalDL * AlphaDL
+
+    preNetUp = preTotalUL - preTotalDL
+    while(preNetUp < minPerPeer):
+        AlphaUL = AlphaUL + .2
+        preTotalUL = preTotalUL * AlphaUL
+        preNetUp = preTotalUL - preTotalDL
+    """
+    if(preNetUp < minPerPeer):
+        AlphaUL = (minPerPeer + preTotalDL) / preTotalUL
+
+    s.t. preTotalUL*AlphaUL - preTotalDL*AlphaDL >= minPerPeer
+    """
+
+    x.update("BAUL-"+str(mjpeer), preTotalUL)
+    x.update("BADL-"+str(mjpeer), preTotalDL)
     #print >>sys.stderr, "[MJ-AVGUP]\t%f" % (float(x.data["AvgUp"][0]))
     #print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
-    print >>sys.stderr, "[BA-%s]\t%f" % (mjpeer, float(x.data["BA-"+str(mjpeer)][0]))
-    print >>dataFile4, "[BA-%s]\t%f" % (mjpeer, float(x.data["BA-"+str(mjpeer)][0]))
+    print >>sys.stderr, "[BAUL-%s]\t%f" % (mjpeer, float(x.data["BAUL-"+str(mjpeer)][0]))
+    print >>sys.stderr, "[BADL-%s]\t%f" % (mjpeer, float(x.data["BADL-"+str(mjpeer)][0]))
+    print >>dataFile4, "[BAUL-%s]\t%f" % (mjpeer, float(x.data["BAUL-"+str(mjpeer)][0]))
+    print >>dataFile4, "[BADL-%s]\t%f" % (mjpeer, float(x.data["BADL-"+str(mjpeer)][0]))
 
 def vod_ready_callback(d,mimetype,stream,filename):
     """ Called by the Session when the content of the Download is ready
@@ -441,7 +477,7 @@ def mjcallback(addr, msg):
         if x.is_existing("highpeers"):
             for mjpeer in  x.data["highpeers"]:
                 mjbandwidth_allocation(mjpeer, minNeeded, len(x.data["highpeers"]))
-                sendMojoTstream(mjpeer, helpedTorrentDef, helpedhighpeers + [addr[0]], helpedlowpeers, x.data["BA-"+str(mjpeer)][0])
+                sendMojoTstream(mjpeer, helpedTorrentDef, helpedhighpeers + [addr[0]], helpedlowpeers, x.data["BAUL-"+str(mjpeer)][0], x.data["BADL-"+str(mjpeer)][0])
         
         # Reply to the helped swarm with your peer list
         x.update("HELPING", True)
@@ -568,11 +604,11 @@ def getHelp(highpeers, lowpeers, minNeeded):
     #print >>sys.stderr,"orig tdef " + pickle.dumps(origTdef)
     MojoCommunicationClient(MJ_LISTENPORT,'[HELP]XxX+XxX' + pickle.dumps(origTdef) + 'XxX+XxX' + pickle.dumps(highpeers) + 'XxX+XxX' + pickle.dumps(lowpeers) + 'XxX+XxX' + pickle.dumps(minNeeded), helpingSwarmIP)
     
-def sendMojoTstream(ipAddr, torrentdef, highpeers, lowpeers, bandwidthAlloc):
+def sendMojoTstream(ipAddr, torrentdef, highpeers, lowpeers, bandwidthAllocUL, bandwidthAllocDL):
     """ Called by MojoCommunication thread """
     print >>sys.stderr,"Sending tstream... ", ipAddr
     #createTorrentDef()
-    MojoCommunicationClient(MJ_LISTENPORT,'[download-tstream]XxX+XxX' + pickle.dumps(torrentdef) + 'XxX+XxX' + pickle.dumps(highpeers) + 'XxX+XxX' + pickle.dumps(lowpeers) + 'XxX+XxX' + pickle.dumps(bandwidthAlloc), ipAddr)
+    MojoCommunicationClient(MJ_LISTENPORT,'[download-tstream]XxX+XxX' + pickle.dumps(torrentdef) + 'XxX+XxX' + pickle.dumps(highpeers) + 'XxX+XxX' + pickle.dumps(lowpeers) + 'XxX+XxX' + pickle.dumps(bandwidthAllocUL) + 'XxX+XxX' + pickle.dumps(bandwidthAllocDL), ipAddr)
 
 def mojoBUSend(ipAddr):
     # do what you want to do to the recieved message in the main thread. hekhek

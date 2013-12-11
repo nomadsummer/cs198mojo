@@ -75,7 +75,8 @@ x.log("MAXUP", 0.0)
 x.log("MAXDOWN", 0.0)
 x.log("ORIGUP", 0.0)
 x.log("ORIGDOWN", 0.0)
-x.log("HELPEDUP", 0.0)
+x.log("HELPEDUL", 0.0)
+x.log("HELPEDDL", 0.0)
 x.log("HELPEDDOWN", 0.0)
 
 ##################
@@ -494,12 +495,14 @@ class PlayerApp(wx.App):
             highpeers = pickle.loads(temp[2])
             #include midpeers
             lowpeers = pickle.loads(temp[3])
-            bandwidthAlloc = pickle.loads(temp[4])
+            bandwidthAllocUL = pickle.loads(temp[4])
+            bandwidthAllocDL = pickle.loads(temp[5])
             
             x.update("HELPING", True)
             x.update("HIGHPEERLIST", highpeers)
             x.update("LOWPEERLIST", lowpeers)
-            x.update("HELPEDUP", bandwidthAlloc)
+            x.update("HELPEDUL", bandwidthAllocUL)
+            x.update("HELPEDDL", bandwidthAllocDL)
             self.start_download("mojoTstream", tdef)
             #kickout mid peers
             #self.d.update_peerlist(None)
@@ -674,11 +677,17 @@ class PlayerApp(wx.App):
             x.update("HELPING", False)
             x.update("STILLH", True)
             helpedDownload.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
-            helpedDownload.set_max_desired_speed(UPLOAD,x.data["HELPEDUP"][0])
+            helpedDownload.set_max_desired_speed(UPLOAD,x.data["HELPEDUL"][0])
             print >>sys.stderr, "HELPED SWARM MAX UPLOAD", helpedDownload.get_max_desired_speed(UPLOAD)
             adjust = origDownload.get_max_desired_speed(UPLOAD) - helpedDownload.get_max_desired_speed(UPLOAD)
             origDownload.set_max_desired_speed(UPLOAD, adjust)
             print >>sys.stderr, "NEW ORIG SWARM MAX UPLOAD",origDownload.get_max_desired_speed(UPLOAD)
+            
+            helpedDownload.set_max_desired_speed(DOWNLOAD,x.data["HELPEDDL"][0])
+            print >>sys.stderr, "HELPED SWARM MAX DOWNLOAD", helpedDownload.get_max_desired_speed(DOWNLOAD)
+            adjust = origDownload.get_max_desired_speed(DOWNLOAD) - helpedDownload.get_max_desired_speed(DOWNLOAD)
+            origDownload.set_max_desired_speed(DOWNLOAD, adjust)
+            print >>sys.stderr, "NEW ORIG SWARM MAX DOWNLOAD",origDownload.get_max_desired_speed(DOWNLOAD)
             
         #if(x.data["STILLH"][0]):
 
@@ -906,7 +915,8 @@ class PlayerApp(wx.App):
                         + '\nactualUpload ' + str(totalSpeedAll[0][UPLOAD]) 
                         + '\nmaxDownload ' + str(totalSpeedAll[0][MAXDOWNLOAD]) 
                         + '\nactualDownload ' + str(totalSpeedAll[0][DOWNLOAD]) 
-                        + '\n BANDWIDTHALLOWRECEIVED ' + str(x.data["HELPEDUP"][0])
+                        + '\n BANDWIDTH UL RECEIVED ' + str(x.data["HELPEDUL"][0])
+                        + '\n BANDWIDTH DL RECEIVED ' + str(x.data["HELPEDDL"][0])
                         + '\nhelpedMaxUpload ' + str(totalSpeedAll[1][MAXUPLOAD])
                         + '\nhelpedActualUpload ' + str(totalSpeedAll[1][UPLOAD]) 
                         + '\nhelpedMaxDownload ' + str(totalSpeedAll[1][MAXDOWNLOAD])
