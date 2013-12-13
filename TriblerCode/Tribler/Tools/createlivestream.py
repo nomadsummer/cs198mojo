@@ -70,6 +70,8 @@ dataFile2 = open("C:\\Temp\\BandUtil.txt", "w+")
 dataFile3 = open("C:\\Temp\\CIRI.txt", "w+")
 dataFile4 = open("C:\\Temp\\Extra.txt", "w+")
 dataFile5 = open("C:\\Temp\\SUDelay.txt", "w+")
+dataFile6 = open("C:\\Temp\\PacketLoss.txt", "w+")
+dataFile7 = open("C:\\Temp\\MsgCount.txt", "w+")
 
 #########
 x.log("PCHECK", 0)
@@ -97,6 +99,8 @@ def state_callback(ds):
     global dataFile3
     global dataFile4
     global dataFile5
+    global dataFile6
+    global dataFile7
 
     d = ds.get_download()
     
@@ -141,18 +145,24 @@ def state_callback(ds):
         #print >>dataFile2, "##\t##"
         print >>dataFile3, "##\t##"
         print >>dataFile5, "##\t##"
+        print >>dataFile6, "##\t##"
+        print >>dataFile7, "##\t##"
 
         print >>dataFile, "Time\tLatency"
         print >>dataFile2, "Time\tBandUtilUp\tBandUtilDown"
         #print >>dataFile2, "Time\tBandUtilUp"
         print >>dataFile3, "Time\tCIRI/MCIRI"
         print >>dataFile5, "Time\tSUDelay"
+        print >>dataFile6, "Time\tPacketLoss"
+        print >>dataFile7, "Time\tMsgCount"
 
         dataFile = open("C:\\Temp\\Latency.txt", "a+")
         dataFile2 = open("C:\\Temp\\BandUtil.txt", "a+")
         dataFile3 = open("C:\\Temp\\CIRI.txt", "a+")
         dataFile4 = open("C:\\Temp\\Extra.txt", "a+")
         dataFile5 = open("C:\\Temp\\SUDelay.txt", "a+")
+        dataFile6 = open("C:\\Temp\\PacketLoss.txt", "a+")
+        dataFile7 = open("C:\\Temp\\MsgCount.txt", "a+")
 
         firstTime = False
     
@@ -226,6 +236,8 @@ def state_callback(ds):
     dataFile3.flush()
     dataFile4.flush()
     dataFile5.flush()
+    dataFile6.flush()
+    dataFile7.flush()
 
     return (1.0,False)
 
@@ -590,6 +602,16 @@ def mjcallback(addr, msg):
             for mjpeer in  x.data["highpeers"]:
                 mjbandwidth_allocation(mjpeer, minNeeded, len(x.data["highpeers"]))
                 MojoCommunicationClient(MJ_LISTENPORT,'[REALLOC]XxX+XxX' + pickle.dumps(x.data["BAUL-"+str(mjpeer)][0]) + 'XxX+XxX' + pickle.dumps(x.data["BADL-"+str(mjpeer)][0]), mjpeer)
+
+    elif msg.startswith('[PACKET]'):
+        temp = msg.split("][")
+        pcktLoss = pickle.loads(temp[1])
+        print >>dataFile6,"%f\t%f" % (time.time(), pcktLoss)
+
+    elif msg.startswith('[NUMMSG]'):
+        temp = msg.split("][")
+        numMsgs = pickle.loads(temp[1])
+        print >>dataFile7,"%f\t%f" % (time.time(), numMsgs)
 
 def getHelp(highpeers, lowpeers, minNeeded):   
     global helpingSwarmIP 
