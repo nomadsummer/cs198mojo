@@ -57,8 +57,9 @@ x.log("BUDOWN", 0.0)
 x.log("BUCOUNT", 0)
 x.log("BUCHECK", 0)
 x.log("LATCOUNT", 0)
-x.log("LATCHECK", 0)
-x.log("AVGLATENCY", 0.0)
+x.log("GUILATENCY", 0)
+x.log("GUIPACKET", 0)
+x.log("GUIMSG", 0)
 x.log("LATTIME", float(x.data["TIME"][0]))
 x.log("ACTIME", float(x.data["TIME"][0]))
 latInt = 15.0 #Do not make less than 15
@@ -91,6 +92,7 @@ x.log("BRATE", 0.0)
 x.init("PEERS")
 x.init("PACKETLOSS")
 x.init("MSGCOUNT")
+x.init("AVGLATENCY")
 
 MOJOMAXUPLOAD = 6900
 
@@ -134,7 +136,9 @@ def state_callback(ds):
     #msg += 'MCIRI:\t' + str(mciri) + '\n'   
     msg += 'NetUpCon:\t' + str(netup) + '\n'
     msg += 'BandwidthUtil \tUp: ' + str(x.data["BUUP"][0]) + " Down: " + str(x.data["BUDOWN"][0]) + "\n"
-    msg += 'AvgLatency\t' + str(x.data["AVGLATENCY"][0]) + "\n"
+    msg += 'AvgLatency\t' + str(x.data["GUILATENCY"][0]) + "\n"
+    msg += 'PacketLoss\t' + str(x.data["GUIPACKET"][0]) + "\n"
+    msg += 'AvgNumMsgs\t' + str(x.data["GUIMSG"][0]) + "\n"
     msg += '\nPEERLIST WITH AC RANKINGS\n-------------------------\n'
     count = 1 
     if(x.is_existing("AC-RANKED")):
@@ -255,8 +259,6 @@ def state_callback(ds):
 def get_latency():
     if(len(x.data["PEERS"]) > 0 and float(x.data["LATCOUNT"][0]) == 0):
         x.update("LATCOUNT", len(x.data["PEERS"]))
-        x.update("LATCHECK", 0)
-        x.update("AVGLATENCY", 0.0)
         for mjpeer in x.data["PEERS"]:
             x.update("LATENCY-"+str(mjpeer), time.time())
             mojoLatencyTest(mjpeer)
@@ -521,16 +523,15 @@ def mjcallback(addr, msg):
 
     elif msg.startswith('[latencyrep]'):
         x.update("LATENCY-"+str(addr[0]), time.time() - float(x.data["LATENCY-"+str(addr[0])][0]))
-        x.update("AVGLATENCY", float(x.data["AVGLATENCY"][0]) + float(x.data["LATENCY-"+str(addr[0])][0]))
-        x.update("LATCHECK", float(x.data["LATCHECK"][0]) + 1)
+        x.log("AVGLATENCY", float(x.data["LATENCY-"+str(addr[0])][0]))
         #print >>sys.stderr,"[Lat-%s]\t%s" % (addr[0], x.data["LATENCY-"+str(addr[0])][0])
         #print >>sys.stderr,"[AvgLat]\t%s" % (x.data["AVGLATENCY"][0])
 
-        if(float(x.data["LATCHECK"][0]) == float(x.data["LATCOUNT"][0])):
-            x.update("AVGLATENCY", x.data["AVGLATENCY"][0]/x.data["LATCOUNT"][0])
-            print >>dataFile, "%f\t%f" % (time.time(), x.data["AVGLATENCY"][0])
+        if(float(len(x.data["AVGLATENCY"]) == float(x.data["LATCOUNT"][0])):
+            print >>dataFile, "%f\t%f" % (time.time(), x.averageData("AVGLATENCY"))
+            x.update("GUILATENCY", x.averageData("AVGLATENCY"))
+            x.delete("AVGLATENCY")
             x.update("LATCOUNT", 0)
-            x.update("LATCHECK", 0)
             x.update("LFLAG", True)
 
     elif msg.startswith('[maxspeed]'):
@@ -620,8 +621,9 @@ def mjcallback(addr, msg):
         temp = msg.split("][")
         pcktLoss = pickle.loads(temp[1])
         x.log("PACKETLOSS", pcktLoss)
-        if(len(x.data["PACKETLOSS"]) >= x.data["KLEN"][0]):
+        if(len(x.data["PACKETLOSS"]) == x.data["KLEN"][0]):
             print >>dataFile6,"%f\t%f" % (time.time(), x.averageData("PACKETLOSS"))
+            x.update("GUIPACKET", x.averageData("PACKETLOSS"))
             x.delete("PACKETLOSS")
             x.update("KLEN", 0)
             x.update("KFLAG", True)
@@ -630,8 +632,9 @@ def mjcallback(addr, msg):
         temp = msg.split("][")
         numMsgs = pickle.loads(temp[1])
         x.log("MSGCOUNT", numMsgs)
-        if(len(x.data["MSGCOUNT"]) >= x.data["MLEN"][0]):
+        if(len(x.data["MSGCOUNT"]) == x.data["MLEN"][0]):
             print >>dataFile7,"%f\t%f" % (time.time(), x.averageData("MSGCOUNT"))
+            x.update("GUIMSG", x.averageData("MSGCOUNT"))
             x.delete("MSGCOUNT")
             x.update("MLEN", 0)
             x.update("MFLAG", True)
