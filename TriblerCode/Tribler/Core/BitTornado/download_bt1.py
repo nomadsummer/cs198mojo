@@ -772,6 +772,12 @@ class BT1Download:
 
     def get_moviestreamtransport(self):
         return self.voddownload
+
+    def get_packet_loss(self):
+        return self.connecter.get_packet_loss()
+
+    def get_num_msgs(self):
+        return self.connecter.get_num_msgs()
     
     def set_server_ip(self, ipAddr):
         self.voddownload.set_server_ip(ipAddr)

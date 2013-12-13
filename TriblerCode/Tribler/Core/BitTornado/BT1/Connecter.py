@@ -37,6 +37,10 @@ helping = False
 helpedhighpeers = []
 helpedlowpeers = []
 x = MJLogger()
+x.log("MSGCOUNT", 0)
+x.log("PCKTLOSS", 0)
+x.log("RCVCOUNT", 0)
+x.log("REQCOUNT", 0)
 
 try:
     True
@@ -207,6 +211,8 @@ class Connection:
     def send_request(self, index, begin, length):
         global helping 
         global helpedlowpeers
+
+        x.update("REQCOUNT", x.data["REQCOUNT"][0] + 1)
         if helping and self.get_ip() in helpedlowpeers:
             return
         self._send_message(REQUEST + tobinary(index) + 
@@ -232,6 +238,7 @@ class Connection:
         self._send_message('')
 
     def _send_message(self, s):
+        x.update("MSGCOUNT", x.data["MSGCOUNT"][0] + 1)
         s = tobinary(len(s))+s
         if self.partial_message:
             self.outqueue.append(s)
@@ -751,6 +758,15 @@ class Connecter:
             self.ratelimiter.queue(conn)
 
     # MOJO WAS HERE
+    def get_packet_loss():
+        notRcv = x.data["REQCOUNT"][0] - x.data["RCVCOUNT"][0]
+        x.update("PCKTLOSS", notRcv / x.data["REQCOUNT"][0])
+
+        return x.data["PCKTLOSS"][0]
+
+    def get_num_msgs():
+        return x.data["MSGCOUNT"][0]
+
     def kick_peers(self, highpeers, lowpeers):
         """
         print >>sys.stderr, "KICK PEERS"
@@ -967,6 +983,7 @@ class Connecter:
             c.upload.got_cancel(i, toint(message[5:9]), 
                 toint(message[9:]))
         elif t == PIECE:
+            x.update("RCVCOUNT", x.data["RCVCOUNT"][0] + 1)
             if len(message) <= 9:
                 if DEBUG:
                     print >>sys.stderr,"Close on bad PIECE: msg len"

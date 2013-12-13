@@ -346,6 +346,12 @@ class DownloadImpl:
             self.session.lm.rawserver.add_task(self.network_restart,0.0)
         finally:
             self.dllock.release()
+
+    def get_packet_loss(self):
+        return self.sd.get_bt1download().get_packet_loss()
+
+    def get_num_msgs(self):
+        return self.sd.get_bt1download().get_num_msgs()
     
     def set_server_ip(self, ipAddr):
         self.sd.get_bt1download().set_server_ip(ipAddr)

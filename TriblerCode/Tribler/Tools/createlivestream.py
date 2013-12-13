@@ -49,6 +49,8 @@ flag = True
 firstTime = True
 checktime = False
 checkac = True
+collabInt = 0
+helpingSwarmIP = ""
 
 #x.log("PACKETLOSS", 0.0)
 x.log("BUUP", 0.0)
@@ -212,6 +214,8 @@ def state_callback(ds):
                     MojoCommunicationClient(MJ_LISTENPORT,'[aac][1', peerip)
                 else:
                     MojoCommunicationClient(MJ_LISTENPORT,'[aac][0', peerip)
+                MojoCommunicationClient(MJ_LISTENPORT,'[GET-PCKT]', peerip)
+                MojoCommunicationClient(MJ_LISTENPORT,'[GET-NUMMSG]', peerip)
 
             x.update("STARTTIME", time.time())
 
@@ -250,6 +254,8 @@ def get_bandutil():
             mojoBUSend(mjpeer)
 
 def mjcompute_ciri():
+    global collabInt
+
     if(x.data["HELPED"][0] and x.is_existing("HELPERS") and not x.data["HELPING"][0]):
         if(x.is_existing("MCIRI")):
             x.update("MCIRI", 0.0)
@@ -278,6 +284,12 @@ def mjcompute_ciri():
 
             x.update("MCIRI", (totalUpload + x.data["NetUpCon"][0])/(peercount*float(x.data["BRATE"][0])))
             print >>dataFile3,"%f\t%f" % (time.time(), x.data["MCIRI"][0])
+            collabInt += 1
+
+        if(x.data["MCIRI"][0] < 1 and collabInt == 15):
+            mjmin_needed()
+            MojoCommunicationClient(MJ_LISTENPORT,'[RENEW-MIN]XxX+XxX' + pickle.dumps(x.data["MIN-NEEDED"][0]), helpingSwarmIP)            
+            collabInt = 0
     else:
         if(x.is_existing("CIRI")):
             x.delete("CIRI")
@@ -571,7 +583,16 @@ def mjcallback(addr, msg):
             x.update("PLEN", 0)
             x.update("PFLAG", True)
 
-def getHelp(highpeers, lowpeers, minNeeded):    
+    elif msg.startswith('[RENEW-MIN]'):
+        temp = msg.split("XxX+XxX")
+        minNeeded = pickle.loads(temp[1])
+        if x.is_existing("highpeers"):
+            for mjpeer in  x.data["highpeers"]:
+                mjbandwidth_allocation(mjpeer, minNeeded, len(x.data["highpeers"]))
+                MojoCommunicationClient(MJ_LISTENPORT,'[REALLOC]XxX+XxX' + pickle.dumps(x.data["BAUL-"+str(mjpeer)][0]) + 'XxX+XxX' + pickle.dumps(x.data["BADL-"+str(mjpeer)][0]), mjpeer)
+
+def getHelp(highpeers, lowpeers, minNeeded):   
+    global helpingSwarmIP 
     '''
     MOJO Server TODO, X => DONE
     [ ] 1. Mechanism for finding the helping swarm. For now, helping swarm is prompted

@@ -85,6 +85,7 @@ x.log("CURRDL", 0)
 x.log("ULLOG", 0)
 x.log("DLLOG", 0)
 x.log("SFLAG", True)
+x.log("RFLAG", False)
 
 SERVER_IP = None
 
@@ -499,6 +500,7 @@ class PlayerApp(wx.App):
             bandwidthAllocDL = pickle.loads(temp[5])
             
             x.update("HELPING", True)
+            x.update("RFLAG", True)
             x.update("HIGHPEERLIST", highpeers)
             x.update("LOWPEERLIST", lowpeers)
             x.update("HELPEDUL", bandwidthAllocUL)
@@ -536,6 +538,26 @@ class PlayerApp(wx.App):
 
         if msg.startswith('[checksu]'):
             SERVER_IP = addr[0]
+
+        if msg.startswith('[REALLOC]'):
+            temp = msg.split('XxX+XxX')
+            bandwidthAllocUL = pickle.loads(temp[1])
+            bandwidthAllocDL = pickle.loads(temp[2])
+            x.update("HELPEDUL", bandwidthAllocUL)
+            x.update("HELPEDDL", bandwidthAllocDL)
+            x.update("RFLAG", True)
+
+        if msg.startswith('[GET-PCKT]'):
+            #WHAT DOWNLOAD
+            pcktLoss = self.d.get_packet_loss()
+            reply = '[PACKET]['+ pickle.dumps(pcktLoss)
+            MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
+
+        if msg.startswith('[GET-NUMMSG]'):
+            #WHAT DOWNLOAD
+            numMsgs = self.d.get_num_msgs()
+            reply = '[NUMMSG]['+ pickle.dumps(numMsgs)
+            MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
     
     def remote_start_download(self,torrentfilename):
         """ Called by GUI thread """
@@ -673,9 +695,11 @@ class PlayerApp(wx.App):
         playermode = self.playermode
         d = self.d
         # print >>sys.stderr,"Orig Download! upload:", origDownload.get_max_desired_speed(UPLOAD)
-        if(x.data["HELPING"][0]) :
+        if(x.data["HELPING"][0] or x.data["RFLAG"][0]) :
             x.update("HELPING", False)
             x.update("STILLH", True)
+            x.update("RFLAG", False)
+
             helpedDownload.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
             helpedDownload.set_max_desired_speed(UPLOAD,x.data["HELPEDUL"][0])
             print >>sys.stderr, "HELPED SWARM MAX UPLOAD", helpedDownload.get_max_desired_speed(UPLOAD)
