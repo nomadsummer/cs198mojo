@@ -758,13 +758,13 @@ class Connecter:
             self.ratelimiter.queue(conn)
 
     # MOJO WAS HERE
-    def get_packet_loss():
+    def get_packet_loss(self):
         notRcv = x.data["REQCOUNT"][0] - x.data["RCVCOUNT"][0]
         x.update("PCKTLOSS", notRcv / x.data["REQCOUNT"][0])
 
         return x.data["PCKTLOSS"][0]
 
-    def get_num_msgs():
+    def get_num_msgs(self):
         return x.data["MSGCOUNT"][0]
 
     def kick_peers(self, highpeers, lowpeers):

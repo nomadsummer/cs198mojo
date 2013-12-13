@@ -52,7 +52,6 @@ checkac = True
 collabInt = 0
 helpingSwarmIP = ""
 
-#x.log("PACKETLOSS", 0.0)
 x.log("BUUP", 0.0)
 x.log("BUDOWN", 0.0)
 x.log("BUCOUNT", 0)
@@ -74,6 +73,10 @@ dataFile6 = open("C:\\Temp\\PacketLoss.txt", "w+")
 dataFile7 = open("C:\\Temp\\MsgCount.txt", "w+")
 
 #########
+x.log("KLEN", 0)
+x.log("KFLAG", True)
+x.log("MLEN", 0)
+x.log("MFLAG", True)
 x.log("PCHECK", 0)
 x.log("PLEN", 0)
 x.log("PFLAG", True)
@@ -86,6 +89,8 @@ x.log("SUL", 0.0)
 x.log("SDL", 0.0)
 x.log("BRATE", 0.0)
 x.init("PEERS")
+x.init("PACKETLOSS")
+x.init("MSGCOUNT")
 
 MOJOMAXUPLOAD = 6900
 
@@ -187,6 +192,14 @@ def state_callback(ds):
 
     graceInt += 1
     if(len(x.data["PEERS"]) > 0 and graceInt >= 5):
+        if(x.data["KFLAG"][0] and x.data["MFLAG"][0]):
+            x.update("KLEN", len(x.data["PEERS"]))
+            x.update("MLEN", len(x.data["PEERS"]))
+            x.update("KFLAG", False)
+            x.update("MFLAG", False)
+            MojoCommunicationClient(MJ_LISTENPORT,'[GET-PCKT]', peerip)
+            MojoCommunicationClient(MJ_LISTENPORT,'[GET-NUMMSG]', peerip)
+
         if(x.data["CFLAG"][0] and x.data["BFLAG"][0]):
             toParse = ds.get_videoinfo()
             bitRate = (toParse['bitrate']/1024.0)*8
@@ -224,8 +237,6 @@ def state_callback(ds):
                     MojoCommunicationClient(MJ_LISTENPORT,'[aac][1', peerip)
                 else:
                     MojoCommunicationClient(MJ_LISTENPORT,'[aac][0', peerip)
-                MojoCommunicationClient(MJ_LISTENPORT,'[GET-PCKT]', peerip)
-                MojoCommunicationClient(MJ_LISTENPORT,'[GET-NUMMSG]', peerip)
 
             x.update("STARTTIME", time.time())
 
@@ -577,6 +588,7 @@ def mjcallback(addr, msg):
             checkac = True
             get_bandutil()
             x.update("CLEN", 0)
+            x.update("CCHECK", 0)
             x.update("CFLAG", True)
 
     elif msg.startswith('[aac]'):
@@ -593,6 +605,7 @@ def mjcallback(addr, msg):
             checktime = True
             mjcompute_rankings()
             x.update("PLEN", 0)
+            x.update("PCHECK", 0)
             x.update("PFLAG", True)
 
     elif msg.startswith('[RENEW-MIN]'):
@@ -606,12 +619,22 @@ def mjcallback(addr, msg):
     elif msg.startswith('[PACKET]'):
         temp = msg.split("][")
         pcktLoss = pickle.loads(temp[1])
-        print >>dataFile6,"%f\t%f" % (time.time(), pcktLoss)
+        x.log("PACKETLOSS", pcktLoss)
+        if(len(x.data["PACKETLOSS"]) >= x.data["KLEN"][0]):
+            print >>dataFile6,"%f\t%f" % (time.time(), x.averageData("PACKETLOSS"))
+            x.delete("PACKETLOSS")
+            x.update("KLEN", 0)
+            x.update("KFLAG", True)
 
     elif msg.startswith('[NUMMSG]'):
         temp = msg.split("][")
         numMsgs = pickle.loads(temp[1])
-        print >>dataFile7,"%f\t%f" % (time.time(), numMsgs)
+        x.log("MSGCOUNT", numMsgs)
+        if(len(x.data["MSGCOUNT"]) >= x.data["MLEN"][0]):
+            print >>dataFile7,"%f\t%f" % (time.time(), x.averageData("MSGCOUNT"))
+            x.delete("MSGCOUNT")
+            x.update("MLEN", 0)
+            x.update("MFLAG", True)
 
 def getHelp(highpeers, lowpeers, minNeeded):   
     global helpingSwarmIP 
