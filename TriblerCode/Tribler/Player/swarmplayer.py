@@ -548,14 +548,12 @@ class PlayerApp(wx.App):
             x.update("RFLAG", True)
 
         if msg.startswith('[GET-PCKT]'):
-            #WHAT DOWNLOAD
-            pcktLoss = self.d.get_packet_loss()
+            pcktLoss = origDownload.get_packet_loss()
             reply = '[PACKET]['+ pickle.dumps(pcktLoss)
             MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
 
         if msg.startswith('[GET-NUMMSG]'):
-            #WHAT DOWNLOAD
-            numMsgs = self.d.get_num_msgs()
+            numMsgs = origDownload.get_num_msgs()
             reply = '[NUMMSG]['+ pickle.dumps(numMsgs)
             MojoCommunicationClient(MJ_LISTENPORT,reply,addr[0])
     
