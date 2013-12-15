@@ -259,9 +259,12 @@ def state_callback(ds):
 def get_latency():
     if(len(x.data["PEERS"]) > 0 and float(x.data["LATCOUNT"][0]) == 0):
         x.update("LATCOUNT", len(x.data["PEERS"]))
+        if(x.is_existing("HELPERS") and len(x.data["HELPERS"]) > 0):
+            x.update("LATCOUNT", x.data["LATCOUNT"][0] - len(x.data["HELPERS"]))
         for mjpeer in x.data["PEERS"]:
-            x.update("LATENCY-"+str(mjpeer), time.time())
-            mojoLatencyTest(mjpeer)
+            if(mjpeer not in x.data["HELPERS"]):
+                x.update("LATENCY-"+str(mjpeer), time.time())
+                mojoLatencyTest(mjpeer)
     """
     #PACKET LOSS
     completePieces = ds.get_pieces_complete()
@@ -272,11 +275,14 @@ def get_latency():
 def get_bandutil():
     if(len(x.data["PEERS"]) > 0 and float(x.data["BUCOUNT"][0]) == 0):
         x.update("BUCOUNT", len(x.data["PEERS"]))
+        if(x.is_existing("HELPERS") and len(x.data["HELPERS"]) > 0):
+            x.update("BUCOUNT", x.data["BUCOUNT"][0] - len(x.data["HELPERS"]))
         x.update("BUCHECK", 0)
         for mjpeer in x.data["PEERS"]:  
-            x.update("BUUP", 0.0)
-            x.update("BUDOWN", 0.0)
-            mojoBUSend(mjpeer)
+            if(mjpeer not in x.data["HELPERS"]):
+                x.update("BUUP", 0.0)
+                x.update("BUDOWN", 0.0)
+                mojoBUSend(mjpeer)
 
 def mjcompute_ciri():
     global collabInt
@@ -547,8 +553,9 @@ def mjcallback(addr, msg):
             totalDownload = x.data["SDL"][0]
             #print >>sys.stderr, "[SULDL]\t%s\t%s" % (totalUpload, totalDownload)
             for mjpeer in x.data["PEERS"]:
-                totalUpload += x.data["UL-"+str(mjpeer)][0]
-                totalDownload += x.data["DL-"+str(mjpeer)][0]    
+                if(mjpeer not in x.data["HELPERS"]):
+                    totalUpload += x.data["UL-"+str(mjpeer)][0]
+                    totalDownload += x.data["DL-"+str(mjpeer)][0]    
             #print >>sys.stderr, "[TULDL]\t%s\t%s" % (totalUpload, totalDownload)
             #print >>sys.stderr, "[BULDL]\t%s\t%s" % (x.data["BUUP"][0], x.data["BUDOWN"][0])
             buUp = totalUpload / float(x.data["BUUP"][0])
