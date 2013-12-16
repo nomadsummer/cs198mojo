@@ -94,7 +94,7 @@ x.init("PACKETLOSS")
 x.init("MSGCOUNT")
 x.init("AVGLATENCY")
 
-MOJOMAXUPLOAD = 6900
+MOJOMAXUPLOAD = 150
 
 def state_callback(ds):
     global sendTstream
@@ -135,6 +135,7 @@ def state_callback(ds):
     msg += 'CIRI:\t' + str(ciri) + '\n'
     #msg += 'MCIRI:\t' + str(mciri) + '\n'   
     msg += 'NetUpCon:\t' + str(netup) + '\n'
+    msg += 'ServerUpload\t' + str(ds.get_current_speed(UPLOAD)) + "\n"
     msg += 'BandwidthUtil \tUp: ' + str(x.data["BUUP"][0]) + " Down: " + str(x.data["BUDOWN"][0]) + "\n"
     msg += 'AvgLatency\t' + str(x.data["GUILATENCY"][0]) + "\n"
     msg += 'PacketLoss\t' + str(x.data["GUIPACKET"][0]) + "\n"
@@ -212,7 +213,8 @@ def state_callback(ds):
 
         if(x.data["CFLAG"][0] and x.data["BFLAG"][0]):
             toParse = ds.get_videoinfo()
-            bitRate = (toParse['bitrate']/1024.0)*8
+            #bitRate = (toParse['bitrate']/1024.0)*8
+            bitRate = toParse['bitrate']
             x.update("SUL", ds.get_current_speed(UPLOAD))
             x.update("SDL", ds.get_current_speed(DOWNLOAD))
             x.update("BRATE", bitRate/8)
@@ -320,8 +322,7 @@ def mjcompute_ciri():
                     x.update("NetUpCon", (x.data["NetUpCon"][0] + 0.0))
 
         totalUpload = float(x.data["SUL"][0])
-        if(peercount >= len(x.data["HELPERS"]) + x.data["OLDPC"][0]):
-            peercount = peercount - len(x.data["HELPERS"])
+        peercount = peercount - len(x.data["HELPERS"])
 
         if(peercount > 0):
             for mjpeer in x.data["PEERS"]:
@@ -331,7 +332,11 @@ def mjcompute_ciri():
             x.update("MCIRI", (totalUpload + x.data["NetUpCon"][0])/(peercount*float(x.data["BRATE"][0])))
             print >>dataFile3,"%f\t%f" % (time.time(), x.data["MCIRI"][0])
             collabInt += 1
-
+        """
+        print >>sys.stderr, "totalUpload\t", totalUpload
+        print >>sys.stderr, "after\t", totalUpload + x.data["NetUpCon"][0]
+        print >>sys.stderr, "PEERCOUNT\t", peercount
+        """
         if(x.data["MCIRI"][0] < 1 and collabInt == 15):
             mjmin_needed()
             MojoCommunicationClient(MJ_LISTENPORT,'[RENEW-MIN]XxX+XxX' + pickle.dumps(x.data["MIN-NEEDED"][0]), helpingSwarmIP)            
@@ -426,9 +431,9 @@ def mjcompute_rankings():
             counter = 0
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
-                #x.update("HELPED", True)
+                x.update("HELPED", True)
                 mjmin_needed()
-                #getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
+                getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
 
 def mjmin_needed():
     if(x.is_existing("MIN-NEEDED")):
@@ -687,7 +692,7 @@ def getHelp(highpeers, lowpeers, minNeeded):
     '''
     
     #helpingSwarmIP = "192.168.1.40" #get from tracker
-    helpingSwarmIP = "10.40.81.118" #get from tracker
+    helpingSwarmIP = "10.40.81.173" #get from tracker
     # After some time
     print >>sys.stderr,"Helping swarm found. Initiating connection." 
     x.update("HELPED",True);
