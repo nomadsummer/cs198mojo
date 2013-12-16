@@ -428,7 +428,7 @@ def mjcompute_rankings():
                 print >>sys.stderr,"Calling the getHelp() function..."
                 x.update("HELPED", True)
                 mjmin_needed()
-                getHelp(x.data["highpeers"], x.data["lowpeers"], x.data[MIN-NEEDED][0])
+                getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
 
 def mjmin_needed():
     if(x.is_existing("MIN-NEEDED")):
