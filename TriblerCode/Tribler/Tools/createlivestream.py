@@ -533,7 +533,7 @@ def mjcallback(addr, msg):
         #print >>sys.stderr,"[Lat-%s]\t%s" % (addr[0], x.data["LATENCY-"+str(addr[0])][0])
         #print >>sys.stderr,"[AvgLat]\t%s" % (x.data["AVGLATENCY"][0])
 
-        if(float(len(x.data["AVGLATENCY"]) == float(x.data["LATCOUNT"][0])):
+        if(float(len(x.data["AVGLATENCY"])) == float(x.data["LATCOUNT"][0])):
             print >>dataFile, "%f\t%f" % (time.time(), x.averageData("AVGLATENCY"))
             x.update("GUILATENCY", x.averageData("AVGLATENCY"))
             x.delete("AVGLATENCY")
