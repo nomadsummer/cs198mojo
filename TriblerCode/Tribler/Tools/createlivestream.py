@@ -213,8 +213,8 @@ def state_callback(ds):
 
         if(x.data["CFLAG"][0] and x.data["BFLAG"][0]):
             toParse = ds.get_videoinfo()
-            #bitRate = (toParse['bitrate']/1024.0)*8
-            bitRate = toParse['bitrate']
+            bitRate = (toParse['bitrate']/1024.0)*8
+            #bitRate = toParse['bitrate']
             x.update("SUL", ds.get_current_speed(UPLOAD))
             x.update("SDL", ds.get_current_speed(DOWNLOAD))
             x.update("BRATE", bitRate)
