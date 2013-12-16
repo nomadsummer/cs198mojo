@@ -201,8 +201,14 @@ def state_callback(ds):
             x.update("MLEN", len(x.data["PEERS"]))
             x.update("KFLAG", False)
             x.update("MFLAG", False)
-            MojoCommunicationClient(MJ_LISTENPORT,'[GET-PCKT]', peerip)
-            MojoCommunicationClient(MJ_LISTENPORT,'[GET-NUMMSG]', peerip)
+            for peerip in x.data["PEERS"]:
+                if(x.is_existing("HELPERS")):
+                    if(peerip not in x.data["HELPERS"]):
+                        MojoCommunicationClient(MJ_LISTENPORT,'[GET-PCKT]', peerip)
+                        MojoCommunicationClient(MJ_LISTENPORT,'[GET-NUMMSG]', peerip)
+                else:
+                    MojoCommunicationClient(MJ_LISTENPORT,'[GET-PCKT]', peerip)
+                    MojoCommunicationClient(MJ_LISTENPORT,'[GET-NUMMSG]', peerip)
 
         if(x.data["CFLAG"][0] and x.data["BFLAG"][0]):
             toParse = ds.get_videoinfo()
@@ -262,7 +268,11 @@ def get_latency():
         if(x.is_existing("HELPERS") and len(x.data["HELPERS"]) > 0):
             x.update("LATCOUNT", x.data["LATCOUNT"][0] - len(x.data["HELPERS"]))
         for mjpeer in x.data["PEERS"]:
-            if(mjpeer not in x.data["HELPERS"]):
+            if(x.is_existing("HELPERS")):
+                if(mjpeer not in x.data["HELPERS"]):
+                    x.update("LATENCY-"+str(mjpeer), time.time())
+                    mojoLatencyTest(mjpeer)
+            else:
                 x.update("LATENCY-"+str(mjpeer), time.time())
                 mojoLatencyTest(mjpeer)
     """
@@ -279,7 +289,12 @@ def get_bandutil():
             x.update("BUCOUNT", x.data["BUCOUNT"][0] - len(x.data["HELPERS"]))
         x.update("BUCHECK", 0)
         for mjpeer in x.data["PEERS"]:  
-            if(mjpeer not in x.data["HELPERS"]):
+            if(x.is_existing("HELPERS")):
+                if(mjpeer not in x.data["HELPERS"]):
+                    x.update("BUUP", 0.0)
+                    x.update("BUDOWN", 0.0)
+                    mojoBUSend(mjpeer)
+            else:
                 x.update("BUUP", 0.0)
                 x.update("BUDOWN", 0.0)
                 mojoBUSend(mjpeer)
@@ -553,7 +568,11 @@ def mjcallback(addr, msg):
             totalDownload = x.data["SDL"][0]
             #print >>sys.stderr, "[SULDL]\t%s\t%s" % (totalUpload, totalDownload)
             for mjpeer in x.data["PEERS"]:
-                if(mjpeer not in x.data["HELPERS"]):
+                if(x.is_existing("HELPERS")):
+                    if(mjpeer not in x.data["HELPERS"]):
+                        totalUpload += x.data["UL-"+str(mjpeer)][0]
+                        totalDownload += x.data["DL-"+str(mjpeer)][0]    
+                else:
                     totalUpload += x.data["UL-"+str(mjpeer)][0]
                     totalDownload += x.data["DL-"+str(mjpeer)][0]    
             #print >>sys.stderr, "[TULDL]\t%s\t%s" % (totalUpload, totalDownload)
