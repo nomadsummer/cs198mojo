@@ -42,13 +42,12 @@ x = MJLogger()
 x.log("TIME", time.time())
 x.log("STARTTIME", float(x.data["TIME"][0]))
 x.log("HELPED", False)
-x.log("HELPING", False)
+x.log("ONHELP", False)
 twin = 15.0
 graceInt = 0
 flag = True
 firstTime = True
 checktime = False
-checkac = True
 collabInt = 0
 helpingSwarmIP = ""
 
@@ -119,7 +118,7 @@ def state_callback(ds):
     status = "Normal"
     if(x.data["HELPED"][0]):
         status = "Helped"
-    if(x.data["HELPING"][0]):
+    if(x.data["ONHELP"][0]):
         status = "Helping"
     msg += 'Server Status:\t' + status + '\n\n'
     #add something about actual server upload if there is such a thing....
@@ -190,8 +189,8 @@ def state_callback(ds):
             if(not x.is_existing("SU-"+mjpeer['ip'])):
                 x.update("SU-"+mjpeer['ip'], time.time())
                 MojoCommunicationClient(MJ_LISTENPORT,'[checksu]', mjpeer['ip'])
-            if(mjpeer['ip'] not in x.data["PEERS"]):
-                x.log("PEERS", mjpeer['ip'])
+            if(str(mjpeer['ip']) not in x.data["PEERS"]):
+                x.log("PEERS", str(mjpeer['ip']))
 
         x.update("STARTTIME", time.time())
 
@@ -204,7 +203,7 @@ def state_callback(ds):
             x.update("MFLAG", False)
             for peerip in x.data["PEERS"]:
                 if(x.is_existing("HELPERS")):
-                    if(peerip not in x.data["HELPERS"]):
+                    if(str(peerip) not in x.data["HELPERS"]):
                         MojoCommunicationClient(MJ_LISTENPORT,'[GET-PCKT]', peerip)
                         MojoCommunicationClient(MJ_LISTENPORT,'[GET-NUMMSG]', peerip)
                 else:
@@ -223,7 +222,7 @@ def state_callback(ds):
             x.update("CFLAG", False)
             x.update("BFLAG", False)
             for peerip in x.data["PEERS"]:
-                if(x.is_existing("HELPERS") and peerip in x.data["HELPERS"]):
+                if(x.is_existing("HELPERS") and str(peerip) in x.data["HELPERS"]):
                     MojoCommunicationClient(MJ_LISTENPORT,'[uldl][1', peerip)
                 else:
                     MojoCommunicationClient(MJ_LISTENPORT,'[uldl][0', peerip)
@@ -245,7 +244,7 @@ def state_callback(ds):
             x.update("ACTIME", time.time())
             #print >>sys.stderr, "[PEERS]\t", x.data["PEERS"]
             for peerip in x.data["PEERS"]:
-                if(x.is_existing("HELPERS") and peerip in x.data["HELPERS"]):
+                if(x.is_existing("HELPERS") and str(peerip) in x.data["HELPERS"]):
                     MojoCommunicationClient(MJ_LISTENPORT,'[aac][1', peerip)
                 else:
                     MojoCommunicationClient(MJ_LISTENPORT,'[aac][0', peerip)
@@ -271,7 +270,7 @@ def get_latency():
             x.update("LATCOUNT", x.data["LATCOUNT"][0] - len(x.data["HELPERS"]))
         for mjpeer in x.data["PEERS"]:
             if(x.is_existing("HELPERS")):
-                if(mjpeer not in x.data["HELPERS"]):
+                if(str(mjpeer) not in x.data["HELPERS"]):
                     x.update("LATENCY-"+str(mjpeer), time.time())
                     mojoLatencyTest(mjpeer)
             else:
@@ -292,7 +291,7 @@ def get_bandutil():
         x.update("BUCHECK", 0)
         for mjpeer in x.data["PEERS"]:  
             if(x.is_existing("HELPERS")):
-                if(mjpeer not in x.data["HELPERS"]):
+                if(str(mjpeer) not in x.data["HELPERS"]):
                     x.update("BUUP", 0.0)
                     x.update("BUDOWN", 0.0)
                     mojoBUSend(mjpeer)
@@ -304,7 +303,7 @@ def get_bandutil():
 def mjcompute_ciri():
     global collabInt
 
-    if(x.data["HELPED"][0] and x.is_existing("HELPERS") and not x.data["HELPING"][0]):
+    if(x.data["HELPED"][0] and x.is_existing("HELPERS") and not x.data["ONHELP"][0]):
         if(x.is_existing("MCIRI")):
             x.update("MCIRI", 0.0)
 
@@ -313,30 +312,29 @@ def mjcompute_ciri():
         #print >>sys.stderr, "HELPERS:", x.data["HELPERS"]
         peercount = len(x.data["PEERS"])
         for mjpeer in x.data["HELPERS"]:
-            if(checkac):
-                x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data["ACUL-"+str(mjpeer)][0] - x.data["ACDL-"+str(mjpeer)][0]))
+            if(str(mjpeer) in x.data["PEERS"]):
+                x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data["UL-"+str(mjpeer)][0] - x.data["DL-"+str(mjpeer)][0]))                    
             else:
-                if(str(mjpeer) in x.data["PEERS"]):
-                    x.update("NetUpCon", (x.data["NetUpCon"][0] + x.data["UL-"+str(mjpeer)][0] - x.data["DL-"+str(mjpeer)][0]))                    
-                else:
-                    x.update("NetUpCon", (x.data["NetUpCon"][0] + 0.0))
+                x.update("NetUpCon", (x.data["NetUpCon"][0] + 0.0))
 
         totalUpload = float(x.data["SUL"][0])
         peercount = peercount - len(x.data["HELPERS"])
+        #print >>sys.stderr, "SUPLOAD\t", x.data["SUL"][0]
 
         if(peercount > 0):
             for mjpeer in x.data["PEERS"]:
-                if(mjpeer not in x.data["HELPERS"]):
+                if(str(mjpeer) not in x.data["HELPERS"]):
                     totalUpload = totalUpload + float(x.data["UL-"+str(mjpeer)][0])
+                    #print >>sys.stderr, "UPLOAD\t", x.data["UL-"+str(mjpeer)][0]
 
             x.update("MCIRI", (totalUpload + x.data["NetUpCon"][0])/(peercount*float(x.data["BRATE"][0])))
             print >>dataFile3,"%f\t%f" % (time.time(), x.data["MCIRI"][0])
             collabInt += 1
-        """
-        print >>sys.stderr, "totalUpload\t", totalUpload
-        print >>sys.stderr, "after\t", totalUpload + x.data["NetUpCon"][0]
-        print >>sys.stderr, "PEERCOUNT\t", peercount
-        """
+        
+        #print >>sys.stderr, "totalUpload\t", totalUpload
+        #print >>sys.stderr, "after\t", totalUpload + x.data["NetUpCon"][0]
+        #print >>sys.stderr, "PEERCOUNT\t", peercount
+        
         if(x.data["MCIRI"][0] < 1 and collabInt == 15):
             mjmin_needed()
             MojoCommunicationClient(MJ_LISTENPORT,'[RENEW-MIN]XxX+XxX' + pickle.dumps(x.data["MIN-NEEDED"][0]), helpingSwarmIP)            
@@ -347,12 +345,15 @@ def mjcompute_ciri():
 
         totalUpload = float(x.data["SUL"][0])
         peercount = len(x.data["PEERS"])
+        #print >>sys.stderr, "SUPLOAD\t", x.data["SUL"][0]
+
         if(peercount > 0):
             for mjpeer in x.data["PEERS"]:
                 totalUpload = totalUpload + float(x.data["UL-"+str(mjpeer)][0])
+                #print >>sys.stderr, "UPLOAD\t", x.data["UL-"+str(mjpeer)][0]
 
             x.update("CIRI", totalUpload/(peercount*float(x.data["BRATE"][0])))
-            #print >>sys.stderr,"[totalUpload]\t%s\n[peercount]\t%s\n[bitRate]\t%s\n[CIRI]\t%s" % (totalUpload, peercount, x.data["BRATE"][0], x.data["CIRI"][0])
+            #print >>sys.stderr, "totalUpload\t", totalUpload            
             print >>dataFile3,"%f\t%f" % (time.time(), x.data["CIRI"][0])    
 
 def mjcompute_rankings():
@@ -361,10 +362,20 @@ def mjcompute_rankings():
             AvgUL = 0.0
             AvgDL = 0.0
             for mjpeer in x.data["PEERS"]:
-                AvgUL += x.data["ACUL-"+str(mjpeer)][0]
-                AvgDL += x.data["ACDL-"+str(mjpeer)][0]
-            x.update("AvgUL", AvgUL/float(len(x.data["PEERS"][0])))
-            x.update("AvgDL", AvgDL/float(len(x.data["PEERS"][0])))
+                if(x.is_existing("HELPERS")):
+                    if(str(mjpeer) not in x.data["HELPERS"]):
+                        AvgUL += x.data["ACUL-"+str(mjpeer)][0]
+                        AvgDL += x.data["ACDL-"+str(mjpeer)][0]
+                else:
+                    AvgUL += x.data["ACUL-"+str(mjpeer)][0]
+                    AvgDL += x.data["ACDL-"+str(mjpeer)][0]
+
+            if(x.is_existing("HELPERS") and len(x.data["HELPERS"]) > 0):
+                x.update("AvgUL", AvgUL/float(len(x.data["PEERS"][0])) - float(len(x.data["HELPERS"])))
+                x.update("AvgDL", AvgDL/float(len(x.data["PEERS"][0])) - float(len(x.data["HELPERS"])))
+            else:
+                x.update("AvgUL", AvgUL/float(len(x.data["PEERS"][0])))
+                x.update("AvgDL", AvgDL/float(len(x.data["PEERS"][0])))
             #print >>sys.stderr,"[AvgULDL]\t%s\t%s" % (x.data["AvgUL"][0], x.data["AvgDL"][0])
 
         if(x.is_existing("AC-RANKED")):
@@ -377,8 +388,12 @@ def mjcompute_rankings():
         #RANK PEERS ACCORDING TO AC IS POSSIBLE
         ranked = []
         for mjpeer in x.data["PEERS"]:
-            if(x.is_existing("ACUL-"+str(mjpeer))):
-                ranked.append(float(x.data["ACUL-"+str(mjpeer)][0]))
+            if(x.is_existing("HELPERS")):
+                if(str(mjpeer) not in x.data["HELPERS"] and x.is_existing("ACUL-"+str(mjpeer))):
+                    ranked.append(float(x.data["ACUL-"+str(mjpeer)][0]))
+            else:
+                if(x.is_existing("ACUL-"+str(mjpeer))):
+                    ranked.append(float(x.data["ACUL-"+str(mjpeer)][0]))
         ranked = sorted(ranked, reverse=True)
 
         peerrank = []
@@ -405,7 +420,7 @@ def mjcompute_rankings():
         counter = counter + 1
         print >>sys.stderr,"help counter", counter
         #if(x.data["CIRI"][0] < 1):
-        if counter == 3 and not x.data["HELPING"][0]:
+        if counter == 3 and not x.data["ONHELP"][0]:
             if(x.is_existing("highpeers")):
                 x.delete("highpeers")   
             if(x.is_existing("lowpeers")):
@@ -431,9 +446,9 @@ def mjcompute_rankings():
             counter = 0
             if not x.data["HELPED"][0]:
                 print >>sys.stderr,"Calling the getHelp() function..."
-                #x.update("HELPED", True)
+                x.update("HELPED", True)
                 mjmin_needed()
-                #getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
+                getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
 
 def mjmin_needed():
     if(x.is_existing("MIN-NEEDED")):
@@ -445,7 +460,11 @@ def mjmin_needed():
     totalUpload = float(x.data["SUL"][0])
     if(peercount > 0):
         for mjpeer in x.data["PEERS"]:
-            totalUpload = totalUpload + float(x.data["ACUL-"+str(mjpeer)][0])
+            if(x.is_existing("HELPERS")):
+                if(str(mjpeer) not in x.data["HELPERS"]):
+                    totalUpload = totalUpload + float(x.data["ACUL-"+str(mjpeer)][0])
+            else:
+                totalUpload = totalUpload + float(x.data["ACUL-"+str(mjpeer)][0])
 
     minBandwidth = minBandwidth - totalUpload
 
@@ -524,7 +543,6 @@ def mjcallback(addr, msg):
     '''
     #print >>sys.stderr,"[MJ-Notif-Host] Callback function in main received: ", msg    
     global checktime
-    global checkac
 
     if msg.startswith('[HELP]'):
         temp = msg.split("XxX+XxX")
@@ -543,7 +561,7 @@ def mjcallback(addr, msg):
                 sendMojoTstream(mjpeer, helpedTorrentDef, helpedhighpeers + [addr[0]], helpedlowpeers, x.data["BAUL-"+str(mjpeer)][0], x.data["BADL-"+str(mjpeer)][0])
         
         # Reply to the helped swarm with your peer list
-        x.update("HELPING", True)
+        x.update("ONHELP", True)
 
         MojoCommunicationClient(MJ_LISTENPORT,'[ACK-HELP]XxX+XxX' + pickle.dumps(x.data["highpeers"]) + 'XxX+XxX' + pickle.dumps(x.data["lowpeers"]), addr[0])
 
@@ -574,7 +592,7 @@ def mjcallback(addr, msg):
             #print >>sys.stderr, "[SULDL]\t%s\t%s" % (totalUpload, totalDownload)
             for mjpeer in x.data["PEERS"]:
                 if(x.is_existing("HELPERS")):
-                    if(mjpeer not in x.data["HELPERS"]):
+                    if(str(mjpeer) not in x.data["HELPERS"]):
                         totalUpload += x.data["UL-"+str(mjpeer)][0]
                         totalDownload += x.data["DL-"+str(mjpeer)][0]    
                 else:
@@ -584,6 +602,8 @@ def mjcallback(addr, msg):
             #print >>sys.stderr, "[BULDL]\t%s\t%s" % (x.data["BUUP"][0], x.data["BUDOWN"][0])
             buUp = totalUpload / float(x.data["BUUP"][0])
             buDown = totalDownload / float(x.data["BUDOWN"][0])
+            x.update("BUUP", buUp)
+            x.update("BUDOWN", buDown)
             print >>dataFile2, "%f\t%f\t%f" % (time.time(), buUp, buDown)
             #print >>dataFile2, "%f\t%f" % (time.time(), buUp)
             x.update("BUCOUNT", 0)
@@ -612,12 +632,7 @@ def mjcallback(addr, msg):
         x.update("CCHECK", float(x.data["CCHECK"][0]) + 1)
         #print >>sys.stderr, "[ULDL-%s]\t%s\t%s" % (addr[0], x.data["UL-"+str(addr[0])][0], x.data["DL-"+str(addr[0])][0])
         if(x.data["CCHECK"][0] == x.data["CLEN"][0]):
-            if(x.is_existing("HELPERS")):
-                for mjpeer in x.data["HELPERS"]:
-                    if(not x.is_existing("ACUL-"+str(mjpeer))):
-                        checkac = False
             mjcompute_ciri()
-            checkac = True
             get_bandutil()
             x.update("CLEN", 0)
             x.update("CCHECK", 0)
