@@ -93,7 +93,11 @@ x.init("PACKETLOSS")
 x.init("MSGCOUNT")
 x.init("AVGLATENCY")
 
+<<<<<<< HEAD
 MOJOMAXUPLOAD = 15000
+=======
+MOJOMAXUPLOAD = 750
+>>>>>>> 72793006fd85602f051fa2917e524448695b60b2
 
 def state_callback(ds):
     global sendTstream
@@ -447,7 +451,7 @@ def mjcompute_rankings():
             if not x.data["HELPED"][0]:
                 #print >>sys.stderr,"Calling the getHelp() function..."
                 mjmin_needed()
-                #getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
+                getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
 
 def mjmin_needed():
     if(x.is_existing("MIN-NEEDED")):
@@ -706,7 +710,7 @@ def getHelp(highpeers, lowpeers, minNeeded):
     '''
     
     #helpingSwarmIP = "192.168.1.40" #get from tracker
-    helpingSwarmIP = "10.40.81.173" #get from tracker
+    helpingSwarmIP = "192.168.1.43" #get from tracker
     # After some time
     print >>sys.stderr,"Helping swarm found. Initiating connection." 
     x.update("HELPED",True);
