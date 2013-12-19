@@ -699,15 +699,25 @@ class PlayerApp(wx.App):
             x.update("RFLAG", False)
 
             helpedDownload.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
-            helpedDownload.set_max_desired_speed(UPLOAD,x.data["HELPEDUL"][0])
-            print >>sys.stderr, "HELPED SWARM MAX UPLOAD", helpedDownload.get_max_desired_speed(UPLOAD)
-            adjust = origDownload.get_max_desired_speed(UPLOAD) - helpedDownload.get_max_desired_speed(UPLOAD)
+            maxOrigUpload = origDownload.get_max_desired_speed(UPLOAD);
+            if x.data["HELPEDUL"][0] >= maxOrigUpload:
+                helpedDownload.set_max_desired_speed(UPLOAD,maxOrigUpload)
+                adjust = 0
+            else:
+                helpedDownload.set_max_desired_speed(UPLOAD,x.data["HELPEDUL"][0])
+                adjust = maxOrigUpload - helpedDownload.get_max_desired_speed(UPLOAD)
+            print >>sys.stderr, "HELPED SWARM MAX UPLOAD", helpedDownload.get_max_desired_speed(UPLOAD) 
             origDownload.set_max_desired_speed(UPLOAD, adjust)
             print >>sys.stderr, "NEW ORIG SWARM MAX UPLOAD",origDownload.get_max_desired_speed(UPLOAD)
             
-            helpedDownload.set_max_desired_speed(DOWNLOAD,x.data["HELPEDDL"][0])
+            maxOrigDownload = origDownload.get_max_desired_speed(DOWNLOAD)
+            if x.data["HELPEDDL"][0] >= maxOrigDownload:
+                helpedDownload.set_max_desired_speed(DOWNLOAD,maxOrigDownload)
+                adjust = 0
+            else:
+                helpedDownload.set_max_desired_speed(DOWNLOAD,x.data["HELPEDDL"][0])
+                adjust = maxOrigDownload - helpedDownload.get_max_desired_speed(DOWNLOAD)
             print >>sys.stderr, "HELPED SWARM MAX DOWNLOAD", helpedDownload.get_max_desired_speed(DOWNLOAD)
-            adjust = origDownload.get_max_desired_speed(DOWNLOAD) - helpedDownload.get_max_desired_speed(DOWNLOAD)
             origDownload.set_max_desired_speed(DOWNLOAD, adjust)
             print >>sys.stderr, "NEW ORIG SWARM MAX DOWNLOAD",origDownload.get_max_desired_speed(DOWNLOAD)
             
