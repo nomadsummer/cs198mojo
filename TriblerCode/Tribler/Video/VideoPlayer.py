@@ -390,7 +390,8 @@ class VideoPlayer:
 
     def get_video_player(self,ext,videourl,mimetype=None):
 
-        video_player_path = self.utility.config.Read('videoplayerpath')
+        video_player_path = None
+        #self.utility.config.Read('videoplayerpath')
         if DEBUG:
             print >>sys.stderr,"videoplay: Default player is",video_player_path
 
@@ -412,8 +413,7 @@ class VideoPlayer:
             if sys.platform == 'win32':
                 [mimetype,playcmd] = win32_retrieve_playcmd_from_mimetype(mimetype,videourl)
 
-        #if self.playbackmode == PLAYBACKMODE_INTERNAL:
-        if True:
+        if self.playbackmode == PLAYBACKMODE_INTERNAL:
             print >>sys.stderr,"videoplay: using internal player"
             return [mimetype,videourl]
         elif self.playbackmode == PLAYBACKMODE_EXTERNAL_MIME and sys.platform == 'win32':
