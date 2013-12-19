@@ -93,7 +93,7 @@ x.init("PACKETLOSS")
 x.init("MSGCOUNT")
 x.init("AVGLATENCY")
 
-MOJOMAXUPLOAD = 6000
+MOJOMAXUPLOAD = 600
 
 def state_callback(ds):
     global sendTstream
@@ -448,7 +448,7 @@ def mjcompute_rankings():
             if not x.data["HELPED"][0]:
                 #print >>sys.stderr,"Calling the getHelp() function..."
                 mjmin_needed()
-                #getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
+                getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
 
 def mjmin_needed():
     if(x.is_existing("MIN-NEEDED")):
@@ -499,15 +499,15 @@ def mjbandwidth_allocation(mjpeer, minNeeded, numPeers):
     totalDL = preTotalDL
     totalUL = preTotalUL
 
-    while(TotalDL > TotalUL and AlphaDL > 1):
+    while(totalDL > totalUL and AlphaDL > 1):
         AlphaDL = AlphaDL - .2
-        TotalDL = preTotalDL * AlphaDL
+        totalDL = preTotalDL * AlphaDL
 
-    preNetUp = TotalUL - preTotalDL
+    preNetUp = totalUL - preTotalDL
     while(preNetUp < minPerPeer and AlphaUL <= 3):
         AlphaUL = AlphaUL + .2
-        TotalUL = preTotalUL * AlphaUL
-        preNetUp = TotalUL - TotalDL
+        totalUL = preTotalUL * AlphaUL
+        preNetUp = totalUL - totalDL
     """
     if(preNetUp < minPerPeer):
         AlphaUL = (minPerPeer + preTotalDL) / preTotalUL
@@ -515,8 +515,8 @@ def mjbandwidth_allocation(mjpeer, minNeeded, numPeers):
     s.t. preTotalUL*AlphaUL - preTotalDL*AlphaDL >= minPerPeer
     """
 
-    x.update("BAUL-"+str(mjpeer), preTotalUL)
-    x.update("BADL-"+str(mjpeer), preTotalDL)
+    x.update("BAUL-"+str(mjpeer), totalUL)
+    x.update("BADL-"+str(mjpeer), totalDL)
     #print >>sys.stderr, "[MJ-AVGUP]\t%f" % (float(x.data["AvgUp"][0]))
     #print >>sys.stderr, "[MJ-AAC-%s]\t%f" % (mjpeer, float(x.data["AAC-"+str(mjpeer)][0]))
     print >>sys.stderr, "[BAUL-%s]\t%f" % (mjpeer, float(x.data["BAUL-"+str(mjpeer)][0]))
