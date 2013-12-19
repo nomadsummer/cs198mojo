@@ -435,7 +435,7 @@ class VideoPlayer:
         else:
             cmd = playcmd
         print >>sys.stderr,"videoplay: using external user-defined player by executing ",cmd
-        # return [mimetype,cmd]
+        return [mimetype,cmd]
 
             
 
