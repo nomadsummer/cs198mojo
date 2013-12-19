@@ -93,7 +93,7 @@ x.init("PACKETLOSS")
 x.init("MSGCOUNT")
 x.init("AVGLATENCY")
 
-MOJOMAXUPLOAD = 750
+MOJOMAXUPLOAD = 600
 
 def state_callback(ds):
     global sendTstream
@@ -143,7 +143,7 @@ def state_callback(ds):
     count = 1 
     if(x.is_existing("AC-RANKED")):
         for mjpeer in x.data["AC-RANKED"]:
-            if(x.is_existing("ACUL-"+str(mjpeer))):
+            if(x.is_existing("ACUL-"+str(mjpeer)) and x.is_existing("UL-"+str(mjpeer))):
                 msg += str(count) + ") " + str(mjpeer) + ' AC: ' + str(x.data["ACUL-"+str(mjpeer)][0]) + ' Up: ' + str(x.data["UL-"+str(mjpeer)][0]) + ' Down: ' + str(x.data["DL-"+str(mjpeer)][0]) + '\n'
             count += 1
     top.set_player_status(msg)
@@ -447,7 +447,7 @@ def mjcompute_rankings():
             if not x.data["HELPED"][0]:
                 #print >>sys.stderr,"Calling the getHelp() function..."
                 mjmin_needed()
-                getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
+                #getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
 
 def mjmin_needed():
     if(x.is_existing("MIN-NEEDED")):
@@ -570,7 +570,7 @@ def mjcallback(addr, msg):
         #print >>sys.stderr,"[Lat-%s]\t%s" % (addr[0], x.data["LATENCY-"+str(addr[0])][0])
         #print >>sys.stderr,"[AvgLat]\t%s" % (x.data["AVGLATENCY"][0])
 
-        if(float(len(x.data["AVGLATENCY"])) == float(x.data["LATCOUNT"][0])):
+        if(float(len(x.data["AVGLATENCY"])) == float(x.data["LATCOUNT"][0]) and x.data["LATCOUNT"][0] > 0):
             print >>dataFile, "%f\t%f" % (time.time(), x.averageData("AVGLATENCY"))
             x.update("GUILATENCY", x.averageData("AVGLATENCY"))
             x.delete("AVGLATENCY")
@@ -666,7 +666,7 @@ def mjcallback(addr, msg):
         temp = msg.split("][")
         pcktLoss = pickle.loads(temp[1])
         x.log("PACKETLOSS", pcktLoss)
-        if(len(x.data["PACKETLOSS"]) == x.data["KLEN"][0]):
+        if(len(x.data["PACKETLOSS"]) == x.data["KLEN"][0] and x.data["KLEN"][0] > 0):
             print >>dataFile6,"%f\t%f" % (time.time(), x.averageData("PACKETLOSS"))
             x.update("GUIPACKET", x.averageData("PACKETLOSS"))
             x.delete("PACKETLOSS")
@@ -677,7 +677,7 @@ def mjcallback(addr, msg):
         temp = msg.split("][")
         numMsgs = pickle.loads(temp[1])
         x.log("MSGCOUNT", numMsgs)
-        if(len(x.data["MSGCOUNT"]) == x.data["MLEN"][0]):
+        if(len(x.data["MSGCOUNT"]) == x.data["MLEN"][0] and x.data["MLEN"][0] > 0):
             print >>dataFile7,"%f\t%f" % (time.time(), x.averageData("MSGCOUNT"))
             x.update("GUIMSG", x.averageData("MSGCOUNT"))
             x.delete("MSGCOUNT")
