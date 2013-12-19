@@ -178,7 +178,8 @@ class Utility:
             progfilesdir = os.path.expandvars('${PROGRAMFILES}')
             # defaults['videoplayerpath'] = progfilesdir+'\\VideoLAN\\VLC\\vlc.exe'
             # Path also valid on MS Vista
-            defaults['videoplayerpath'] = progfilesdir+'\\Windows Media Player\\wmplayer.exe'
+            defaults['videoplayerpath'] = ''
+            # progfilesdir+'\\Windows Media Player\\wmplayer.exe'
             defaults['videoanalyserpath'] = self.getPath()+'\\ffmpeg.exe'
         elif sys.platform == 'darwin':
             profiledir = os.path.expandvars('${HOME}')
