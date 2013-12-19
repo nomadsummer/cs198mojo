@@ -187,7 +187,7 @@ class PlayerApp(wx.App):
             self.videoserv.register(self.videoserver_error_callback,self.videoserver_set_status_callback)
 
             # Initialize the player manager
-            self.videoplay = VideoPlayer.getInstance()
+            # self.videoplay = VideoPlayer.getInstance()
             
             # H4xor: Use external player on Ubuntu when no VLC python bindings avail 
             if Tribler.Video.EmbeddedPlayer.REALVLC:
