@@ -199,7 +199,8 @@ class Utility:
             vlcpath = None
             # find_prog_in_PATH("vlc")
             if vlcpath is None:
-                defaults['videoplayerpath'] = "vlc"
+                defaults['videoplayerpath'] = ""
+                #"vlc"
             else:
                 defaults['videoplayerpath'] = vlcpath
             ffmpegpath = find_prog_in_PATH("ffmpeg")
