@@ -363,20 +363,11 @@ def mjcompute_rankings():
             AvgUL = 0.0
             AvgDL = 0.0
             for mjpeer in x.data["PEERS"]:
-                if(x.is_existing("HELPERS")):
-                    if(str(mjpeer) not in x.data["HELPERS"]):
-                        AvgUL += x.data["ACUL-"+str(mjpeer)][0]
-                        AvgDL += x.data["ACDL-"+str(mjpeer)][0]
-                else:
-                    AvgUL += x.data["ACUL-"+str(mjpeer)][0]
-                    AvgDL += x.data["ACDL-"+str(mjpeer)][0]
+                AvgUL += x.data["ACUL-"+str(mjpeer)][0]
+                AvgDL += x.data["ACDL-"+str(mjpeer)][0]
 
-            if(x.is_existing("HELPERS") and len(x.data["HELPERS"]) > 0):
-                x.update("AvgUL", AvgUL/float(len(x.data["PEERS"][0])) - float(len(x.data["HELPERS"])))
-                x.update("AvgDL", AvgDL/float(len(x.data["PEERS"][0])) - float(len(x.data["HELPERS"])))
-            else:
-                x.update("AvgUL", AvgUL/float(len(x.data["PEERS"][0])))
-                x.update("AvgDL", AvgDL/float(len(x.data["PEERS"][0])))
+            x.update("AvgUL", AvgUL/float(len(x.data["PEERS"][0])))
+            x.update("AvgDL", AvgDL/float(len(x.data["PEERS"][0])))
             #print >>sys.stderr,"[AvgULDL]\t%s\t%s" % (x.data["AvgUL"][0], x.data["AvgDL"][0])
 
         if(x.is_existing("AC-RANKED")):
@@ -389,12 +380,8 @@ def mjcompute_rankings():
         #RANK PEERS ACCORDING TO AC IS POSSIBLE
         ranked = []
         for mjpeer in x.data["PEERS"]:
-            if(x.is_existing("HELPERS")):
-                if(str(mjpeer) not in x.data["HELPERS"] and x.is_existing("ACUL-"+str(mjpeer))):
-                    ranked.append(float(x.data["ACUL-"+str(mjpeer)][0]))
-            else:
-                if(x.is_existing("ACUL-"+str(mjpeer))):
-                    ranked.append(float(x.data["ACUL-"+str(mjpeer)][0]))
+            if(x.is_existing("ACUL-"+str(mjpeer))):
+                ranked.append(float(x.data["ACUL-"+str(mjpeer)][0]))
         ranked = sorted(ranked, reverse=True)
 
         peerrank = []
@@ -460,11 +447,7 @@ def mjmin_needed():
     totalUpload = float(x.data["SUL"][0])
     if(peercount > 0):
         for mjpeer in x.data["PEERS"]:
-            if(x.is_existing("HELPERS")):
-                if(str(mjpeer) not in x.data["HELPERS"]):
-                    totalUpload = totalUpload + float(x.data["ACUL-"+str(mjpeer)][0])
-            else:
-                totalUpload = totalUpload + float(x.data["ACUL-"+str(mjpeer)][0])
+            totalUpload = totalUpload + float(x.data["ACUL-"+str(mjpeer)][0])
 
     minBandwidth = minBandwidth - totalUpload
 

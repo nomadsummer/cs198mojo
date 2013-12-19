@@ -710,7 +710,7 @@ class PlayerApp(wx.App):
             print >>sys.stderr, "HELPED SWARM MAX UPLOAD", helpedDownload.get_max_desired_speed(UPLOAD) 
             origDownload.set_max_desired_speed(UPLOAD, adjust)
             print >>sys.stderr, "NEW ORIG SWARM MAX UPLOAD",origDownload.get_max_desired_speed(UPLOAD)
-            
+            """
             maxOrigDownload = origDownload.get_max_desired_speed(DOWNLOAD)
             if x.data["HELPEDDL"][0] >= maxOrigDownload:
                 helpedDownload.set_max_desired_speed(DOWNLOAD,maxOrigDownload)
@@ -721,7 +721,7 @@ class PlayerApp(wx.App):
             print >>sys.stderr, "HELPED SWARM MAX DOWNLOAD", helpedDownload.get_max_desired_speed(DOWNLOAD)
             origDownload.set_max_desired_speed(DOWNLOAD, adjust)
             print >>sys.stderr, "NEW ORIG SWARM MAX DOWNLOAD",origDownload.get_max_desired_speed(DOWNLOAD)
-            
+            """
         #if(x.data["STILLH"][0]):
 
         self.dlock.release()
