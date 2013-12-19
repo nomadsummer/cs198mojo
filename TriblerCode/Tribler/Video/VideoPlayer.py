@@ -390,8 +390,7 @@ class VideoPlayer:
 
     def get_video_player(self,ext,videourl,mimetype=None):
 
-        video_player_path = None
-        #self.utility.config.Read('videoplayerpath')
+        video_player_path = self.utility.config.Read('videoplayerpath')
         if DEBUG:
             print >>sys.stderr,"videoplay: Default player is",video_player_path
 
@@ -436,7 +435,7 @@ class VideoPlayer:
         else:
             cmd = playcmd
         print >>sys.stderr,"videoplay: using external user-defined player by executing ",cmd
-        return [mimetype,cmd]
+        # return [mimetype,cmd]
 
             
 
