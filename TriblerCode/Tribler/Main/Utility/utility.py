@@ -176,14 +176,15 @@ class Utility:
             # abc.conf file in INI-file format. The code that starts the player will add quotes
             # if there is a space in this string.
             progfilesdir = os.path.expandvars('${PROGRAMFILES}')
-            defaults['videoplayerpath'] = progfilesdir+'\\VideoLAN\\VLC\\vlc.exe'
+            # defaults['videoplayerpath'] = progfilesdir+'\\VideoLAN\\VLC\\vlc.exe'
             # Path also valid on MS Vista
-            # defaults['videoplayerpath'] = progfilesdir+'\\Windows Media Player\\wmplayer.exe'
+            defaults['videoplayerpath'] = progfilesdir+'\\Windows Media Player\\wmplayer.exe'
             defaults['videoanalyserpath'] = self.getPath()+'\\ffmpeg.exe'
         elif sys.platform == 'darwin':
             profiledir = os.path.expandvars('${HOME}')
             defaults['mintray'] = '0'  # tray doesn't make sense on Mac
-            vlcpath = find_prog_in_PATH("vlc")
+            vlcpath = None
+            #find_prog_in_PATH("vlc")
             if vlcpath is None:
                 defaults['videoplayerpath'] = "/Applications/QuickTime Player.app"
             else:
@@ -195,9 +196,11 @@ class Utility:
                 defaults['videoanalyserpath'] = ffmpegpath
         else:
             defaults['mintray'] = '0'  # Still crashes on Linux sometimes 
-            vlcpath = find_prog_in_PATH("vlc")
+            vlcpath = None
+            # find_prog_in_PATH("vlc")
             if vlcpath is None:
-                defaults['videoplayerpath'] = "vlc"
+                defaults['videoplayerpath'] = ""
+                #"vlc"
             else:
                 defaults['videoplayerpath'] = vlcpath
             ffmpegpath = find_prog_in_PATH("ffmpeg")
