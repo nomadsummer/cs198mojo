@@ -212,7 +212,7 @@ def state_callback(ds):
 
         if(x.data["CFLAG"][0] and x.data["BFLAG"][0]):
             toParse = ds.get_videoinfo()
-            bitRate = (toParse['bitrate']/1024.0)*8
+            bitRate = float(toParse['bitrate'])
             #bitRate = toParse['bitrate']
             x.update("SUL", ds.get_current_speed(UPLOAD))
             x.update("SDL", ds.get_current_speed(DOWNLOAD))
@@ -447,7 +447,7 @@ def mjcompute_rankings():
             if not x.data["HELPED"][0]:
                 #print >>sys.stderr,"Calling the getHelp() function..."
                 mjmin_needed()
-                #getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
+                getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
 
 def mjmin_needed():
     if(x.is_existing("MIN-NEEDED")):
@@ -468,7 +468,7 @@ def mjmin_needed():
     minBandwidth = minBandwidth - totalUpload
 
     x.log("MIN-NEEDED", minBandwidth)
-    print >>dataFile5, "[MIN-NEEDED]\t", x.data["MIN-NEEDED"][0]
+    print >>dataFile4, "[MIN-NEEDED]\t", x.data["MIN-NEEDED"][0]
 
 def mjbandwidth_allocation(mjpeer, minNeeded, numPeers):
     minPerPeer = minNeeded/numPeers
