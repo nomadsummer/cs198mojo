@@ -93,11 +93,8 @@ x.init("PACKETLOSS")
 x.init("MSGCOUNT")
 x.init("AVGLATENCY")
 
-<<<<<<< HEAD
 MOJOMAXUPLOAD = 15000
-=======
-MOJOMAXUPLOAD = 750
->>>>>>> 72793006fd85602f051fa2917e524448695b60b2
+#MOJOMAXUPLOAD = 750
 
 def state_callback(ds):
     global sendTstream
