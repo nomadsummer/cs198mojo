@@ -473,8 +473,8 @@ def mjmin_needed():
 
 def mjbandwidth_allocation(mjpeer, minNeeded, numPeers):
     minPerPeer = minNeeded/numPeers
-    AlphaUL = 1
-    AlphaDL = 1
+    AlphaUL = 2
+    AlphaDL = 2
 
     if(float(x.data["ACDL-"+str(mjpeer)][0]) > x.data["AvgDL"][0]):
         excessDL = float(x.data["ACDL-"+str(mjpeer)][0]) - x.data["AvgDL"][0] 
@@ -496,15 +496,18 @@ def mjbandwidth_allocation(mjpeer, minNeeded, numPeers):
     rightSide = (1 - BetaUL)*(usedUL)
     preTotalUL = leftSide + rightSide
 
-    while(preTotalDL > preTotalUL):
-        AlphaDL = AlphaDL - .2
-        preTotalDL = preTotalDL * AlphaDL
+    totalDL = preTotalDL
+    totalUL = preTotalUL
 
-    preNetUp = preTotalUL - preTotalDL
-    while(preNetUp < minPerPeer):
+    while(TotalDL > TotalUL and AlphaDL > 1):
+        AlphaDL = AlphaDL - .2
+        TotalDL = preTotalDL * AlphaDL
+
+    preNetUp = TotalUL - preTotalDL
+    while(preNetUp < minPerPeer and AlphaUL <= 3):
         AlphaUL = AlphaUL + .2
-        preTotalUL = preTotalUL * AlphaUL
-        preNetUp = preTotalUL - preTotalDL
+        TotalUL = preTotalUL * AlphaUL
+        preNetUp = TotalUL - TotalDL
     """
     if(preNetUp < minPerPeer):
         AlphaUL = (minPerPeer + preTotalDL) / preTotalUL
