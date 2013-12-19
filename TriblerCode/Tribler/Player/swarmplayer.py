@@ -501,8 +501,8 @@ class PlayerApp(wx.App):
             
             x.update("HELPING", True)
             x.update("RFLAG", True)
-            x.update("HIGHPEERLIST", highpeers)
-            x.update("LOWPEERLIST", lowpeers)
+            x.equate("HIGHPEERLIST", highpeers)
+            x.equate("LOWPEERLIST", lowpeers)
             x.update("HELPEDUL", bandwidthAllocUL)
             x.update("HELPEDDL", bandwidthAllocDL)
             self.start_download("mojoTstream", tdef)

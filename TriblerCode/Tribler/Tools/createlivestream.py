@@ -94,7 +94,7 @@ x.init("PACKETLOSS")
 x.init("MSGCOUNT")
 x.init("AVGLATENCY")
 
-MOJOMAXUPLOAD = 6000
+MOJOMAXUPLOAD = 600
 
 def state_callback(ds):
     global sendTstream
@@ -343,7 +343,7 @@ def mjcompute_ciri():
         #print >>sys.stderr, "PEERCOUNT\t", peercount
         print >>dataFile8,"%f\t%f\t%f" % (time.time(), totalUpload, x.data["NetUpCon"][0])    
         
-        if(x.data["MCIRI"][0] < 1 and collabInt == 15):
+        if(x.is_existing("MCIRI") and x.data["MCIRI"][0] < 1 and collabInt == 15):
             mjmin_needed()
             MojoCommunicationClient(MJ_LISTENPORT,'[RENEW-MIN]XxX+XxX' + pickle.dumps(x.data["MIN-NEEDED"][0]), helpingSwarmIP)            
             collabInt = 0
@@ -442,7 +442,7 @@ def mjcompute_rankings():
             if not x.data["HELPED"][0]:
                 #print >>sys.stderr,"Calling the getHelp() function..."
                 mjmin_needed()
-                #getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
+                getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
 
 def mjmin_needed():
     if(x.is_existing("MIN-NEEDED")):
@@ -454,7 +454,8 @@ def mjmin_needed():
     totalUpload = float(x.data["SUL"][0])
     if(peercount > 0):
         for mjpeer in x.data["PEERS"]:
-            totalUpload = totalUpload + float(x.data["ACUL-"+str(mjpeer)][0])
+            if(x.is_existing("HELPERS") and str(mjpeer) not in x.data["HELPERS"]):
+                totalUpload = totalUpload + float(x.data["ACUL-"+str(mjpeer)][0])
 
     minBandwidth = minBandwidth - totalUpload
 
