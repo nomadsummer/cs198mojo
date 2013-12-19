@@ -183,7 +183,8 @@ class Utility:
         elif sys.platform == 'darwin':
             profiledir = os.path.expandvars('${HOME}')
             defaults['mintray'] = '0'  # tray doesn't make sense on Mac
-            vlcpath = find_prog_in_PATH("vlc")
+            vlcpath = None
+            #find_prog_in_PATH("vlc")
             if vlcpath is None:
                 defaults['videoplayerpath'] = "/Applications/QuickTime Player.app"
             else:
@@ -195,7 +196,8 @@ class Utility:
                 defaults['videoanalyserpath'] = ffmpegpath
         else:
             defaults['mintray'] = '0'  # Still crashes on Linux sometimes 
-            vlcpath = find_prog_in_PATH("vlc")
+            vlcpath = None
+            # find_prog_in_PATH("vlc")
             if vlcpath is None:
                 defaults['videoplayerpath'] = "vlc"
             else:
