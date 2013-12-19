@@ -698,7 +698,6 @@ class PlayerApp(wx.App):
             x.update("STILLH", True)
             x.update("RFLAG", False)
 
-            helpedDownload.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
             maxOrigUpload = origDownload.get_max_desired_speed(UPLOAD);
             print >>sys.stderr, "MAX ORIG UPLOAD", maxOrigUpload
             if x.data["HELPEDUL"][0] >= maxOrigUpload:
@@ -710,6 +709,7 @@ class PlayerApp(wx.App):
             print >>sys.stderr, "HELPED SWARM MAX UPLOAD", helpedDownload.get_max_desired_speed(UPLOAD) 
             origDownload.set_max_desired_speed(UPLOAD, adjust)
             print >>sys.stderr, "NEW ORIG SWARM MAX UPLOAD",origDownload.get_max_desired_speed(UPLOAD)
+            helpedDownload.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
             """
             maxOrigDownload = origDownload.get_max_desired_speed(DOWNLOAD)
             if x.data["HELPEDDL"][0] >= maxOrigDownload:
