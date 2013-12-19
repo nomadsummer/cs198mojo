@@ -385,19 +385,16 @@ def mjcompute_rankings():
             x.delete("LOW-RANKED")   
 
         #RANK PEERS ACCORDING TO AC IS POSSIBLE
-        ranked = []
+        achash = {}
         for mjpeer in x.data["PEERS"]:
             if(x.is_existing("ACUL-"+str(mjpeer))):
-                ranked.append(float(x.data["ACUL-"+str(mjpeer)][0]))
-        ranked = sorted(ranked, reverse=True)
+                achash[float(x.data["ACUL-"+str(mjpeer)][0])] = str(mjpeer)
+        ranked = sorted(achash)
 
         peerrank = []
         for mjpeerup in ranked:
-            for mjpeer in x.data["PEERS"]:
-                if(x.is_existing("ACUL-"+str(mjpeer)) and float(x.data["ACUL-"+str(mjpeer)][0]) == float(mjpeerup)):
-                    mjpeerup = -1
-                    peerrank.append(mjpeer)
-
+            peerrank.append(str(achash[mjpeerup]))
+            
         #print >>sys.stderr, "PEERRANK", peerrank
 
         for mjpeer in peerrank:
@@ -415,7 +412,7 @@ def mjcompute_rankings():
         counter = counter + 1
         print >>sys.stderr,"help counter", counter
         #if(x.data["CIRI"][0] < 1):
-        if counter == 3 and not x.data["ONHELP"][0]:
+        if counter == 20 and not x.data["ONHELP"][0]:
             if(x.is_existing("highpeers")):
                 x.delete("highpeers")   
             if(x.is_existing("lowpeers")):
