@@ -190,10 +190,10 @@ class PlayerApp(wx.App):
             self.videoplay = VideoPlayer.getInstance()
             
             # H4xor: Use external player on Ubuntu when no VLC python bindings avail 
-            #if Tribler.Video.EmbeddedPlayer.REALVLC:
-            playbackmode = PLAYBACKMODE_INTERNAL
-            #else:
-            #    playbackmode = PLAYBACKMODE_EXTERNAL_DEFAULT
+            if Tribler.Video.EmbeddedPlayer.REALVLC:
+                playbackmode = PLAYBACKMODE_INTERNAL
+            else:
+                playbackmode = PLAYBACKMODE_EXTERNAL_DEFAULT
             self.videoplay.register(self.utility,overrideplaybackmode=playbackmode)
             self.videoplay.set_parentwindow(self.videoFrame)
             

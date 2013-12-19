@@ -412,9 +412,9 @@ class VideoPlayer:
             if sys.platform == 'win32':
                 [mimetype,playcmd] = win32_retrieve_playcmd_from_mimetype(mimetype,videourl)
 
-        if self.playbackmode == PLAYBACKMODE_INTERNAL:
-            print >>sys.stderr,"videoplay: using internal player"
-            return [mimetype,videourl]
+        #if self.playbackmode == PLAYBACKMODE_INTERNAL:
+        print >>sys.stderr,"videoplay: using internal player"
+        return [mimetype,videourl]
         elif self.playbackmode == PLAYBACKMODE_EXTERNAL_MIME and sys.platform == 'win32':
             if playcmd is not None:
                 cmd = 'start /B "TriblerVideo" '+playcmd
