@@ -700,6 +700,7 @@ class PlayerApp(wx.App):
 
             helpedDownload.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
             maxOrigUpload = origDownload.get_max_desired_speed(UPLOAD);
+            print >>sys.stderr, "MAX ORIG UPLOAD", maxOrigUpload
             if x.data["HELPEDUL"][0] >= maxOrigUpload:
                 helpedDownload.set_max_desired_speed(UPLOAD,maxOrigUpload)
                 adjust = 0
