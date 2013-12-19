@@ -87,7 +87,7 @@ x.log("BFLAG", True)
 x.log("LFLAG", True)
 x.log("SUL", 0.0)
 x.log("SDL", 0.0)
-x.log("BRATE", 0.0)
+x.log("BRATE", 200.0)
 x.init("PEERS")
 x.init("PACKETLOSS")
 x.init("MSGCOUNT")
@@ -211,12 +211,13 @@ def state_callback(ds):
                     MojoCommunicationClient(MJ_LISTENPORT,'[GET-NUMMSG]', peerip)
 
         if(x.data["CFLAG"][0] and x.data["BFLAG"][0]):
-            toParse = ds.get_videoinfo()
-            bitRate = float(toParse['bitrate'])
+            bitRate = 200
+            #toParse = ds.get_videoinfo()
+            #bitRate = float(toParse['bitrate']*8/1024)
             #bitRate = toParse['bitrate']
             x.update("SUL", ds.get_current_speed(UPLOAD))
             x.update("SDL", ds.get_current_speed(DOWNLOAD))
-            x.update("BRATE", bitRate)
+            #x.update("BRATE", bitRate)
             x.update("CLEN", len(x.data["PEERS"]))
             x.update("CCHECK", 0)
             x.update("CFLAG", False)
