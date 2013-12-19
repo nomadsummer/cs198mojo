@@ -71,6 +71,7 @@ dataFile4 = open("C:\\Temp\\Extra.txt", "w+")
 dataFile5 = open("C:\\Temp\\SUDelay.txt", "w+")
 dataFile6 = open("C:\\Temp\\PacketLoss.txt", "w+")
 dataFile7 = open("C:\\Temp\\MsgCount.txt", "w+")
+dataFile8 = open("C:\\Temp\\MCIRI.txt", "w+")
 
 #########
 x.log("KLEN", 0)
@@ -107,6 +108,7 @@ def state_callback(ds):
     global dataFile5
     global dataFile6
     global dataFile7
+    global dataFile8
 
     d = ds.get_download()
     
@@ -156,6 +158,7 @@ def state_callback(ds):
         print >>dataFile5, "##\t##"
         print >>dataFile6, "##\t##"
         print >>dataFile7, "##\t##"
+        print >>dataFile8, "##\t##\t##"
 
         print >>dataFile, "Time\tLatency"
         print >>dataFile2, "Time\tBandUtilUp\tBandUtilDown"
@@ -164,6 +167,7 @@ def state_callback(ds):
         print >>dataFile5, "Time\tSUDelay"
         print >>dataFile6, "Time\tPacketLoss"
         print >>dataFile7, "Time\tMsgCount"
+        print >>dataFile8, "Time\tTotalUp\tNetUpCon"
 
         dataFile = open("C:\\Temp\\Latency.txt", "a+")
         dataFile2 = open("C:\\Temp\\BandUtil.txt", "a+")
@@ -172,6 +176,7 @@ def state_callback(ds):
         dataFile5 = open("C:\\Temp\\SUDelay.txt", "a+")
         dataFile6 = open("C:\\Temp\\PacketLoss.txt", "a+")
         dataFile7 = open("C:\\Temp\\MsgCount.txt", "a+")
+        dataFile8 = open("C:\\Temp\\MCIRI.txt", "a+")
 
         firstTime = False
     
@@ -261,6 +266,7 @@ def state_callback(ds):
     dataFile5.flush()
     dataFile6.flush()
     dataFile7.flush()
+    dataFile8.flush()
 
     return (1.0,False)
 
@@ -335,6 +341,7 @@ def mjcompute_ciri():
         #print >>sys.stderr, "totalUpload\t", totalUpload
         #print >>sys.stderr, "after\t", totalUpload + x.data["NetUpCon"][0]
         #print >>sys.stderr, "PEERCOUNT\t", peercount
+        print >>dataFile8,"%f\t%f\t%f" % (time.time(), totalUpload, x.data["NetUpCon"][0])    
         
         if(x.data["MCIRI"][0] < 1 and collabInt == 15):
             mjmin_needed()
@@ -702,6 +709,9 @@ def getHelp(highpeers, lowpeers, minNeeded):
     print >>dataFile3,"@===============================[SWARM HELPED]===============================" 
     print >>dataFile4,"@===============================[SWARM HELPED]===============================" 
     print >>dataFile5,"@===============================[SWARM HELPED]===============================" 
+    print >>dataFile6,"@===============================[SWARM HELPED]===============================" 
+    print >>dataFile7,"@===============================[SWARM HELPED]===============================" 
+    print >>dataFile8,"@===============================[SWARM HELPED]===============================" 
     #print >>sys.stderr,"orig tdef " + pickle.dumps(origTdef)
     MojoCommunicationClient(MJ_LISTENPORT,'[HELP]XxX+XxX' + pickle.dumps(origTdef) + 'XxX+XxX' + pickle.dumps(highpeers) + 'XxX+XxX' + pickle.dumps(lowpeers) + 'XxX+XxX' + pickle.dumps(minNeeded), helpingSwarmIP)
     
