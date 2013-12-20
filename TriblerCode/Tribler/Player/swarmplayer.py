@@ -69,6 +69,7 @@ MOJOMAX_UPLOAD = 150
 MOJOMAX_DOWNLOAD = 300
 
 x = MJLogger()
+x.log("updatePeerlist", False)
 x.log("HELPING", False)
 x.log("STILLH", False)
 x.log("MAXUP", 0.0)
@@ -86,7 +87,6 @@ x.log("ULLOG", 0)
 x.log("DLLOG", 0)
 x.log("SFLAG", True)
 x.log("RFLAG", False)
-updatePeerlist = False
 
 SERVER_IP = None
 
@@ -694,10 +694,9 @@ class PlayerApp(wx.App):
         playermode = self.playermode
         d = self.d
         # print >>sys.stderr,"Orig Download! upload:", origDownload.get_max_desired_speed(UPLOAD)
-        global updatePeerlist
-        if updatePeerlist:
-            global updatePeerlist
-            updatePeerlist = not helpedDownload.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
+        
+        if x.data["updatePeerlist"][0]:
+            x.update("updatePeerlist", not helpedDownload.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST']))
         if(x.data["HELPING"][0] or x.data["RFLAG"][0]) :
             x.update("HELPING", False)
             x.update("STILLH", True)
@@ -715,8 +714,8 @@ class PlayerApp(wx.App):
             print >>sys.stderr, "HELPED SWARM MAX UPLOAD", helpedDownload.get_max_desired_speed(UPLOAD) 
             origDownload.set_max_desired_speed(UPLOAD, adjust)
             print >>sys.stderr, "NEW ORIG SWARM MAX UPLOAD",origDownload.get_max_desired_speed(UPLOAD)
-            global updatePeerlist
-            updatePeerlist = True
+            
+            x.update("updatePeerlist", True)
                 
             maxOrigDownload = MOJOMAX_DOWNLOAD
             if x.data["HELPEDDL"][0] >= maxOrigDownload:
