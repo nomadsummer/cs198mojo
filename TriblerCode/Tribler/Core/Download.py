@@ -87,7 +87,7 @@ class Download(DownloadRuntimeConfig,DownloadImpl):
     def update_peerlist(self, highpeers, lowpeers):
         """ Updates peerlist. """
         # Called by any thread
-        DownloadImpl.update_peerlist(self, highpeers, lowpeers)
+        return DownloadImpl.update_peerlist(self, highpeers, lowpeers)
 
     def get_packet_loss(self):
         # Called by any thread

@@ -363,7 +363,7 @@ class DownloadImpl:
         return self.sd.get_bt1download().set_flag(ipAddr)
         
     def update_peerlist(self, highpeers, lowpeers):
-        self.sd.get_bt1download().update_peerlist(highpeers, lowpeers)
+        return self.sd.get_bt1download().update_peerlist(highpeers, lowpeers)
     
     def network_restart(self):
         """ Called by network thread """

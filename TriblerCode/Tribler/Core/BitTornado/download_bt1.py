@@ -789,4 +789,8 @@ class BT1Download:
         return self.connecter.set_flag(ipAddr)
 
     def update_peerlist(self, highpeers, lowpeers):
-        return self.connecter.kick_peers(highpeers, lowpeers)
+        if self.connecter is not None:
+            self.connecter.kick_peers(highpeers, lowpeers)
+            return True
+        else:
+            return False

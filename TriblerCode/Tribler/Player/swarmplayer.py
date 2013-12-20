@@ -86,6 +86,7 @@ x.log("ULLOG", 0)
 x.log("DLLOG", 0)
 x.log("SFLAG", True)
 x.log("RFLAG", False)
+updatePeerlist = False
 
 SERVER_IP = None
 
@@ -693,12 +694,15 @@ class PlayerApp(wx.App):
         playermode = self.playermode
         d = self.d
         # print >>sys.stderr,"Orig Download! upload:", origDownload.get_max_desired_speed(UPLOAD)
+        if updatePeerlist:
+            updatePeerlist = not helpedDownload.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
         if(x.data["HELPING"][0] or x.data["RFLAG"][0]) :
             x.update("HELPING", False)
             x.update("STILLH", True)
             x.update("RFLAG", False)
 
-            maxOrigUpload = origDownload.get_max_desired_speed(UPLOAD);
+            maxOrigUpload = MOJOMAX_UPLOAD
+            # origDownload.get_max_desired_speed(UPLOAD);
             print >>sys.stderr, "MAX ORIG UPLOAD", maxOrigUpload
             if x.data["HELPEDUL"][0] >= maxOrigUpload:
                 helpedDownload.set_max_desired_speed(UPLOAD,maxOrigUpload)
@@ -709,9 +713,9 @@ class PlayerApp(wx.App):
             print >>sys.stderr, "HELPED SWARM MAX UPLOAD", helpedDownload.get_max_desired_speed(UPLOAD) 
             origDownload.set_max_desired_speed(UPLOAD, adjust)
             print >>sys.stderr, "NEW ORIG SWARM MAX UPLOAD",origDownload.get_max_desired_speed(UPLOAD)
-            helpedDownload.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
-            """
-            maxOrigDownload = origDownload.get_max_desired_speed(DOWNLOAD)
+            updatePeerlist = True
+                
+            maxOrigDownload = MOJOMAX_DOWNLOAD
             if x.data["HELPEDDL"][0] >= maxOrigDownload:
                 helpedDownload.set_max_desired_speed(DOWNLOAD,maxOrigDownload)
                 adjust = 0
@@ -721,7 +725,6 @@ class PlayerApp(wx.App):
             print >>sys.stderr, "HELPED SWARM MAX DOWNLOAD", helpedDownload.get_max_desired_speed(DOWNLOAD)
             origDownload.set_max_desired_speed(DOWNLOAD, adjust)
             print >>sys.stderr, "NEW ORIG SWARM MAX DOWNLOAD",origDownload.get_max_desired_speed(DOWNLOAD)
-            """
         #if(x.data["STILLH"][0]):
 
         self.dlock.release()
