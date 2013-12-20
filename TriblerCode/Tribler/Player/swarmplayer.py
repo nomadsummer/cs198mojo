@@ -713,15 +713,9 @@ class PlayerApp(wx.App):
             print >>sys.stderr, "HELPED SWARM MAX UPLOAD", helpedDownload.get_max_desired_speed(UPLOAD) 
             origDownload.set_max_desired_speed(UPLOAD, adjust)
             print >>sys.stderr, "NEW ORIG SWARM MAX UPLOAD",origDownload.get_max_desired_speed(UPLOAD)
-<<<<<<< HEAD
             updatePeerlist = True
                 
             maxOrigDownload = MOJOMAX_DOWNLOAD
-=======
-            helpedDownload.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
-            
-            maxOrigDownload = origDownload.get_max_desired_speed(DOWNLOAD)
->>>>>>> 0ddf3096b82edf06df3a9d9677a77aeeb32700e4
             if x.data["HELPEDDL"][0] >= maxOrigDownload:
                 helpedDownload.set_max_desired_speed(DOWNLOAD,maxOrigDownload)
                 adjust = 0
@@ -731,10 +725,6 @@ class PlayerApp(wx.App):
             print >>sys.stderr, "HELPED SWARM MAX DOWNLOAD", helpedDownload.get_max_desired_speed(DOWNLOAD)
             origDownload.set_max_desired_speed(DOWNLOAD, adjust)
             print >>sys.stderr, "NEW ORIG SWARM MAX DOWNLOAD",origDownload.get_max_desired_speed(DOWNLOAD)
-<<<<<<< HEAD
-=======
-            
->>>>>>> 0ddf3096b82edf06df3a9d9677a77aeeb32700e4
         #if(x.data["STILLH"][0]):
 
         self.dlock.release()
