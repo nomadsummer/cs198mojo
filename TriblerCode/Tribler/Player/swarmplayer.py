@@ -694,7 +694,9 @@ class PlayerApp(wx.App):
         playermode = self.playermode
         d = self.d
         # print >>sys.stderr,"Orig Download! upload:", origDownload.get_max_desired_speed(UPLOAD)
+        global updatePeerlist
         if updatePeerlist:
+            global updatePeerlist
             updatePeerlist = not helpedDownload.update_peerlist(x.data['HIGHPEERLIST'], x.data['LOWPEERLIST'])
         if(x.data["HELPING"][0] or x.data["RFLAG"][0]) :
             x.update("HELPING", False)
@@ -713,6 +715,7 @@ class PlayerApp(wx.App):
             print >>sys.stderr, "HELPED SWARM MAX UPLOAD", helpedDownload.get_max_desired_speed(UPLOAD) 
             origDownload.set_max_desired_speed(UPLOAD, adjust)
             print >>sys.stderr, "NEW ORIG SWARM MAX UPLOAD",origDownload.get_max_desired_speed(UPLOAD)
+            global updatePeerlist
             updatePeerlist = True
                 
             maxOrigDownload = MOJOMAX_DOWNLOAD
