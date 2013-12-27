@@ -94,7 +94,7 @@ x.init("PACKETLOSS")
 x.init("MSGCOUNT")
 x.init("AVGLATENCY")
 
-MOJOMAXUPLOAD = 100
+MOJOMAXUPLOAD = 200
 
 def state_callback(ds):
     global sendTstream
@@ -704,7 +704,7 @@ def getHelp(highpeers, lowpeers, minNeeded):
     '''
     
     #helpingSwarmIP = "192.168.1.40" #get from tracker
-    helpingSwarmIP = "192.168.0.27" #get from tracker
+    helpingSwarmIP = "192.168.0.33" #get from tracker
     # After some time
     print >>sys.stderr,"Helping swarm found. Initiating connection." 
     x.update("HELPED",True);
