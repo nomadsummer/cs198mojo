@@ -202,8 +202,8 @@ def state_callback(ds):
     graceInt += 1
     if(len(x.data["PEERS"]) > 0 and graceInt >= 5):
         if(x.data["KFLAG"][0] and x.data["MFLAG"][0]):
-            x.update("KLEN", len(x.data["PEERS"]))
-            x.update("MLEN", len(x.data["PEERS"]))
+            x.update("KLEN", len(x.data["PEERS"]) - len(x.data["HELPERS"]))
+            x.update("MLEN", len(x.data["PEERS"]) - len(x.data["HELPERS"]))
             x.update("KFLAG", False)
             x.update("MFLAG", False)
             for peerip in x.data["PEERS"]:
@@ -439,7 +439,7 @@ def mjcompute_rankings():
             if not x.data["HELPED"][0]:
                 #print >>sys.stderr,"Calling the getHelp() function..."
                 mjmin_needed()
-                getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
+                #getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
 
 def mjmin_needed():
     if(x.is_existing("MIN-NEEDED")):
