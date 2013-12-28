@@ -450,15 +450,17 @@ def mjmin_needed():
 
     bitRate = float(x.data["BRATE"][0])
     peercount = len(x.data["PEERS"])
+    if(x.is_existing("HELPERS")):
+        peercount = peercount - len(x.data["HELPERS"])
     minBandwidth = peercount*bitRate
     totalUpload = float(x.data["SUL"][0])
     if(peercount > 0):
         for mjpeer in x.data["PEERS"]:
             if(x.is_existing("HELPERS")):
                 if(str(mjpeer) not in x.data["HELPERS"]):
-                    totalUpload = totalUpload + float(x.data["ACUL-"+str(mjpeer)][0])
+                    totalUpload = totalUpload + float(x.data["UL-"+str(mjpeer)][0])
             else:
-                totalUpload = totalUpload + float(x.data["ACUL-"+str(mjpeer)][0])
+                totalUpload = totalUpload + float(x.data["UL-"+str(mjpeer)][0])
 
     minBandwidth = minBandwidth - totalUpload
 
