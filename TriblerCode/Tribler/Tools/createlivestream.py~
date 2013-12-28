@@ -202,8 +202,16 @@ def state_callback(ds):
     graceInt += 1
     if(len(x.data["PEERS"]) > 0 and graceInt >= 5):
         if(x.data["KFLAG"][0] and x.data["MFLAG"][0]):
+<<<<<<< HEAD
             x.update("KLEN", len(x.data["PEERS"]) - len(x.data["HELPERS"]))
             x.update("MLEN", len(x.data["PEERS"]) - len(x.data["HELPERS"]))
+=======
+            x.update("KLEN", len(x.data["PEERS"]))
+            x.update("MLEN", len(x.data["PEERS"]))
+            if(x.is_existing("HELPERS")):
+                x.update("KLEN", float(x.data["KLEN"][0]) - len(x.data["HELPERS"]))
+                x.update("MLEN", float(x.data["MLEN"][0]) - len(x.data["HELPERS"]))
+>>>>>>> 30cdae1f96dbc6f20747d172e51b391705944214
             x.update("KFLAG", False)
             x.update("MFLAG", False)
             for peerip in x.data["PEERS"]:
@@ -701,7 +709,11 @@ def getHelp(highpeers, lowpeers, minNeeded):
     '''
     
     #helpingSwarmIP = "192.168.1.40" #get from tracker
+<<<<<<< HEAD
     helpingSwarmIP = "192.168.0.17" #get from tracker
+=======
+    helpingSwarmIP = "192.168.0.69" #get from tracker
+>>>>>>> 30cdae1f96dbc6f20747d172e51b391705944214
     # After some time
     print >>sys.stderr,"Helping swarm found. Initiating connection." 
     x.update("HELPED",True);

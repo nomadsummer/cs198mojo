@@ -706,7 +706,7 @@ def getHelp(highpeers, lowpeers, minNeeded):
     '''
     
     #helpingSwarmIP = "192.168.1.40" #get from tracker
-    helpingSwarmIP = "192.168.1.43" #get from tracker
+    helpingSwarmIP = "192.168.0.69" #get from tracker
     # After some time
     print >>sys.stderr,"Helping swarm found. Initiating connection." 
     x.update("HELPED",True);
