@@ -94,7 +94,7 @@ x.init("PACKETLOSS")
 x.init("MSGCOUNT")
 x.init("AVGLATENCY")
 
-MOJOMAXUPLOAD = 200
+MOJOMAXUPLOAD = 6000
 
 def state_callback(ds):
     global sendTstream
@@ -440,9 +440,9 @@ def mjcompute_rankings():
             
             counter = 0
             if not x.data["HELPED"][0]:
-                print >>sys.stderr,"Calling the getHelp() function..."
+                #print >>sys.stderr,"Calling the getHelp() function..."
                 mjmin_needed()
-                getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
+                #getHelp(x.data["highpeers"], x.data["lowpeers"], x.data["MIN-NEEDED"][0])
 
 def mjmin_needed():
     if(x.is_existing("MIN-NEEDED")):
