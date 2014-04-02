@@ -181,7 +181,6 @@ def state_callback(ds):
         firstTime = False
     
     ###################
-    # MENMA EX
     mjtime = time.time()
     mjpeers = ds.get_peerlist()
     #print >>sys.stderr, "PREBUF\t", ds.get_vod_prebuffering_progress()
@@ -901,7 +900,6 @@ if __name__ == "__main__":
     dscfg.set_video_source(source,authcfg)
 
     dscfg.set_max_uploads(config['nuploads'])
-    # MENMA EX
 
     dscfg.set_max_speed(UPLOAD, MOJOMAXUPLOAD)
     

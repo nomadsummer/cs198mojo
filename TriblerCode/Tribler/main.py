@@ -101,7 +101,6 @@ if __name__ == "__main__":
         #tdef = TorrentDef.load('/tmp/bla3multi.torrent')
         tdef = TorrentDef.load('/tmp/bla.torrent')
     
-    # MENMA EX
     dcfg = DownloadStartupConfig()
     dcfg.set_max_rate_period(4.0)
     #dcfg.set_max_speed(UPLOAD, 100)

@@ -495,7 +495,6 @@ class MovieOnDemandTransporter(MovieTransport):
         gotall = not missing_pieces
         self.prebufprogress = float(self.max_prebuf_packets-len(missing_pieces))/float(self.max_prebuf_packets)
         
-        # MENMA EX
         """
         # START UP DELAY
         if not gotall:

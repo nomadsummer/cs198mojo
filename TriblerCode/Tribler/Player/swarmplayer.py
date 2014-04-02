@@ -365,7 +365,6 @@ class PlayerApp(wx.App):
         dcfg.set_video_event_callback(self.sesscb_vod_event_callback)
         dcfg.set_video_events([VODEVENT_START,VODEVENT_PAUSE,VODEVENT_RESUME])
         dcfg.set_dest_dir(destdir)
-        # MENMA EX
         dcfg.set_max_speed(UPLOAD, MOJOMAX_UPLOAD)
         dcfg.set_max_speed(DOWNLOAD, MOJOMAX_DOWNLOAD)
 
@@ -797,7 +796,6 @@ class PlayerApp(wx.App):
         if ds is None:
             return
         elif playermode == DLSTATUS_DOWNLOADING:
-            # MENMA EX
             mjtime = datetime.datetime.now().time()
             mjpeers = ds.get_peerlist()
             ######################
@@ -820,7 +818,6 @@ class PlayerApp(wx.App):
         if playermode != DLSTATUS_SEEDING and ds.get_status() == DLSTATUS_SEEDING:
             self.restart_other_downloads() # GUI UPDATE
 
-        # MENMA EX
         #self.restart_other_downloads()
 
         # cf. 25 Mbps cap to reduce CPU usage and improve playback on slow machines
@@ -965,7 +962,6 @@ class PlayerApp(wx.App):
             self.videoFrame.set_player_status(msg)
         self.videoFrame.videopanel.updateProgressSlider(ds.get_pieces_complete()) 
 
-        # MENMA EX
         boolArray = ds.get_pieces_complete()
         mjtime = datetime.datetime.now().time()
         #if len(boolArray) != 0:

@@ -304,7 +304,6 @@ class Connection:
             self.connection.close()
             self.sever(closeall=closeall)
 
-    # MENMA EX
     """
     def set_flag(self, ipAddr):
         return 0

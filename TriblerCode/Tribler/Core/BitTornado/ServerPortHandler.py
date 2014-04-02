@@ -114,7 +114,6 @@ class NewSocketHandler:     # hand a new socket off where it belongs
             self.connection.close()
             self.closed = True
 
-    # MENMA EX
     def get_flag(self, ipAddr):
         return False
 

@@ -414,13 +414,11 @@ class TriblerLaunchMany(Thread):
     #
     # State retrieval
     #
-    # MENMA EX
     def set_download_states_callback(self,usercallback,getpeerlist,when=0.0):
         """ Called by any thread """
         network_set_download_states_callback_lambda = lambda:self.network_set_download_states_callback(usercallback,getpeerlist)
         self.rawserver.add_task(network_set_download_states_callback_lambda,when)
 	
-	# MENMA EX        
     def network_set_download_states_callback(self,usercallback,getpeerlist):
         """ Called by network thread """
         self.sesslock.acquire()

@@ -494,7 +494,6 @@ class BT1Download:
             if self.config['video_ratelimit']:
                 self.videosourcetransporter = RateLimitedVideoSourceTransporter(self.config['video_ratelimit'],self.config['video_source'],self,self.config['video_source_authconfig'])
             else:
-            	# MENMA EX
                 self.videosourcetransporter = VideoSourceTransporter(self.config['video_source'],self,self.config['video_source_authconfig'])
             self.videosourcetransporter.start()
         elif DEBUG:

@@ -814,7 +814,6 @@ class Connecter:
             #if counter == maxBroadcast:
             #    break
 
-    # MENMA EX
     def set_flag(self, ipAddr):
         x.update(ipAddr, 1)
     

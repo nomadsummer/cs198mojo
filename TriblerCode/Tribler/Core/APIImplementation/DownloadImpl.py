@@ -219,7 +219,6 @@ class DownloadImpl:
         self.session.lm.rawserver.add_task(network_create_engine_wrapper_lambda,0) 
         
 
-    # MENMA EX
     def network_create_engine_wrapper(self,infohash,metainfo,kvconfig,multihandler,listenport,vapath,vodfileindex,lmcallback,pstate,lmvodeventcallback):
         """ Called by network thread """
         self.dllock.acquire()
@@ -242,7 +241,6 @@ class DownloadImpl:
     #
     # Retrieving DownloadState
     #
-    # MENMA EX
     def set_state_callback(self,usercallback,getpeerlist=True):
         """ Called by any thread """
         self.dllock.acquire()
@@ -253,7 +251,6 @@ class DownloadImpl:
         finally:
             self.dllock.release()
 
-    # MENMA EX
     def network_get_state(self,usercallback,getpeerlist,sessioncalling=False):
         """ Called by network thread """
         self.dllock.acquire()
